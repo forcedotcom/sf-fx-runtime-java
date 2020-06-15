@@ -43,7 +43,7 @@
         <mockito.version>2.7.10</mockito.version>
         <org.apache.commons.commons-lang.version>3.5</org.apache.commons.commons-lang.version>
         <org.apache.httpcomponents.version>4.5.3</org.apache.httpcomponents.version>
-        <spring.boot.version>2.1.1.RELEASE</spring.boot.version>
+        <spring.boot.version>2.2.0.RELEASE</spring.boot.version>
     </properties>
 
     <dependencies>
@@ -122,7 +122,7 @@
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <configuration>
                     <rules>
-                        <dependencyConvergence />
+                        <dependencyConvergence/>
                     </rules>
                 </configuration>
                 <executions>
@@ -160,12 +160,9 @@
                             <target>
                                 <echo>ANT TASK - removing version
                                     number....</echo>
-                                <copy
-                                    tofile="target/com.salesforce.function.runtime.jar"
-                                    overwrite="true" flatten="true">
+                                <copy tofile="target/com.salesforce.function.runtime.jar" overwrite="true" flatten="true">
                                     <fileset dir="${basedir}">
-                                        <include
-                                            name="target/com.salesforce.function.runtime-*.jar" />
+                                        <include name="target/com.salesforce.function.runtime-*.jar"/>
                                     </fileset>
                                 </copy>
                             </target>
@@ -183,12 +180,9 @@
                                     local cache. THIS WILL
                                     BYPASS ASSET
                                     STAGING!</echo>
-                                <copy
-                                    tofile="/tmp/sf-function-cache/sf-fx-runtime.jar"
-                                    overwrite="true" flatten="true">
+                                <copy tofile="/tmp/sf-function-cache/sf-fx-runtime.jar" overwrite="true" flatten="true">
                                     <fileset dir="${basedir}">
-                                        <include
-                                            name="target/com.salesforce.function.runtime.jar" />
+                                        <include name="target/com.salesforce.function.runtime.jar"/>
                                     </fileset>
                                 </copy>
                             </target>
