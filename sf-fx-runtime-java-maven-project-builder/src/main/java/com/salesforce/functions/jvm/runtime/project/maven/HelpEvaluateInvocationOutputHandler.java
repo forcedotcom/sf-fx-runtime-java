@@ -1,0 +1,22 @@
+package com.salesforce.functions.jvm.runtime.project.maven;
+
+import java.util.Optional;
+import java.util.regex.Pattern;
+
+final class HelpEvaluateInvocationOutputHandler implements InvocationOutputHandler<Optional<String>> {
+    private String evaluationResult;
+
+    @Override
+    public void consumeLine(String line) {
+        if (!PATTERN.matcher(line).matches()) {
+            evaluationResult = line;
+        }
+    }
+
+    @Override
+    public Optional<String> getResult() {
+        return Optional.ofNullable(evaluationResult);
+    }
+
+    private final static Pattern PATTERN = Pattern.compile("^\\[[A-Z]+\\] .*$");
+}
