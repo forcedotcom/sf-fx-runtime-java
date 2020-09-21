@@ -55,7 +55,10 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
     public Object deserializeAt(String json, Class<?> clazz, String... path) throws JsonDeserializationException {
         try {
             Object jsonNode = readTreeMethod.invoke(objectMapper, json);
-            jsonNode = atMethod.invoke(jsonNode, "/" + String.join("/", path));
+
+            if (path.length > 0) {
+                jsonNode = atMethod.invoke(jsonNode, "/" + String.join("/", path));
+            }
 
             Object objectReader = readerForMethod.invoke(objectMapper, clazz);
             return readValueMethod.invoke(objectReader, jsonNode);
