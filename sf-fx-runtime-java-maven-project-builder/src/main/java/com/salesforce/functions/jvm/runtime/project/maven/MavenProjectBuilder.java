@@ -44,7 +44,7 @@ public final class MavenProjectBuilder implements ProjectBuilder {
         properties.setProperty("outputAbsoluteArtifactFilename", "true");
         properties.setProperty("includeScope", "runtime");
 
-        InvocationOutputHandler<List<Path>> outputHandler = new DependencyListInvocationOutputHandler();
+        MavenInvocationOutputHandler<List<Path>> outputHandler = new DependencyListMavenInvocationOutputHandler();
         return MavenInvoker.invoke(projectPath, "dependency:list", properties, outputHandler);
     }
 
@@ -60,7 +60,7 @@ public final class MavenProjectBuilder implements ProjectBuilder {
         Properties properties = new Properties();
         properties.setProperty("expression", "project.build.outputDirectory");
 
-        InvocationOutputHandler<Optional<String>> outputHandler = new HelpEvaluateInvocationOutputHandler();
+        MavenInvocationOutputHandler<Optional<String>> outputHandler = new HelpEvaluateMavenInvocationOutputHandler();
 
         return MavenInvoker
                 .invoke(projectPath, "help:evaluate", properties, outputHandler)

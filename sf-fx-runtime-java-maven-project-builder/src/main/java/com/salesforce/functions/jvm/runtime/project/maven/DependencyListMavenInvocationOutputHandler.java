@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-final class DependencyListInvocationOutputHandler implements InvocationOutputHandler<List<Path>> {
+final class DependencyListMavenInvocationOutputHandler implements MavenInvocationOutputHandler<List<Path>> {
     private List<Path> collectedDependencyPaths = new ArrayList<>();
 
     @Override

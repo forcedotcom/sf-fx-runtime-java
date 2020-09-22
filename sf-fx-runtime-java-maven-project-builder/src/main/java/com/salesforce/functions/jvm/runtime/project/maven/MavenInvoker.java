@@ -9,7 +9,7 @@ import java.util.Properties;
 
 final class MavenInvoker {
 
-    static <A> A invoke(Path projectPath, String goal, Properties invocationRequestProperties, InvocationOutputHandler<A> outputHandler) throws MavenInvocationException {
+    static <A> A invoke(Path projectPath, String goal, Properties invocationRequestProperties, MavenInvocationOutputHandler<A> outputHandler) throws MavenInvocationException {
         InvocationRequest invocationRequest = new DefaultInvocationRequest();
         invocationRequest.setPomFile(projectPath.resolve("pom.xml").toFile());
         invocationRequest.setGoals(Collections.singletonList(goal));

@@ -3,7 +3,7 @@ package com.salesforce.functions.jvm.runtime.project.maven;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-final class HelpEvaluateInvocationOutputHandler implements InvocationOutputHandler<Optional<String>> {
+final class HelpEvaluateMavenInvocationOutputHandler implements MavenInvocationOutputHandler<Optional<String>> {
     private String evaluationResult;
 
     @Override
