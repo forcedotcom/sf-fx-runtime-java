@@ -90,6 +90,30 @@ public class SalesforceContextParserTest {
         assertFalse(result.isPresent());
     }
 
+    @Test
+    public void testParseSalesforceFunctionContextWithEmptyString() {
+        CloudEvent cloudEvent = CloudEventBuilder
+                .v1(BASE_TESTING_CLOUD_EVENT)
+                .withExtension("sffncontext", Base64.getEncoder().encodeToString("".getBytes(StandardCharsets.UTF_8)))
+                .build();
+
+        Optional<SalesforceFunctionContext> result = SalesforceContextParser.parseSalesforceFunctionContext(cloudEvent);
+
+        assertFalse(result.isPresent());
+    }
+
+    @Test
+    public void testParseSalesforceContextWithEmptyString() {
+        CloudEvent cloudEvent = CloudEventBuilder
+                .v1(BASE_TESTING_CLOUD_EVENT)
+                .withExtension("sfcontext", Base64.getEncoder().encodeToString("".getBytes(StandardCharsets.UTF_8)))
+                .build();
+
+        Optional<SalesforceContext> result = SalesforceContextParser.parseSalesforceContext(cloudEvent);
+
+        assertFalse(result.isPresent());
+    }
+
     private CloudEvent BASE_TESTING_CLOUD_EVENT = CloudEventBuilder
             .v1()
             .withId("fe9da89b-1eed-471c-a04c-0b3c664b63af")

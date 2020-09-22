@@ -29,7 +29,7 @@ public final class SalesforceContextParser {
         String extensionString = new String(base64DecodedExtension, StandardCharsets.UTF_8);
 
         try {
-            return Optional.of(gson.fromJson(extensionString, clazz));
+            return Optional.ofNullable(gson.fromJson(extensionString, clazz));
         } catch (JsonSyntaxException e) {
             return Optional.empty();
         }
