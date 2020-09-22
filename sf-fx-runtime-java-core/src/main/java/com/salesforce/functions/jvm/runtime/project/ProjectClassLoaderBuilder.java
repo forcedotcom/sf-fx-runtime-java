@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedExceptionAction;
 import java.util.List;
 
 public final class ProjectClassLoaderBuilder {
@@ -30,7 +33,9 @@ public final class ProjectClassLoaderBuilder {
         // This creates a strong isolation of function runtime classloading and the function provided by the user.
         ClassLoader bootstrapClassLoader = ClassLoader.getSystemClassLoader().getParent();
 
-        return new URLClassLoader(urls, bootstrapClassLoader);
+        return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) () -> {
+            return new URLClassLoader(urls, bootstrapClassLoader);
+        });
     }
 
     private static URL pathToURLClassLoaderURL(Path path) {
