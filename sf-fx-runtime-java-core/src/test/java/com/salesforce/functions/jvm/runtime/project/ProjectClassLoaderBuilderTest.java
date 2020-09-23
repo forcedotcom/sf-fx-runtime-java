@@ -47,7 +47,7 @@ public class ProjectClassLoaderBuilderTest {
     @Test
     public void testClassesDirectory() throws Exception {
         List<Path> paths = new ArrayList<>();
-        paths.add(Paths.get("src", "test", "resources", "precompiled-classes"));
+        paths.add(Paths.get("src", "test", "resources", "precompiled-classes", "to-uppercase-function"));
 
         ClassLoader classLoader = ProjectClassLoaderBuilder.build(paths);
         Class<?> clazz = classLoader.loadClass("com.example.ToUpperCaseFunction");

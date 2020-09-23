@@ -1,4 +1,4 @@
-package com.salesforce.functions.jvm.runtime.cloudevent;
+package com.salesforce.functions.jvm.runtime.testing;
 
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunction;
@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-final class ProjectFunctionTestingHelper {
+public final class ProjectFunctionTestingHelper {
 
     public static <A, B> ProjectFunction createProjectFunction(Function<A, B> f, Class<A> a, Class<B> b) {
         try {

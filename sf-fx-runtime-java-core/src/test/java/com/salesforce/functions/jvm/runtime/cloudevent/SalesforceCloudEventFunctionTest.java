@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import com.salesforce.functions.jvm.runtime.cloudevent.exception.*;
+import com.salesforce.functions.jvm.runtime.testing.ProjectFunctionTestingHelper;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
 import org.junit.Test;
