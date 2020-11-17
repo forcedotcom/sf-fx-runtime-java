@@ -60,9 +60,13 @@ public final class SalesforceCloudEventFunction {
             throw new IncompatibleCloudEventDataContentTypeException();
         }
 
-        final byte[] cloudEventData = cloudEvent.getData();
         // Nullary functions are currently not supported.
-        if (cloudEventData == null || cloudEventData.length == 0) {
+        if (cloudEvent.getData() == null) {
+            throw new MissingCloudEventDataException();
+        }
+
+        final byte[] cloudEventData = cloudEvent.getData().toBytes();
+        if (cloudEventData.length == 0) {
             throw new MissingCloudEventDataException();
         }
 

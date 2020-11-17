@@ -17,11 +17,6 @@ jobs:
       name: << parameters.executor >>
     steps:
       - checkout
-      # Install dependencies that are not yet available at Maven central
-      - run: git clone https://github.com/cloudevents/sdk-java.git
-      - run: cd sdk-java && ./mvnw install
-      - run: cd ..
-      # Run the actual build...
       - run: ./mvnw package
 
 workflows:
