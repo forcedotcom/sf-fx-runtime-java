@@ -1,20 +1,11 @@
 # sf-fx-runtime-java
 
+Note: This feature is in beta and has been released early so we can collect feedback. It may contain significant problems, undergo major changes, or be discontinued. The use of this feature is governed by the [Salesforce.com Program Agreement](https://trailblazer.me/terms?lan=en).
+
 ## Building
 
 This project uses [Maven Wrapper](https://github.com/takari/maven-wrapper), run `./mvnw package` to build and package 
 the runtime. It requires at least OpenJDK 8.
-
-### Prerequisites
-This application currently depends on a `SNAPSHOT` version of 
-[cloudevents/sdk-java](https://github.com/cloudevents/sdk-java) for generic HTTP binding support. As soon as 
-`2.0.0-milestone3` is released, installing the `SNAPSHOT` version before building is no longer necessary.
-
-```
-$ git clone git@github.com:cloudevents/sdk-java.git
-$ cd sdk-java 
-$ ./mvnw install
-``` 
 
 ## Running
 
