@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+#
+# Copyright (c) 2021, salesforce.com, inc.
+# All rights reserved.
+# SPDX-License-Identifier: BSD-3-Clause
+# For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+#
+
+project_directory="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+
+if ! compgen -G "${project_directory}/sf-fx-runtime-java-runtime/target/sf-fx-runtime-*-jar-with-dependencies.jar" >/dev/null; then
+	echo >&2 "Could not find runtime JAR. Did you build the project?"
+	echo >&2 "$ ./mvnw package"
+	exit 100
+fi
+
+java -jar "${project_directory}"/sf-fx-runtime-java-runtime/target/sf-fx-runtime-*-jar-with-dependencies.jar "${@}"
