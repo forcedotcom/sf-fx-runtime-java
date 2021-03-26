@@ -29,6 +29,8 @@ public final class ProjectClassLoaderBuilder {
      * @return The new class loader.
      */
     public static ClassLoader build(List<Path> paths) {
+        // NOTE: It's important to keep the order of the given paths since URLClassLoader will load classes in the
+        // given order. See com.salesforce.functions.jvm.runtime.project.Project#createClassLoader for details.
         URL[] urls = new URL[paths.size()];
         for (int i = 0; i < urls.length; i++) {
             urls[i] = pathToURLClassLoaderURL(paths.get(i));
@@ -39,9 +41,7 @@ public final class ProjectClassLoaderBuilder {
         // This creates a strong isolation of function runtime classloading and the function provided by the user.
         ClassLoader bootstrapClassLoader = ClassLoader.getSystemClassLoader().getParent();
 
-                return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) () -> {
-            return new URLClassLoader(urls, bootstrapClassLoader);
-        });
+        return AccessController.doPrivileged((PrivilegedAction<ClassLoader>) () -> new URLClassLoader(urls, bootstrapClassLoader));
     }
 
     private static URL pathToURLClassLoaderURL(Path path) {
@@ -63,5 +63,6 @@ public final class ProjectClassLoaderBuilder {
         }
     }
 
-    private ProjectClassLoaderBuilder() {}
+    private ProjectClassLoaderBuilder() {
+    }
 }
