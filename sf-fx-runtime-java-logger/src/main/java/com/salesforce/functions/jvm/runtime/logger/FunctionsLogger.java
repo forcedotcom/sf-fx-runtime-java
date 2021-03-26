@@ -26,35 +26,37 @@ public class FunctionsLogger implements Logger {
 
     private void log(Level level, String message) {
         if (isLevelEnabled(level)) {
-            System.out.print(formatter.format(name, level, message));
+            log(level, message, (Throwable) null);
         }
     }
 
     private void log(Level level, String s, Object o) {
         if (isLevelEnabled(level)) {
             FormattingTuple formattingTuple = MessageFormatter.format(s, o);
-            log(level, formattingTuple.getMessage());
+            log(level, formattingTuple.getMessage(), formattingTuple.getThrowable());
         }
     }
 
     private void log(Level level, String s, Object o, Object o1) {
         if (isLevelEnabled(level)) {
             FormattingTuple formattingTuple = MessageFormatter.format(s, o, o1);
-            log(level, formattingTuple.getMessage());
+            log(level, formattingTuple.getMessage(), formattingTuple.getThrowable());
         }
     }
 
     private void log(Level level, String s, Object... objects) {
         if (isLevelEnabled(level)) {
             FormattingTuple formattingTuple = MessageFormatter.arrayFormat(s, objects);
-            log(level, formattingTuple.getMessage());
+            log(level, formattingTuple.getMessage(), formattingTuple.getThrowable());
         }
     }
 
     private void log(Level level, String s, Throwable throwable) {
         if (isLevelEnabled(level)) {
-            FormattingTuple formattingTuple = MessageFormatter.format(s, throwable);
-            log(level, formattingTuple.getMessage());
+            System.out.print(formatter.format(name, level, s));
+            if (throwable != null) {
+                throwable.printStackTrace();
+            }
         }
     }
 
