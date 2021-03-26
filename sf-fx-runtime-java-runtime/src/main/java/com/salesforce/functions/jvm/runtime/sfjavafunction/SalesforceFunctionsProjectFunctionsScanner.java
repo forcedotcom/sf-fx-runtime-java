@@ -50,21 +50,27 @@ public class SalesforceFunctionsProjectFunctionsScanner implements ProjectFuncti
     public List<SalesforceFunction> scan(Project project) {
         Objects.requireNonNull(project);
 
-        // In the future when we might have multiple incompatible SDK interfaces, we can implement different strategies
-        // for each SDK version initialization and function detection. This is not a concern right now and therefore
-        // unimplemented. The SDK does include a properties files that can be used to reliably detect the SDK version:
-        //
-        // final Properties properties = new Properties();
-        // try (final InputStream stream = projectClassLoader.getResourceAsStream("sf-fx-sdk-java.properties")) {
-        //   properties.load(stream);
-        // }
-        //
-        // properties.getProperty("version");
+        // We inject a slf4j compatible logger implementation into the project classloader in the next step. To do so,
+        // we need to get the implementation JAR out of the invoker JAR:
+        Path loggerJarPath;
+        try {
+            Optional<Path> optionalLoggerJarPath = copyJarFileFromClassPath("sf-fx-java-logger.jar");
+            if (!optionalLoggerJarPath.isPresent()) {
+                LOGGER.error("Could not find logger implementation JAR!");
+                return Collections.emptyList();
+            }
+
+            loggerJarPath = optionalLoggerJarPath.get();
+        } catch (IOException e) {
+            LOGGER.error("Could not copy logger JAR file to disk!", e);
+            return Collections.emptyList();
+        }
 
         // Class loader for the user project, does only contain classes (including dependencies) from the the
         // user-defined project and bootstrap classes. Specifically no SDK implementation! This ensures no classes leak
-        // from the runtime to the function.
-        final ClassLoader projectClassLoader = project.getClassLoader();
+        // from the runtime to the function. The only exception is the injected logger JAR file since it needs to be
+        // visible for the classes inside the project.
+        final ClassLoader projectClassLoader = project.createClassLoader(loggerJarPath);
 
         // Class loader that exposes a subset of classes from the general runtime class loader. This is necessary to
         // share some classes between the SDK class loader (see below) and the runtime.
@@ -87,22 +93,27 @@ public class SalesforceFunctionsProjectFunctionsScanner implements ProjectFuncti
         // contain the CloudEvent classes nor the SDK interface. This can be achieved by using the "provided" scope in
         // Maven for the SDK implementation project.
         final ClassLoader sdkClassLoader;
-        try {
-            InputStream sdkImplementationJarStream
-                    = getClass().getClassLoader().getResourceAsStream("sdk-impl-v0.jar");
 
-            if (sdkImplementationJarStream == null) {
-                LOGGER.error("Could not find SDK implementation JAR!");
+        // In the future when we might have multiple incompatible SDK interfaces, we can implement different strategies
+        // for each SDK version initialization and function detection. This is not a concern right now and therefore
+        // unimplemented. The SDK does include a properties files that can be used to reliably detect the SDK version:
+        //
+        // final Properties properties = new Properties();
+        // try (final InputStream stream = projectClassLoader.getResourceAsStream("sf-fx-sdk-java.properties")) {
+        //   properties.load(stream);
+        // }
+        //
+        // properties.getProperty("version");
+
+        try {
+            Optional<Path> optionalSdkImplementationJarPath = copyJarFileFromClassPath("sdk-impl-v0.jar");
+            if (!optionalSdkImplementationJarPath.isPresent()) {
+                LOGGER.error("Could not find logger implementation JAR!");
                 return Collections.emptyList();
             }
 
-            // URLClassLoader does not work well with "jar:" URLs. As a workaround, we copy the JAR file from the JAR
-            // file to a temporary location and load the classes from there:
-            Path sdkImplementationJarPath = Files.createTempFile("sdk-impl-v0", "jar");
-            Files.copy(sdkImplementationJarStream, sdkImplementationJarPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-
             sdkClassLoader
-                    = new URLClassLoader(new URL[]{sdkImplementationJarPath.toUri().toURL()}, allowListClassLoader);
+                    = new URLClassLoader(new URL[]{optionalSdkImplementationJarPath.get().toUri().toURL()}, allowListClassLoader);
 
         } catch (MalformedURLException e) {
             LOGGER.error("Unexpected exception while preparing SDK implementation classloader!", e);
@@ -248,12 +259,38 @@ public class SalesforceFunctionsProjectFunctionsScanner implements ProjectFuncti
                     continue;
                 }
 
+                Method mdcClearMethod = null;
+                Method mdcPutMethod = null;
+                try {
+                    // We look for slf4j in the topmost class loader to make sure if any class in the tree wants to log,
+                    // it can, even when the user project does not declare a dependency on slf4j.
+                    Class<?> mdcClass = sdkClassLoader.loadClass("org.slf4j.MDC");
+                    mdcClearMethod = mdcClass.getMethod("clear");
+                    mdcPutMethod = mdcClass.getMethod("put", String.class, String.class);
+                } catch (ClassNotFoundException e) {
+                    // It's fine to not have slf4j on the classpath since that indicates that no logging is taking place
+                    // in customers or SDK code anyway.
+                    LOGGER.debug("Could not find org.slf4j.MDC in classpath, invocation context data will not be available in logger.");
+                } catch (NoSuchMethodException e) {
+                    LOGGER.warn("Could not find required method on org.slf4j.MDC. Invocation context data will not be available in logger.");
+                }
+
+                final Method finalMdcClearMethod = mdcClearMethod;
+                final Method finalMdcPutMethod = mdcPutMethod;
                 SalesforceFunction salesforceFunction = new SalesforceFunction(
                         unmarshaller,
                         marshaller,
                         (payload, cloudEvent, salesforceContext, functionContext) -> {
                             Object event = eventClassConstructor.newInstance(cloudEvent, payload);
                             Object context = contextClassConstructor.newInstance(cloudEvent, salesforceContext, functionContext);
+
+                            if (finalMdcClearMethod != null) {
+                                finalMdcClearMethod.invoke(null);
+                            }
+
+                            if (finalMdcPutMethod != null) {
+                                finalMdcPutMethod.invoke(null, "function-invocation-id", cloudEvent.getId());
+                            }
 
                             return functionApplyMethod.invoke(functionInstance, event, context);
                         }
@@ -264,5 +301,30 @@ public class SalesforceFunctionsProjectFunctionsScanner implements ProjectFuncti
         }
 
         return foundFunctions;
+    }
+
+    /**
+     * Copies a JAR file from the current class loader to disk.
+     *
+     * This exists since URLClassLoader does not work well with "jar:" URLs. As a workaround, we copy the JAR file from
+     * the JAR file to a temporary location and load the classes from there.
+     *
+     * @param name The name of the JAR file to copy.
+     * @return An Optional containing the path to the temporary file or an undefined Optional if the file could not be
+     * found in the current class loader.
+     * @throws IOException If an IO related error occured.
+     */
+    private Optional<Path> copyJarFileFromClassPath(String name) throws IOException {
+        InputStream inputStream
+                = getClass().getClassLoader().getResourceAsStream(name);
+
+        if (inputStream == null) {
+            return Optional.empty();
+        }
+
+        Path jarFilePath = Files.createTempFile(name, ".tmp.jar");
+        Files.copy(inputStream, jarFilePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+        return Optional.of(jarFilePath);
     }
 }

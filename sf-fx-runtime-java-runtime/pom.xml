@@ -193,6 +193,14 @@
                   <overWrite>true</overWrite>
                   <destFileName>sdk-impl-v0.jar</destFileName>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>${parent.groupId}</groupId>
+                  <artifactId>sf-fx-runtime-java-logger</artifactId>
+                  <version>${parent.version}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <destFileName>sf-fx-java-logger.jar</destFileName>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
               <overWriteReleases>true</overWriteReleases>
@@ -226,6 +234,9 @@
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>0.8.6</version>
+        <configuration>
+          <excludes>*.jar</excludes>
+        </configuration>
         <executions>
           <execution>
             <goals>
