@@ -37,17 +37,17 @@ public class SalesforceFunction
   private final PayloadUnmarshaller unmarshaller;
   private final FunctionResultMarshaller marshaller;
   private final String functionClassName;
-  private final InvocationWrapper functionThing;
+  private final InvocationWrapper invocationWrapper;
 
   public SalesforceFunction(
       PayloadUnmarshaller unmarshaller,
       FunctionResultMarshaller marshaller,
       String functionClassName,
-      InvocationWrapper functionThing) {
+      InvocationWrapper invocationWrapper) {
     this.unmarshaller = unmarshaller;
     this.marshaller = marshaller;
     this.functionClassName = functionClassName;
-    this.functionThing = functionThing;
+    this.invocationWrapper = invocationWrapper;
   }
 
   @Override
@@ -68,7 +68,7 @@ public class SalesforceFunction
 
       Object payloadData = unmarshaller.unmarshall(cloudEvent);
       Object returnValue =
-          functionThing.invoke(
+          invocationWrapper.invoke(
               payloadData, cloudEvent, salesforceContext, salesforceFunctionContext);
       return marshaller.marshall(returnValue);
 
