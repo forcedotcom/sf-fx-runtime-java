@@ -145,6 +145,56 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.9.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <formats>
+                        <format>
+                            <includes>
+                                <include>**/src/main/*.java</include>
+                                <include>**/src/test/*.java</include>
+                                <include>**/pom.xml</include>
+                            </includes>
+
+                            <trimTrailingWhitespace/>
+                            <endWithNewline/>
+                        </format>
+                    </formats>
+
+                    <java>
+                        <googleJavaFormat>
+                            <version>1.7</version>
+                            <style>GOOGLE</style>
+                        </googleJavaFormat>
+
+                        <licenseHeader>
+                            <content>
+                                <![CDATA[
+/*
+ * Copyright (c) 2021, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
+]]>
+                            </content>
+                        </licenseHeader>
+                    </java>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>
@@ -166,7 +216,9 @@
                             <configuration>
                                 <fork>true</fork>
                                 <compilerArgs combine.children="append">
-                                    <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar</arg>
+                                    <arg>
+                                        -J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar
+                                    </arg>
                                 </compilerArgs>
                             </configuration>
                         </plugin>

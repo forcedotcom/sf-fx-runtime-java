@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-
 package com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling;
 
 import com.google.common.net.MediaType;
@@ -12,7 +11,9 @@ import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.PayloadUnma
 import io.cloudevents.CloudEvent;
 
 public interface PayloadUnmarshaller {
-    MediaType getHandledMediaType();
-    Class<?> getTargetClass();
-    Object unmarshall(CloudEvent cloudEvent) throws PayloadUnmarshallingException;
+  MediaType getHandledMediaType();
+
+  Class<?> getTargetClass();
+
+  Object unmarshall(CloudEvent cloudEvent) throws PayloadUnmarshallingException;
 }
