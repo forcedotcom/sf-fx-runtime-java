@@ -36,20 +36,23 @@ public class SalesforceFunction
 
   private final PayloadUnmarshaller unmarshaller;
   private final FunctionResultMarshaller marshaller;
+  private final String functionClassName;
   private final InvocationWrapper functionThing;
 
   public SalesforceFunction(
       PayloadUnmarshaller unmarshaller,
       FunctionResultMarshaller marshaller,
+      String functionClassName,
       InvocationWrapper functionThing) {
     this.unmarshaller = unmarshaller;
     this.marshaller = marshaller;
+    this.functionClassName = functionClassName;
     this.functionThing = functionThing;
   }
 
   @Override
   public String getName() {
-    return "UNIMPLEMENTED";
+    return functionClassName;
   }
 
   @Override
