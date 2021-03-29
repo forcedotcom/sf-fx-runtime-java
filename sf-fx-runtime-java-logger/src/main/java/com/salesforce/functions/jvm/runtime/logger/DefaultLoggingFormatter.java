@@ -34,6 +34,7 @@ public class DefaultLoggingFormatter implements LoggingFormatter {
   }
 
   private static final String FORMAT_STRING = "%s %-5s [INVOCATION %s] %s - %s\n";
+
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 }

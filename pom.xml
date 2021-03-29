@@ -151,6 +151,14 @@
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>2.9.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <formats>
                         <format>
@@ -208,7 +216,9 @@
                             <configuration>
                                 <fork>true</fork>
                                 <compilerArgs combine.children="append">
-                                    <arg>-J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar</arg>
+                                    <arg>
+                                        -J-Xbootclasspath/p:${settings.localRepository}/com/google/errorprone/javac/${javac.version}/javac-${javac.version}.jar
+                                    </arg>
                                 </compilerArgs>
                             </configuration>
                         </plugin>
