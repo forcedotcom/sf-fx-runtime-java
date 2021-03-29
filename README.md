@@ -1,4 +1,5 @@
 # sf-fx-runtime-java
+[![CircleCI](https://circleci.com/gh/forcedotcom/sf-fx-runtime-java/tree/main.svg?style=shield)](https://circleci.com/gh/forcedotcom/sf-fx-runtime-java/tree/main)
 
 Note: This feature is in beta and has been released early so we can collect feedback. It may contain significant problems, undergo major changes, or be discontinued. The use of this feature is governed by the [Salesforce.com Program Agreement](https://trailblazer.me/terms?lan=en).
 
@@ -39,3 +40,10 @@ Usage: sf-fx-runtime-java serve [-p=<port>] <projectPath>
       <projectPath>   The directory that contains the function(s)
   -p, --port=<port>   The port the webserver should listen on.
 ```
+
+## Generating Code Coverage Reports
+
+```
+$ ./mvnw clean package jacoco:report
+```
+Reports for each module can then be found in the `target/site/jacoco` directory relative to the module root.
