@@ -328,6 +328,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
             new SalesforceFunction(
                 unmarshaller,
                 marshaller,
+                functionClass.getName(),
                 (payload, cloudEvent, salesforceContext, functionContext) -> {
                   Object event = eventClassConstructor.newInstance(cloudEvent, payload);
                   Object context =
