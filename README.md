@@ -39,3 +39,10 @@ Usage: sf-fx-runtime-java serve [-p=<port>] <projectPath>
       <projectPath>   The directory that contains the function(s)
   -p, --port=<port>   The port the webserver should listen on.
 ```
+
+## Generating Code Coverage Reports
+
+```
+$ ./mvnw clean package jacoco:report
+```
+Reports for each module can then be found in the `target/site/jacoco` directory relative to the module root.
