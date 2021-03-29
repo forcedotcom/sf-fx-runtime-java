@@ -61,8 +61,7 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
       }
 
       // RestApiRequest#createUri return an absolute URL. For a composite request, we need to strip
-      // off the
-      // base URL from the returned value.
+      // off the base URL from the returned value.
       final String url =
           entry
               .getValue()

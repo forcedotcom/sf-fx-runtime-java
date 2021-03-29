@@ -41,19 +41,14 @@ public class PojoFromJsonPayloadUnmarshaller implements PayloadUnmarshaller {
     }
 
     // RFC 4627 and RFC 7159 both state that the default encoding for JSON is UTF-8. RFC 7159 even
-    // goes so far
-    // to encourage implementations to only use UTF-8 for maximum interoperability. We only support
-    // UTF-8 here
-    // for the same reasons since, especially when dealing with RFC 7159 JSON, detecting the charset
-    // is very
-    // hard. Please note that the JSON mime-type does not allow for a charset attribute that we can
-    // use.
+    // goes so far to encourage implementations to only use UTF-8 for maximum interoperability. We
+    // only support UTF-8 here for the same reasons since, especially when dealing with RFC 7159
+    // JSON, detecting the charset is very hard. Please note that the JSON mime-type does not allow
+    // for a charset attribute that we can use.
     //
     // Invalid UTF-8 is not a concern here, when Java's parser detects invalid data, it will insert
-    // Unicode's
-    // replacement character and continue to parse the data. There won't be an exception but actual
-    // JSON parsing
-    // will most likely fail later on.
+    // Unicode's replacement character and continue to parse the data. There won't be an exception
+    // but actual JSON parsing will most likely fail later on.
     String cloudEventDataUtf8String =
         new String(cloudEvent.getData().toBytes(), StandardCharsets.UTF_8);
 

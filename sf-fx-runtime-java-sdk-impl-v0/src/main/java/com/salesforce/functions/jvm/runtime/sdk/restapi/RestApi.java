@@ -82,8 +82,7 @@ public final class RestApi {
 
     Map<String, String> headers = new HashMap<>();
     for (Header header : response.getAllHeaders()) {
-      // This will overwrite header values for duplicate headers. This is intentional to be
-      // consistent
+      // This will overwrite header values for duplicate headers. This is intentional and consistent
       // with the composite API that does not support multiple headers with the same name.
       headers.put(header.getName(), header.getValue());
     }

@@ -41,10 +41,8 @@ public class LoggingConfigurator {
 
         if (loggerLevel.isPresent()) {
           // Environment variables cannot contain dots. To delimit logger names in environment
-          // variables,
-          // underscore is used instead. The rest of this logger implementation uses dots as the
-          // delimiter,
-          // so we normalize them here before proceeding.
+          // variables, underscore is used instead. The rest of this logger implementation uses dots
+          // as the delimiter, so we normalize them here before proceeding.
           String normalizedLoggerName =
               loggerName.replaceAll(
                   Pattern.quote(ENV_VAR_LOGGER_NAME_SEGMENT_DELIMITER),

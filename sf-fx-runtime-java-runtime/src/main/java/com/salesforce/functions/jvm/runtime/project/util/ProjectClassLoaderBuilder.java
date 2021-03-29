@@ -38,11 +38,9 @@ public final class ProjectClassLoaderBuilder {
     }
 
     // The Bootstrap class loader loads the basic runtime classes provided by the JVM, plus any
-    // classes from JAR
-    // files present in the system extensions directory. It will not "see" the classpath set for the
-    // JVM runtime.
-    // This creates a strong isolation of function runtime classloading and the function provided by
-    // the user.
+    // classes from JAR files present in the system extensions directory. It will not "see" the
+    // classpath set for the JVM runtime. This creates a strong isolation of function runtime
+    // classloading and the function provided by the user.
     ClassLoader bootstrapClassLoader = ClassLoader.getSystemClassLoader().getParent();
 
     return AccessController.doPrivileged(
@@ -53,8 +51,7 @@ public final class ProjectClassLoaderBuilder {
     String absolutePathAsString = path.toAbsolutePath().toString();
 
     // URLClassLoader strictly requires that directories end with a slash. Without it, the contents
-    // of the
-    // directory will not be visible to the classloader.
+    // of the directory will not be visible to the classloader.
     if (Files.isDirectory(path)) {
       absolutePathAsString += "/";
     }
@@ -63,8 +60,7 @@ public final class ProjectClassLoaderBuilder {
       return new URI("file", null, absolutePathAsString, null, null).toURL();
     } catch (MalformedURLException | URISyntaxException e) {
       // This should never happen since we build our URL with the URI constructor that will escape
-      // all parts
-      // of the URL for us.
+      // all parts of the URL for us.
       LOGGER.warn("Unexpected exception while preparing project class loader!", e);
       return null;
     }

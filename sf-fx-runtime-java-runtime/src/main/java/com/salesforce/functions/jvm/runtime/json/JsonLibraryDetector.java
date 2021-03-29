@@ -27,9 +27,8 @@ public final class JsonLibraryDetector {
     ClassLoader classLoader = clazz.getClassLoader();
 
     // getClassLoader returns null when the class was loaded by the bootstrap classloader. To avoid
-    // juggling with
-    // null pointers downstream, we normalize the variable here by putting the actual bootstrap
-    // classloader in.
+    // juggling with null pointers downstream, we normalize the variable here by putting the actual
+    // bootstrap classloader in.
     if (classLoader == null) {
       classLoader = ClassLoader.getSystemClassLoader().getParent();
     }
@@ -40,16 +39,14 @@ public final class JsonLibraryDetector {
       availableJsonLibraries.add(new GsonReflectionJsonLibrary(classLoader));
     } catch (JsonLibraryNotPresentException e) {
       // If the library is not present in the user project's classpath, it cannot be used in any
-      // case.
-      // We can safely ignore this exception and carry on.
+      // case. We can safely ignore this exception and carry on.
     }
 
     try {
       availableJsonLibraries.add(new JacksonReflectionJsonLibrary(classLoader));
     } catch (JsonLibraryNotPresentException e) {
       // If the library is not present in the user project's classpath, it cannot be used in any
-      // case.
-      // We can safely ignore this exception and carry on.
+      // case. We can safely ignore this exception and carry on.
     }
 
     // Find the JSON library that declares to be responsible for the given class

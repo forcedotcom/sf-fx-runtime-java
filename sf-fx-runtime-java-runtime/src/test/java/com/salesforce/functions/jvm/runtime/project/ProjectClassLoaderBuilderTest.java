@@ -26,8 +26,7 @@ public class ProjectClassLoaderBuilderTest {
     Class<?> systemClass = classLoader.loadClass("java.lang.System");
 
     // It's important that those are the exact same class so we can interface with loaded classes
-    // via
-    // bootstrap classes easily.
+    // via bootstrap classes easily.
     assertSame(stringClass, String.class);
     assertSame(systemClass, System.class);
   }

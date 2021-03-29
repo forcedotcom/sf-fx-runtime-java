@@ -53,8 +53,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
     Objects.requireNonNull(project);
 
     // We inject a slf4j compatible logger implementation into the project classloader in the next
-    // step. To do so,
-    // we need to get the implementation JAR out of the invoker JAR:
+    // step. To do so, we need to get the implementation JAR out of the invoker JAR:
     Path loggerJarPath;
     try {
       Optional<Path> optionalLoggerJarPath = copyJarFileFromClassPath("sf-fx-java-logger.jar");
@@ -70,23 +69,17 @@ public class SalesforceFunctionsProjectFunctionsScanner
     }
 
     // Class loader for the user project, does only contain classes (including dependencies) from
-    // the the
-    // user-defined project and bootstrap classes. Specifically no SDK implementation! This ensures
-    // no classes leak
-    // from the runtime to the function. The only exception is the injected logger JAR file since it
-    // needs to be
-    // visible for the classes inside the project.
+    // the the user-defined project and bootstrap classes. Specifically no SDK implementation! This
+    // ensures no classes leak from the runtime to the function. The only exception is the injected
+    // logger JAR file since it needs to be visible for the classes inside the project.
     final ClassLoader projectClassLoader = project.createClassLoader(loggerJarPath);
 
     // Class loader that exposes a subset of classes from the general runtime class loader. This is
-    // necessary to
-    // share some classes between the SDK class loader (see below) and the runtime.
+    // necessary to share some classes between the SDK class loader (see below) and the runtime.
     //
     // The SDK needs to be initialized with a CloudEvent and the required Salesforce extensions. To
-    // be able to pass
-    // those objects to the SDK constructor/initializer, both the runtime and the SDK class loader
-    // need to use the
-    // same class loaded from the same class loader.
+    // be able to pass those objects to the SDK constructor/initializer, both the runtime and the
+    // SDK class loader need to use the same class loaded from the same class loader.
     final AllowListClassLoader allowListClassLoader =
         new AllowListClassLoader(
             // Use the classloader from this class which should be the regular classloader for the
@@ -98,22 +91,17 @@ public class SalesforceFunctionsProjectFunctionsScanner
             "com.salesforce.functions.jvm.runtime.cloudevent.");
 
     // Class loader that can load SDK implementation classes. It will fall back to the
-    // AllowListClassLoader above
-    // to load CloudEvent related classes. The class loader above that one is the project class
-    // loader that contains
-    // the SDK interface required by the SDK implementation. It's important that the SDK
-    // implementation does not
-    // contain the CloudEvent classes nor the SDK interface. This can be achieved by using the
-    // "provided" scope in
-    // Maven for the SDK implementation project.
+    // AllowListClassLoader above to load CloudEvent related classes. The class loader above that
+    // one is the project class loader that contains the SDK interface required by the SDK
+    // implementation. It's important that the SDK implementation does not contain the CloudEvent
+    // classes nor the SDK interface. This can be achieved by using the "provided" scope in Maven
+    // for the SDK implementation project.
     final ClassLoader sdkClassLoader;
 
     // In the future when we might have multiple incompatible SDK interfaces, we can implement
-    // different strategies
-    // for each SDK version initialization and function detection. This is not a concern right now
-    // and therefore
-    // unimplemented. The SDK does include a properties files that can be used to reliably detect
-    // the SDK version:
+    // different strategies for each SDK version initialization and function detection. This is not
+    // a concern right now and therefore unimplemented. The SDK does include a properties files that
+    // can be used to reliably detect the SDK version:
     //
     // final Properties properties = new Properties();
     // try (final InputStream stream =
@@ -319,16 +307,14 @@ public class SalesforceFunctionsProjectFunctionsScanner
         Method mdcClearMethod = null;
         Method mdcPutMethod = null;
         try {
-          // We look for slf4j in the topmost class loader to make sure if any class in the tree
-          // wants to log,
-          // it can, even when the user project does not declare a dependency on slf4j.
+          // We look for slf4j in the topmost class loader to make sure if a class in the tree wants
+          // to log, it can, even when the user project does not declare a dependency on slf4j.
           Class<?> mdcClass = sdkClassLoader.loadClass("org.slf4j.MDC");
           mdcClearMethod = mdcClass.getMethod("clear");
           mdcPutMethod = mdcClass.getMethod("put", String.class, String.class);
         } catch (ClassNotFoundException e) {
           // It's fine to not have slf4j on the classpath since that indicates that no logging is
-          // taking place
-          // in customers or SDK code anyway.
+          // taking place in customers or SDK code anyway.
           LOGGER.debug(
               "Could not find org.slf4j.MDC in classpath, invocation context data will not be available in logger.");
         } catch (NoSuchMethodException e) {
