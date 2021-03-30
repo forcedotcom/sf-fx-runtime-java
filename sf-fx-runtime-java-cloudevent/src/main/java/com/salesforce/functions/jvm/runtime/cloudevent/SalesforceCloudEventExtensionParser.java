@@ -16,6 +16,8 @@ import java.util.Optional;
 public final class SalesforceCloudEventExtensionParser {
   private static final Gson gson = new Gson();
 
+  private SalesforceCloudEventExtensionParser() {}
+
   public static Optional<SalesforceContextCloudEventExtension> parseSalesforceContext(
       CloudEvent cloudEvent) {
     return parseBase64JsonExtension(
