@@ -16,7 +16,7 @@ import java.util.Base64;
 import java.util.Optional;
 import org.junit.Test;
 
-public class SalesforceContextParserTest {
+public class SalesforceCloudEventExtensionParserTest {
 
   @Test
   public void testParseSalesforceContext() {
@@ -141,7 +141,7 @@ public class SalesforceContextParserTest {
     assertFalse(result.isPresent());
   }
 
-  private CloudEvent BASE_TESTING_CLOUD_EVENT =
+  private final CloudEvent BASE_TESTING_CLOUD_EVENT =
       CloudEventBuilder.v1()
           .withId("fe9da89b-1eed-471c-a04c-0b3c664b63af")
           .withSource(URI.create("urn:sf-fx-runtime-java:testing"))
