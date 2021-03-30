@@ -21,9 +21,5 @@ public class StaticMDCBinder {
     return new BasicMDCAdapter();
   }
 
-  public String getMDCAdapterClassStr() {
-    return BasicMDCAdapter.class.getName();
-  }
-
   public static final StaticMDCBinder SINGLETON = new StaticMDCBinder();
 }

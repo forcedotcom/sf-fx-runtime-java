@@ -30,4 +30,6 @@ public class Utils {
 
     return result;
   }
+
+  private Utils() {}
 }
