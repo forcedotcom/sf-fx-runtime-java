@@ -29,4 +29,10 @@ public class UtilsTest {
       Assert.assertEquals(entry.getValue(), Utils.shortenLoggerName(loggerName, entry.getKey()));
     }
   }
+
+  @Test
+  public void testShortenLoggerNameWithEmptySegment() {
+    String loggerName = "foo.bar.baz..blah.Logger";
+    Assert.assertEquals("f.b.b..b.Logger", Utils.shortenLoggerName(loggerName, 10));
+  }
 }
