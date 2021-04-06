@@ -15,7 +15,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <classgraph.version>4.8.104</classgraph.version>
-    <maveninvoker.version>3.0.1</maveninvoker.version>
+    <maveninvoker.version>3.1.0</maveninvoker.version>
     <undertow.version>2.2.7.Final</undertow.version>
     <guava.version>30.1.1-jre</guava.version>
     <picocli.version>4.6.1</picocli.version>
@@ -55,12 +55,6 @@
       <groupId>org.apache.maven.shared</groupId>
       <artifactId>maven-invoker</artifactId>
       <version>${maveninvoker.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-shared-utils</artifactId>
-      <!-- This overrides a transitive dependency of maven-invoker that has a security issue -->
-      <version>3.3.3</version>
     </dependency>
     <dependency>
       <groupId>io.github.classgraph</groupId>
