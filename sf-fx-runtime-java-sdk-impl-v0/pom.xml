@@ -4,7 +4,7 @@
   <parent>
     <artifactId>sf-fx-runtime-java</artifactId>
     <groupId>com.salesforce.functions</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.1.0-ea</version>
   </parent>
 
   <artifactId>sf-fx-runtime-java-sdk-impl-v0</artifactId>
@@ -13,7 +13,7 @@
     <dependency>
       <groupId>com.salesforce.functions</groupId>
       <artifactId>sf-fx-sdk-java</artifactId>
-      <version>0.4.0-SNAPSHOT</version>
+      <version>0.1.0-ea</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
