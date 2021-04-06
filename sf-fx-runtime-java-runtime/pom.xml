@@ -57,12 +57,6 @@
       <version>${maveninvoker.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-shared-utils</artifactId>
-      <!-- This overrides a transitive dependency of maven-invoker that has a security issue -->
-      <version>3.3.3</version>
-    </dependency>
-    <dependency>
       <groupId>io.github.classgraph</groupId>
       <artifactId>classgraph</artifactId>
       <version>${classgraph.version}</version>
