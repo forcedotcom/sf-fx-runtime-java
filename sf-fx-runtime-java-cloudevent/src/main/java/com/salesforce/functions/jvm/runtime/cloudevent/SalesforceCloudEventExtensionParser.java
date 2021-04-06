@@ -30,6 +30,16 @@ public final class SalesforceCloudEventExtensionParser {
         cloudEvent, "sffncontext", SalesforceFunctionContextCloudEventExtension.class);
   }
 
+  public static String serializeSalesforceFunctionContext(
+      SalesforceFunctionContextCloudEventExtension functionContext) {
+    return writeBase64JsonExtension(functionContext);
+  }
+
+  public static String serializeSalesforceContextCloudEventExtension(
+      SalesforceContextCloudEventExtension salesforceContext) {
+    return writeBase64JsonExtension(salesforceContext);
+  }
+
   private static <A> Optional<A> parseBase64JsonExtension(
       CloudEvent cloudEvent, String extensionName, Class<A> clazz) {
     Object sfContextExtensionObject = cloudEvent.getExtension(extensionName);
@@ -45,5 +55,10 @@ public final class SalesforceCloudEventExtensionParser {
     } catch (JsonSyntaxException e) {
       return Optional.empty();
     }
+  }
+
+  private static String writeBase64JsonExtension(Object extensionInstance) {
+    return Base64.getEncoder()
+        .encodeToString(gson.toJson(extensionInstance).getBytes(StandardCharsets.UTF_8));
   }
 }

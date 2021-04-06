@@ -8,8 +8,8 @@ package com.salesforce.functions.jvm.runtime.sfjavafunction;
 
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
 import io.cloudevents.CloudEvent;
-import java.lang.reflect.InvocationTargetException;
 
 public interface InvocationWrapper {
   Object invoke(
@@ -17,5 +17,5 @@ public interface InvocationWrapper {
       CloudEvent cloudEvent,
       SalesforceContextCloudEventExtension salesforceContext,
       SalesforceFunctionContextCloudEventExtension functionContext)
-      throws InvocationTargetException, IllegalAccessException, InstantiationException;
+      throws SalesforceFunctionException;
 }
