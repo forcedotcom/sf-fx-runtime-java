@@ -1,0 +1,35 @@
+[INFO] Scanning for projects...
+[INFO] Inspecting build with total of 5 modules...
+[INFO] Installing Nexus Staging features:
+[INFO]   ... total of 5 executions of maven-deploy-plugin replaced with nexus-staging-maven-plugin
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] sf-fx-runtime-java                                                 [pom]
+[INFO] sf-fx-runtime-java-cloudevent                                      [jar]
+[INFO] sf-fx-runtime-java-sdk-impl-v0                                     [jar]
+[INFO] sf-fx-runtime-java-logger                                          [jar]
+[INFO] sf-fx-runtime-java-runtime                                         [jar]
+[INFO]
+[INFO] ------------< com.salesforce.functions:sf-fx-runtime-java >-------------
+[INFO] Building sf-fx-runtime-java 0.1.0-ea                               [1/5]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] --- maven-help-plugin:3.2.0:evaluate (default-cli) @ sf-fx-runtime-java ---
+[INFO] No artifact parameter specified, using 'com.salesforce.functions:sf-fx-runtime-java:pom:0.1.0-ea' as project.
+[INFO]
+/Users/manuel.fuchs/projects/sf-fx-runtime-java/target/classes
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for sf-fx-runtime-java 0.1.0-ea:
+[INFO]
+[INFO] sf-fx-runtime-java ................................. SUCCESS [  0.326 s]
+[INFO] sf-fx-runtime-java-cloudevent ...................... SKIPPED
+[INFO] sf-fx-runtime-java-sdk-impl-v0 ..................... SKIPPED
+[INFO] sf-fx-runtime-java-logger .......................... SKIPPED
+[INFO] sf-fx-runtime-java-runtime ......................... SKIPPED
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.060 s
+[INFO] Finished at: 2021-04-07T13:36:30+02:00
+[INFO] ------------------------------------------------------------------------
