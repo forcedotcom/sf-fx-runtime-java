@@ -6,7 +6,7 @@
  */
 package com.salesforce.functions.jvm.runtime.project.builder.bundle;
 
-import static com.salesforce.functions.jvm.runtime.test.Util.downloadToTemporary;
+import static com.salesforce.functions.jvm.runtime.test.Util.downloadFileToTemporary;
 
 import com.salesforce.functions.jvm.runtime.project.Project;
 import java.nio.file.Files;
@@ -31,12 +31,12 @@ public class FunctionBundleProjectBuilderTest {
     Files.createDirectories(classpathPath);
 
     Files.move(
-        downloadToTemporary(
+        downloadFileToTemporary(
             "https://repo1.maven.org/maven2/org/slf4j/slf4j-log4j12/1.7.30/slf4j-log4j12-1.7.30.jar"),
         classpathPath.resolve("slf4j-log4j12-1.7.30.jar"));
 
     Files.move(
-        downloadToTemporary(
+        downloadFileToTemporary(
             "https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar"),
         classpathPath.resolve("logback-classic-1.2.3.jar"));
 

@@ -15,12 +15,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Util {
-  public static Path downloadToTemporary(String url) throws IOException {
-    Path temporaryFilePath = Files.createTempFile("test_", ".jar");
-    ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream());
-    FileOutputStream fileOutputStream = new FileOutputStream(temporaryFilePath.toFile());
-    fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
 
+  public static void downloadFile(String url, Path path) throws IOException {
+    ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream());
+    FileOutputStream fileOutputStream = new FileOutputStream(path.toFile());
+    fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+  }
+
+  public static Path downloadFileToTemporary(String url) throws IOException {
+    Path temporaryFilePath = Files.createTempFile("test_", ".jar");
+    downloadFile(url, temporaryFilePath);
     return temporaryFilePath;
   }
 }

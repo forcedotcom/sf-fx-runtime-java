@@ -39,7 +39,7 @@ public class AllowListClassLoaderTest {
     exposedClassLoader = getClass().getClassLoader();
 
     Path log4jJarPath =
-        Util.downloadToTemporary(
+        Util.downloadFileToTemporary(
             "https://repo1.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar");
     parentClassLoader = ProjectClassLoaderBuilder.build(Collections.singletonList(log4jJarPath));
 

@@ -6,7 +6,7 @@
  */
 package com.salesforce.functions.jvm.runtime.project;
 
-import static com.salesforce.functions.jvm.runtime.test.Util.downloadToTemporary;
+import static com.salesforce.functions.jvm.runtime.test.Util.downloadFileToTemporary;
 
 import java.io.IOException;
 import java.net.URL;
@@ -22,15 +22,15 @@ public class ProjectTest {
   @Test
   public void testJarOrdering() throws IOException {
     Path log4jBindingJarPath =
-        downloadToTemporary(
+        downloadFileToTemporary(
             "https://repo1.maven.org/maven2/org/slf4j/slf4j-log4j12/1.7.30/slf4j-log4j12-1.7.30.jar");
 
     Path logbackClassicJarPath =
-        downloadToTemporary(
+        downloadFileToTemporary(
             "https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar");
 
     Path julBindingJarPath =
-        downloadToTemporary(
+        downloadFileToTemporary(
             "https://repo1.maven.org/maven2/org/slf4j/slf4j-jdk14/1.7.30/slf4j-jdk14-1.7.30.jar");
 
     Project project =
