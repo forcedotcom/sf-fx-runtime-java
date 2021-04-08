@@ -45,8 +45,8 @@ public class ServeCommand implements Callable<Integer> {
 
   @Option(
       names = {"-h", "--host"},
-      description = "The host the webserver should listen on. Defaults to '0.0.0.0'.",
-      defaultValue = "0.0.0.0")
+      description = "The host the webserver should bind to. Defaults to 'localhost'.",
+      defaultValue = "localhost")
   private String host;
 
   private final List<ProjectBuilder> projectBuilders =
