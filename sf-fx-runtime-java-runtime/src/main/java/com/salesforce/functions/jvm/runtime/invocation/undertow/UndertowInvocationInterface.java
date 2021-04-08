@@ -35,10 +35,12 @@ public class UndertowInvocationInterface
     implements InvocationInterface<
         CloudEvent, SalesforceFunctionResult, SalesforceFunctionException> {
   private final int port;
+  private final String host;
   private static final Logger LOGGER = LoggerFactory.getLogger(UndertowInvocationInterface.class);
 
-  public UndertowInvocationInterface(int port) {
+  public UndertowInvocationInterface(int port, String host) {
     this.port = port;
+    this.host = host;
   }
 
   @Override
@@ -48,7 +50,7 @@ public class UndertowInvocationInterface
       throws Exception {
     Undertow undertow =
         Undertow.builder()
-            .addHttpListener(port, "")
+            .addHttpListener(port, host)
             .setHandler(new ProjectFunctionHandler(projectFunction))
             .build();
 
