@@ -39,8 +39,15 @@ public class ServeCommand implements Callable<Integer> {
 
   @Option(
       names = {"-p", "--port"},
-      description = "The port the webserver should listen on.")
-  private int port = 8080;
+      description = "The port the webserver should listen on. Defaults to '8080'.",
+      defaultValue = "8080")
+  private int port;
+
+  @Option(
+      names = {"-h", "--host"},
+      description = "The host the webserver should listen on. Defaults to '0.0.0.0'.",
+      defaultValue = "0.0.0.0")
+  private String host;
 
   private final List<ProjectBuilder> projectBuilders =
       Arrays.asList(new FunctionBundleProjectBuilder(), new MavenProjectBuilder());
@@ -95,6 +102,6 @@ public class ServeCommand implements Callable<Integer> {
 
   private InvocationInterface<CloudEvent, SalesforceFunctionResult, SalesforceFunctionException>
       createInvocationInterface() {
-    return new UndertowInvocationInterface(port);
+    return new UndertowInvocationInterface(port, host);
   }
 }
