@@ -7,32 +7,34 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonPrimitive;
+import com.salesforce.functions.jvm.sdk.data.RecordUpdate;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
-public class RecordUpdate
-    extends AbstractRecordModification<com.salesforce.functions.jvm.sdk.data.RecordUpdate>
-    implements com.salesforce.functions.jvm.sdk.data.RecordUpdate {
+public class RecordUpdateImpl extends AbstractRecordModification<RecordUpdate>
+    implements RecordUpdate {
   private final String type;
   private final String id;
 
-  public RecordUpdate(String type, String id, Map<String, JsonPrimitive> values) {
+  public RecordUpdateImpl(String type, String id, Map<String, JsonPrimitive> values) {
     super(values);
     this.type = type;
     this.id = id;
   }
 
   @Override
-  protected com.salesforce.functions.jvm.sdk.data.RecordUpdate copy(
-      Map<String, JsonPrimitive> values) {
-    return new RecordUpdate(type, id, values);
+  protected RecordUpdate copy(Map<String, JsonPrimitive> values) {
+    return new RecordUpdateImpl(type, id, values);
   }
 
   @Override
+  @Nonnull
   public String getType() {
     return type;
   }
 
   @Override
+  @Nonnull
   public String getId() {
     return id;
   }

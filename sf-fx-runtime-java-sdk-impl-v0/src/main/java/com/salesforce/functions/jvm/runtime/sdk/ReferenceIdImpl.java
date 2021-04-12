@@ -6,16 +6,16 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
+import com.salesforce.functions.jvm.sdk.data.ReferenceId;
 import java.util.Objects;
 
-public class ReferenceId implements com.salesforce.functions.jvm.sdk.data.ReferenceId {
+public class ReferenceIdImpl implements ReferenceId {
   private final String id;
 
-  public ReferenceId(String id) {
+  public ReferenceIdImpl(String id) {
     this.id = id;
   }
 
-  @Override
   public String toApiString() {
     return String.format("@{%s.id}", id);
   }
@@ -24,7 +24,7 @@ public class ReferenceId implements com.salesforce.functions.jvm.sdk.data.Refere
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    ReferenceId that = (ReferenceId) o;
+    ReferenceIdImpl that = (ReferenceIdImpl) o;
     return Objects.equals(id, that.id);
   }
 

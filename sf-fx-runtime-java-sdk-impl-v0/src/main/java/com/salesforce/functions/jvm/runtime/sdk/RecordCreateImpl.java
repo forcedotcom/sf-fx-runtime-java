@@ -7,25 +7,26 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonPrimitive;
+import com.salesforce.functions.jvm.sdk.data.RecordCreate;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
-public class RecordInsert
-    extends AbstractRecordModification<com.salesforce.functions.jvm.sdk.data.RecordInsert>
-    implements com.salesforce.functions.jvm.sdk.data.RecordInsert {
+public class RecordCreateImpl extends AbstractRecordModification<RecordCreate>
+    implements RecordCreate {
   private final String type;
 
-  public RecordInsert(String type, Map<String, JsonPrimitive> values) {
+  public RecordCreateImpl(String type, Map<String, JsonPrimitive> values) {
     super(values);
     this.type = type;
   }
 
   @Override
-  protected com.salesforce.functions.jvm.sdk.data.RecordInsert copy(
-      Map<String, JsonPrimitive> values) {
-    return new RecordInsert(type, values);
+  protected RecordCreate copy(Map<String, JsonPrimitive> values) {
+    return new RecordCreateImpl(type, values);
   }
 
   @Override
+  @Nonnull
   public String getType() {
     return type;
   }
