@@ -21,9 +21,9 @@ public class UnitOfWork implements com.salesforce.functions.jvm.sdk.data.UnitOfW
   private final Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
 
   @Override
-  public com.salesforce.functions.jvm.sdk.data.ReferenceId insert(
-      com.salesforce.functions.jvm.sdk.data.RecordInsert insert) {
-    RecordInsert impl = (RecordInsert) insert;
+  public com.salesforce.functions.jvm.sdk.data.ReferenceId registerCreate(
+      com.salesforce.functions.jvm.sdk.data.RecordCreate create) {
+    RecordCreate impl = (RecordCreate) create;
 
     String referenceId = generateReferenceId();
     subrequests.put(referenceId, new CreateRecordRestApiRequest(impl.getType(), impl.getValues()));
@@ -32,7 +32,7 @@ public class UnitOfWork implements com.salesforce.functions.jvm.sdk.data.UnitOfW
   }
 
   @Override
-  public com.salesforce.functions.jvm.sdk.data.ReferenceId update(
+  public com.salesforce.functions.jvm.sdk.data.ReferenceId registerUpdate(
       com.salesforce.functions.jvm.sdk.data.RecordUpdate update) {
     RecordUpdate impl = (RecordUpdate) update;
 

@@ -15,7 +15,6 @@ public class ReferenceId implements com.salesforce.functions.jvm.sdk.data.Refere
     this.id = id;
   }
 
-  @Override
   public String toApiString() {
     return String.format("@{%s.id}", id);
   }

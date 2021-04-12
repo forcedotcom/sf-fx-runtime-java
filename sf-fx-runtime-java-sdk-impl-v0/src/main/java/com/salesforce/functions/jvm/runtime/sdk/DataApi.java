@@ -7,6 +7,7 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.sdk.restapi.*;
+import com.salesforce.functions.jvm.sdk.data.DataApiException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
@@ -21,39 +22,55 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
 
   @Override
   public com.salesforce.functions.jvm.sdk.data.RecordQueryResult query(String soql)
-      throws IOException {
+      throws DataApiException {
     RestApiRequest<QueryRecordResult> request = new QueryRecordRestApiRequest(soql);
-    return new RecordQueryResult(restApi.execute(request));
+    try {
+      return new RecordQueryResult(restApi.execute(request));
+    } catch (IOException e) {
+      throw new DataApiException("I/O error during query", e);
+    }
   }
 
   @Override
-  public com.salesforce.functions.jvm.sdk.data.RecordModificationResult insert(
-      com.salesforce.functions.jvm.sdk.data.RecordInsert insert) throws IOException {
-    RecordInsert impl = (RecordInsert) insert;
+  public com.salesforce.functions.jvm.sdk.data.RecordModificationResult create(
+      com.salesforce.functions.jvm.sdk.data.RecordCreate create) throws DataApiException {
+    RecordCreate impl = (RecordCreate) create;
 
     CreateRecordRestApiRequest request =
         new CreateRecordRestApiRequest(impl.getType(), impl.getValues());
-    return new RecordModificationResult(restApi.execute(request));
+    try {
+      return new RecordModificationResult(restApi.execute(request));
+    } catch (IOException e) {
+      throw new DataApiException("I/O error during create", e);
+    }
   }
 
   @Override
   public com.salesforce.functions.jvm.sdk.data.RecordModificationResult update(
-      com.salesforce.functions.jvm.sdk.data.RecordUpdate update) throws IOException {
+      com.salesforce.functions.jvm.sdk.data.RecordUpdate update) throws DataApiException {
     RecordUpdate impl = (RecordUpdate) update;
 
     UpdateRecordRestApiRequest request =
         new UpdateRecordRestApiRequest(impl.getId(), impl.getType(), impl.getValues());
-    return new RecordModificationResult(restApi.execute(request));
+    try {
+      return new RecordModificationResult(restApi.execute(request));
+    } catch (IOException e) {
+      throw new DataApiException("I/O error during update", e);
+    }
   }
 
   @Override
   public com.salesforce.functions.jvm.sdk.data.RecordQueryResult queryMore(
-      com.salesforce.functions.jvm.sdk.data.RecordQueryResult queryResult) throws IOException {
+      com.salesforce.functions.jvm.sdk.data.RecordQueryResult queryResult) throws DataApiException {
     RecordQueryResult impl = (RecordQueryResult) queryResult;
 
     QueryNextRecordsRestApiRequest request =
         new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get());
-    return new RecordQueryResult(restApi.execute(request));
+    try {
+      return new RecordQueryResult(restApi.execute(request));
+    } catch (IOException e) {
+      throw new DataApiException("I/O error during query more", e);
+    }
   }
 
   @Override
@@ -61,14 +78,19 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
           com.salesforce.functions.jvm.sdk.data.ReferenceId,
           com.salesforce.functions.jvm.sdk.data.RecordModificationResult>
       commitUnitOfWork(com.salesforce.functions.jvm.sdk.data.UnitOfWork unitOfWork)
-          throws IOException {
+          throws DataApiException {
     UnitOfWork impl = (UnitOfWork) unitOfWork;
 
     CompositeRestApiRequest<ModifyRecordResult> request =
         new CompositeRestApiRequest<>(
             restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), impl.getSubrequests());
 
-    Map<String, ModifyRecordResult> result = restApi.execute(request);
+    Map<String, ModifyRecordResult> result = null;
+    try {
+      result = restApi.execute(request);
+    } catch (IOException e) {
+      throw new DataApiException("I/O error while committing UnitOfWork", e);
+    }
 
     Map<
             com.salesforce.functions.jvm.sdk.data.ReferenceId,
@@ -89,8 +111,8 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
   }
 
   @Override
-  public com.salesforce.functions.jvm.sdk.data.RecordInsert newRecordInsert(String type) {
-    return new RecordInsert(type, new HashMap<>());
+  public com.salesforce.functions.jvm.sdk.data.RecordCreate newRecordCreate(String type) {
+    return new RecordCreate(type, new HashMap<>());
   }
 
   @Override

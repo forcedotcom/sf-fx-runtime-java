@@ -27,68 +27,69 @@ public abstract class AbstractRecordModification<T extends RecordModification<T>
   protected abstract T copy(Map<String, JsonPrimitive> values);
 
   @Override
-  public T setStringValue(String key, String value) {
+  public T setValue(String key, String value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setShortValue(String key, short value) {
+  public T setValue(String key, short value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setNumberValue(String key, Number value) {
+  public T setValue(String key, Number value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setLongValue(String key, long value) {
+  public T setValue(String key, long value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setIntValue(String key, int value) {
+  public T setValue(String key, int value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setFloatValue(String key, float value) {
+  public T setValue(String key, float value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setDoubleValue(String key, double value) {
+  public T setValue(String key, double value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setCharacterValue(String key, char value) {
+  public T setValue(String key, char value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setByteValue(String key, byte value) {
+  public T setValue(String key, byte value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setBooleanValue(String key, boolean value) {
+  public T setValue(String key, boolean value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setBigIntegerValue(String key, BigInteger value) {
+  public T setValue(String key, BigInteger value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setBigDecimalValue(String key, BigDecimal value) {
+  public T setValue(String key, BigDecimal value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
-  public T setReferenceIdValue(String key, ReferenceId fkId) {
-    return setStringValue(key, fkId.toApiString());
+  public T setValue(String key, ReferenceId fkId) {
+    String apiString = ((com.salesforce.functions.jvm.runtime.sdk.ReferenceId) fkId).toApiString();
+    return setValue(key, new JsonPrimitive(apiString));
   }
 
   protected T setValue(String key, JsonPrimitive value) {
