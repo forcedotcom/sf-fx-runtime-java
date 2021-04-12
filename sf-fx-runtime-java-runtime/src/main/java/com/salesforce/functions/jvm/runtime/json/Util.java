@@ -31,4 +31,6 @@ class Util {
 
     return annotations;
   }
+
+  private Util() {}
 }

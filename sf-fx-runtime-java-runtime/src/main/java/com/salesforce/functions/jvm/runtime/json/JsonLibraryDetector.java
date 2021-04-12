@@ -78,4 +78,6 @@ public final class JsonLibraryDetector {
 
     return responsibleJsonLibrary;
   }
+
+  private JsonLibraryDetector() {}
 }

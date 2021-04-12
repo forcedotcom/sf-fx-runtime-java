@@ -25,5 +25,5 @@ final class HelpEvaluateMavenInvocationOutputHandler
     return Optional.ofNullable(evaluationResult);
   }
 
-  private static final Pattern PATTERN = Pattern.compile("^\\[[A-Z]+\\] .*$");
+  private static final Pattern PATTERN = Pattern.compile("^\\[[A-Z]+\\].*$");
 }

@@ -6,15 +6,14 @@
  */
 package com.salesforce.functions.jvm.runtime.commands;
 
+import com.salesforce.functions.jvm.runtime.bundle.FunctionBundler;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
 import com.salesforce.functions.jvm.runtime.project.builder.maven.MavenProjectBuilder;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunction;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunctionsProjectFunctionsScanner;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -90,71 +89,9 @@ public class BundleCommand implements Callable<Integer> {
 
     SalesforceFunction function = functions.get(0);
 
-    // Copy all dependencies from the project to the classpath directory of the function bundle
-    // directory.
-    // Directory existence has been validated prior.
-    Path bundleClassPath = Paths.get(bundlePath.toString(), "classpath");
-    for (Path dependencyPath : project.getClasspathPaths()) {
-      final Path destinationDependencyPath =
-          getPathForDestinationDirectory(bundleClassPath, dependencyPath);
-
-      if (Files.isDirectory(dependencyPath)) {
-        Files.walkFileTree(
-            dependencyPath,
-            new SimpleFileVisitor<Path>() {
-              @Override
-              public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-                  throws IOException {
-                Files.createDirectories(
-                    destinationDependencyPath.resolve(dependencyPath.relativize(dir)));
-                return FileVisitResult.CONTINUE;
-              }
-
-              @Override
-              public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-                  throws IOException {
-
-                Files.copy(
-                    file, destinationDependencyPath.resolve(dependencyPath.relativize(file)));
-                return FileVisitResult.CONTINUE;
-              }
-            });
-      } else if (Files.isRegularFile(dependencyPath)) {
-        Files.copy(dependencyPath, destinationDependencyPath);
-      } else {
-        System.err.println("Unexpected file type at path " + dependencyPath + ", exiting...");
-        return EXIT_CODE_UNEXPECTED_FILE_TYPE;
-      }
-    }
-
-    Path functionBundleTomlPath = Paths.get(bundlePath.toString(), "function-bundle.toml");
-
-    try (PrintWriter printWriter = new PrintWriter(functionBundleTomlPath.toFile())) {
-      printWriter.println("[function]");
-      printWriter.printf("class = \"%s\"\n", function.getName());
-      printWriter.printf(
-          "payload_class = \"%s\"\n", function.getUnmarshaller().getTargetClass().getName());
-      printWriter.printf(
-          "payload_media_type = \"%s\"\n",
-          function.getUnmarshaller().getHandledMediaType().toString());
-      printWriter.printf(
-          "return_class = \"%s\"\n", function.getMarshaller().getSourceClass().getName());
-      printWriter.printf(
-          "return_media_type = \"%s\"\n", function.getMarshaller().getMediaType().toString());
-    }
+    FunctionBundler.bundle(project, function, bundlePath);
 
     return EXIT_CODE_SUCCESS;
-  }
-
-  private Path getPathForDestinationDirectory(Path destinationDirectoryPath, Path path) {
-    Path destination =
-        Paths.get(destinationDirectoryPath.toString(), path.getFileName().toString());
-    while (Files.exists(destination)) {
-      destination =
-          Paths.get(destinationDirectoryPath.toString(), "_", path.getFileName().toString());
-    }
-
-    return destination;
   }
 
   private final int EXIT_CODE_SUCCESS = 0;
