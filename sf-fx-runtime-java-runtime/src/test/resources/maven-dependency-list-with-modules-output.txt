@@ -1,0 +1,247 @@
+[INFO] Scanning for projects...
+[INFO] Inspecting build with total of 5 modules...
+[INFO] Installing Nexus Staging features:
+[INFO]   ... total of 5 executions of maven-deploy-plugin replaced with nexus-staging-maven-plugin
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] sf-fx-runtime-java                                                 [pom]
+[INFO] sf-fx-runtime-java-cloudevent                                      [jar]
+[INFO] sf-fx-runtime-java-sdk-impl-v0                                     [jar]
+[INFO] sf-fx-runtime-java-logger                                          [jar]
+[INFO] sf-fx-runtime-java-runtime                                         [jar]
+[INFO]
+[INFO] ------------< com.salesforce.functions:sf-fx-runtime-java >-------------
+[INFO] Building sf-fx-runtime-java 0.1.0-ea                               [1/5]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:list (default-cli) @ sf-fx-runtime-java ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    none
+[INFO]
+[INFO]
+[INFO] -------< com.salesforce.functions:sf-fx-runtime-java-cloudevent >-------
+[INFO] Building sf-fx-runtime-java-cloudevent 0.1.0-ea                    [2/5]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:list (default-cli) @ sf-fx-runtime-java-cloudevent ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    io.cloudevents:cloudevents-core:jar:2.0.0:provided
+[INFO]    io.cloudevents:cloudevents-api:jar:2.0.0:provided
+[INFO]    junit:junit:jar:4.13.2:test
+[INFO]    org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    com.google.code.gson:gson:jar:2.8.6:compile
+[INFO]
+[INFO]
+[INFO] ------< com.salesforce.functions:sf-fx-runtime-java-sdk-impl-v0 >-------
+[INFO] Building sf-fx-runtime-java-sdk-impl-v0 0.1.0-ea                   [3/5]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:list (default-cli) @ sf-fx-runtime-java-sdk-impl-v0 ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    commons-logging:commons-logging:jar:1.2:compile
+[INFO]    com.salesforce.functions:sf-fx-runtime-java-cloudevent:jar:0.1.0-ea:provided
+[INFO]    org.apache.httpcomponents:fluent-hc:jar:4.5.13:compile
+[INFO]    com.salesforce.functions:sf-fx-sdk-java:jar:0.1.0-ea:provided
+[INFO]    io.cloudevents:cloudevents-core:jar:2.0.0:provided
+[INFO]    io.cloudevents:cloudevents-api:jar:2.0.0:provided
+[INFO]    junit:junit:jar:4.13.2:test
+[INFO]    commons-codec:commons-codec:jar:1.11:compile
+[INFO]    org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]    org.apache.httpcomponents:httpclient:jar:4.5.13:compile
+[INFO]    org.apache.httpcomponents:httpcore:jar:4.4.13:compile
+[INFO]    com.google.code.gson:gson:jar:2.8.6:compile
+[INFO]
+[INFO]
+[INFO] ---------< com.salesforce.functions:sf-fx-runtime-java-logger >---------
+[INFO] Building sf-fx-runtime-java-logger 0.1.0-ea                        [4/5]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:list (default-cli) @ sf-fx-runtime-java-logger ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    org.slf4j:slf4j-api:jar:1.7.30:compile
+[INFO]    junit:junit:jar:4.13.2:test
+[INFO]    org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO]
+[INFO]
+[INFO] --------< com.salesforce.functions:sf-fx-runtime-java-runtime >---------
+[INFO] Building sf-fx-runtime-java-runtime 0.1.0-ea                       [5/5]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.2:list (default-cli) @ sf-fx-runtime-java-runtime ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    info.picocli:picocli:jar:4.6.1:compile -- module info.picocli
+[INFO]    io.undertow:undertow-core:jar:2.2.7.Final:compile -- module undertow.core (auto)
+[INFO]    org.jboss.logging:jboss-logging:jar:3.4.1.Final:compile -- module org.jboss.logging [auto]
+[INFO]    org.jboss.xnio:xnio-api:jar:3.8.0.Final:compile -- module xnio.api (auto)
+[INFO]    org.wildfly.common:wildfly-common:jar:1.5.2.Final:compile -- module wildfly.common (auto)
+[INFO]    org.wildfly.client:wildfly-client-config:jar:1.0.1.Final:compile -- module wildfly.client.config (auto)
+[INFO]    org.jboss.xnio:xnio-nio:jar:3.8.0.Final:runtime -- module xnio.nio (auto)
+[INFO]    org.jboss.threads:jboss-threads:jar:3.1.0.Final:compile -- module jboss.threads (auto)
+[INFO]    com.salesforce.functions:sf-fx-runtime-java-cloudevent:jar:0.1.0-ea:compile -- module sf.fx.runtime.java.cloudevent (auto)
+[INFO]    io.cloudevents:cloudevents-api:jar:2.0.0:compile -- module io.cloudevents.api [auto]
+[INFO]    io.cloudevents:cloudevents-core:jar:2.0.0:compile -- module io.cloudevents.core [auto]
+[INFO]    io.cloudevents:cloudevents-http-basic:jar:2.0.0:compile -- module io.cloudevents.http.basic [auto]
+[INFO]    org.apache.maven.shared:maven-invoker:jar:3.1.0:compile -- module maven.invoker (auto)
+[INFO]    org.apache.maven.shared:maven-shared-utils:jar:3.3.3:compile -- module maven.shared.utils (auto)
+[INFO]    commons-io:commons-io:jar:2.6:compile -- module org.apache.commons.io [auto]
+[INFO]    javax.inject:javax.inject:jar:1:compile -- module javax.inject (auto)
+[INFO]    io.github.classgraph:classgraph:jar:4.8.104:compile -- module io.github.classgraph
+[INFO]    org.slf4j:slf4j-api:jar:1.7.30:compile -- module org.slf4j [auto]
+[INFO]    com.google.guava:guava:jar:30.1.1-jre:compile -- module com.google.common [auto]
+[INFO]    com.google.guava:failureaccess:jar:1.0.1:compile -- module failureaccess (auto)
+[INFO]    com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile -- module listenablefuture (auto)
+[INFO]    com.google.code.findbugs:jsr305:jar:3.0.2:compile -- module jsr305 (auto)
+[INFO]    org.checkerframework:checker-qual:jar:3.8.0:compile -- module org.checkerframework.checker.qual [auto]
+[INFO]    com.google.errorprone:error_prone_annotations:jar:2.5.1:compile -- module com.google.errorprone.annotations [auto]
+[INFO]    com.google.j2objc:j2objc-annotations:jar:1.3:compile -- module j2objc.annotations (auto)
+[INFO]    com.google.code.gson:gson:jar:2.8.6:compile -- module com.google.gson
+[INFO]    ch.qos.logback:logback-classic:jar:1.2.3:compile -- module logback.classic (auto)
+[INFO]    ch.qos.logback:logback-core:jar:1.2.3:compile -- module logback.core (auto)
+[INFO]    com.fasterxml.jackson.core:jackson-databind:jar:2.12.2:test -- module com.fasterxml.jackson.databind
+[INFO]    com.fasterxml.jackson.core:jackson-core:jar:2.12.2:test -- module com.fasterxml.jackson.core
+[INFO]    com.fasterxml.jackson.core:jackson-annotations:jar:2.12.2:test -- module com.fasterxml.jackson.annotation
+[INFO]    io.leangen.geantyref:geantyref:jar:1.3.11:test -- module geantyref (auto)
+[INFO]    junit:junit:jar:4.13.2:test -- module junit [auto]
+[INFO]    org.hamcrest:hamcrest-core:jar:1.3:test -- module hamcrest.core (auto)
+[INFO]    org.mockito:mockito-core:jar:3.6.28:compile -- module org.mockito [auto]
+[INFO]    net.bytebuddy:byte-buddy:jar:1.10.18:compile -- module net.bytebuddy
+[INFO]    net.bytebuddy:byte-buddy-agent:jar:1.10.18:compile -- module net.bytebuddy.agent
+[INFO]    org.objenesis:objenesis:jar:3.1:compile -- module org.objenesis [auto]
+[INFO]    org.tomlj:tomlj:jar:1.0.0:compile -- module tomlj (auto)
+[INFO]    org.antlr:antlr4-runtime:jar:4.7.2:compile -- module org.antlr.antlr4.runtime [auto]
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for sf-fx-runtime-java 0.1.0-ea:
+[INFO]
+[INFO] sf-fx-runtime-java ................................. SUCCESS [  0.534 s]
+[INFO] sf-fx-runtime-java-cloudevent ...................... SUCCESS [  0.033 s]
+[INFO] sf-fx-runtime-java-sdk-impl-v0 ..................... SUCCESS [  0.053 s]
+[INFO] sf-fx-runtime-java-logger .......................... SUCCESS [  0.014 s]
+[INFO] sf-fx-runtime-java-runtime ......................... SUCCESS [  0.741 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.089 s
+[INFO] Finished at: 2021-04-07T13:04:57+02:00
+[INFO] ------------------------------------------------------------------------
+13:04:57 [malax/runtime-tests !+] sf-fx-runtime-java $ ./mvnw dependency:list -DoutputAbsoluteArtifactFilename=true -DincludeScope=runtime
+[INFO] Scanning for projects...
+[INFO] Inspecting build with total of 5 modules...
+[INFO] Installing Nexus Staging features:
+[INFO]   ... total of 5 executions of maven-deploy-plugin replaced with nexus-staging-maven-plugin
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] sf-fx-runtime-java                                                 [pom]
+[INFO] sf-fx-runtime-java-cloudevent                                      [jar]
+[INFO] sf-fx-runtime-java-sdk-impl-v0                                     [jar]
+[INFO] sf-fx-runtime-java-logger                                          [jar]
+[INFO] sf-fx-runtime-java-runtime                                         [jar]
+[INFO]
+[INFO] ------------< com.salesforce.functions:sf-fx-runtime-java >-------------
+[INFO] Building sf-fx-runtime-java 0.1.0-ea                               [1/5]
+[INFO] --------------------------------[ pom ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:list (default-cli) @ sf-fx-runtime-java ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    none
+[INFO]
+[INFO]
+[INFO] -------< com.salesforce.functions:sf-fx-runtime-java-cloudevent >-------
+[INFO] Building sf-fx-runtime-java-cloudevent 0.1.0-ea                    [2/5]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:list (default-cli) @ sf-fx-runtime-java-cloudevent ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    com.google.code.gson:gson:jar:2.8.6:compile:/Users/manuel.fuchs/.m2/repository/com/google/code/gson/gson/2.8.6/gson-2.8.6.jar
+[INFO]
+[INFO]
+[INFO] ------< com.salesforce.functions:sf-fx-runtime-java-sdk-impl-v0 >-------
+[INFO] Building sf-fx-runtime-java-sdk-impl-v0 0.1.0-ea                   [3/5]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:list (default-cli) @ sf-fx-runtime-java-sdk-impl-v0 ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    commons-logging:commons-logging:jar:1.2:compile:/Users/manuel.fuchs/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar
+[INFO]    org.apache.httpcomponents:fluent-hc:jar:4.5.13:compile:/Users/manuel.fuchs/.m2/repository/org/apache/httpcomponents/fluent-hc/4.5.13/fluent-hc-4.5.13.jar
+[INFO]    commons-codec:commons-codec:jar:1.11:compile:/Users/manuel.fuchs/.m2/repository/commons-codec/commons-codec/1.11/commons-codec-1.11.jar
+[INFO]    org.apache.httpcomponents:httpclient:jar:4.5.13:compile:/Users/manuel.fuchs/.m2/repository/org/apache/httpcomponents/httpclient/4.5.13/httpclient-4.5.13.jar
+[INFO]    org.apache.httpcomponents:httpcore:jar:4.4.13:compile:/Users/manuel.fuchs/.m2/repository/org/apache/httpcomponents/httpcore/4.4.13/httpcore-4.4.13.jar
+[INFO]    com.google.code.gson:gson:jar:2.8.6:compile:/Users/manuel.fuchs/.m2/repository/com/google/code/gson/gson/2.8.6/gson-2.8.6.jar
+[INFO]
+[INFO]
+[INFO] ---------< com.salesforce.functions:sf-fx-runtime-java-logger >---------
+[INFO] Building sf-fx-runtime-java-logger 0.1.0-ea                        [4/5]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:2.8:list (default-cli) @ sf-fx-runtime-java-logger ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    org.slf4j:slf4j-api:jar:1.7.30:compile:/Users/manuel.fuchs/.m2/repository/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar
+[INFO]
+[INFO]
+[INFO] --------< com.salesforce.functions:sf-fx-runtime-java-runtime >---------
+[INFO] Building sf-fx-runtime-java-runtime 0.1.0-ea                       [5/5]
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- maven-dependency-plugin:3.1.2:list (default-cli) @ sf-fx-runtime-java-runtime ---
+[INFO]
+[INFO] The following files have been resolved:
+[INFO]    info.picocli:picocli:jar:4.6.1:compile:/Users/manuel.fuchs/.m2/repository/info/picocli/picocli/4.6.1/picocli-4.6.1.jar -- module info.picocli
+[INFO]    io.undertow:undertow-core:jar:2.2.7.Final:compile:/Users/manuel.fuchs/.m2/repository/io/undertow/undertow-core/2.2.7.Final/undertow-core-2.2.7.Final.jar -- module undertow.core (auto)
+[INFO]    org.jboss.logging:jboss-logging:jar:3.4.1.Final:compile:/Users/manuel.fuchs/.m2/repository/org/jboss/logging/jboss-logging/3.4.1.Final/jboss-logging-3.4.1.Final.jar -- module org.jboss.logging [auto]
+[INFO]    org.jboss.xnio:xnio-api:jar:3.8.0.Final:compile:/Users/manuel.fuchs/.m2/repository/org/jboss/xnio/xnio-api/3.8.0.Final/xnio-api-3.8.0.Final.jar -- module xnio.api (auto)
+[INFO]    org.wildfly.common:wildfly-common:jar:1.5.2.Final:compile:/Users/manuel.fuchs/.m2/repository/org/wildfly/common/wildfly-common/1.5.2.Final/wildfly-common-1.5.2.Final.jar -- module wildfly.common (auto)
+[INFO]    org.wildfly.client:wildfly-client-config:jar:1.0.1.Final:compile:/Users/manuel.fuchs/.m2/repository/org/wildfly/client/wildfly-client-config/1.0.1.Final/wildfly-client-config-1.0.1.Final.jar -- module wildfly.client.config (auto)
+[INFO]    org.jboss.xnio:xnio-nio:jar:3.8.0.Final:runtime:/Users/manuel.fuchs/.m2/repository/org/jboss/xnio/xnio-nio/3.8.0.Final/xnio-nio-3.8.0.Final.jar -- module xnio.nio (auto)
+[INFO]    org.jboss.threads:jboss-threads:jar:3.1.0.Final:compile:/Users/manuel.fuchs/.m2/repository/org/jboss/threads/jboss-threads/3.1.0.Final/jboss-threads-3.1.0.Final.jar -- module jboss.threads (auto)
+[INFO]    com.salesforce.functions:sf-fx-runtime-java-cloudevent:jar:0.1.0-ea:compile:/Users/manuel.fuchs/.m2/repository/com/salesforce/functions/sf-fx-runtime-java-cloudevent/0.1.0-ea/sf-fx-runtime-java-cloudevent-0.1.0-ea.jar -- module sf.fx.runtime.java.cloudevent (auto)
+[INFO]    io.cloudevents:cloudevents-api:jar:2.0.0:compile:/Users/manuel.fuchs/.m2/repository/io/cloudevents/cloudevents-api/2.0.0/cloudevents-api-2.0.0.jar -- module io.cloudevents.api [auto]
+[INFO]    io.cloudevents:cloudevents-core:jar:2.0.0:compile:/Users/manuel.fuchs/.m2/repository/io/cloudevents/cloudevents-core/2.0.0/cloudevents-core-2.0.0.jar -- module io.cloudevents.core [auto]
+[INFO]    io.cloudevents:cloudevents-http-basic:jar:2.0.0:compile:/Users/manuel.fuchs/.m2/repository/io/cloudevents/cloudevents-http-basic/2.0.0/cloudevents-http-basic-2.0.0.jar -- module io.cloudevents.http.basic [auto]
+[INFO]    org.apache.maven.shared:maven-invoker:jar:3.1.0:compile:/Users/manuel.fuchs/.m2/repository/org/apache/maven/shared/maven-invoker/3.1.0/maven-invoker-3.1.0.jar -- module maven.invoker (auto)
+[INFO]    org.apache.maven.shared:maven-shared-utils:jar:3.3.3:compile:/Users/manuel.fuchs/.m2/repository/org/apache/maven/shared/maven-shared-utils/3.3.3/maven-shared-utils-3.3.3.jar -- module maven.shared.utils (auto)
+[INFO]    commons-io:commons-io:jar:2.6:compile:/Users/manuel.fuchs/.m2/repository/commons-io/commons-io/2.6/commons-io-2.6.jar -- module org.apache.commons.io [auto]
+[INFO]    javax.inject:javax.inject:jar:1:compile:/Users/manuel.fuchs/.m2/repository/javax/inject/javax.inject/1/javax.inject-1.jar -- module javax.inject (auto)
+[INFO]    io.github.classgraph:classgraph:jar:4.8.104:compile:/Users/manuel.fuchs/.m2/repository/io/github/classgraph/classgraph/4.8.104/classgraph-4.8.104.jar -- module io.github.classgraph
+[INFO]    org.slf4j:slf4j-api:jar:1.7.30:compile:/Users/manuel.fuchs/.m2/repository/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar -- module org.slf4j [auto]
+[INFO]    com.google.guava:guava:jar:30.1.1-jre:compile:/Users/manuel.fuchs/.m2/repository/com/google/guava/guava/30.1.1-jre/guava-30.1.1-jre.jar -- module com.google.common [auto]
+[INFO]    com.google.guava:failureaccess:jar:1.0.1:compile:/Users/manuel.fuchs/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar -- module failureaccess (auto)
+[INFO]    com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava:compile:/Users/manuel.fuchs/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar -- module listenablefuture (auto)
+[INFO]    com.google.code.findbugs:jsr305:jar:3.0.2:compile:/Users/manuel.fuchs/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar -- module jsr305 (auto)
+[INFO]    org.checkerframework:checker-qual:jar:3.8.0:compile:/Users/manuel.fuchs/.m2/repository/org/checkerframework/checker-qual/3.8.0/checker-qual-3.8.0.jar -- module org.checkerframework.checker.qual [auto]
+[INFO]    com.google.errorprone:error_prone_annotations:jar:2.5.1:compile:/Users/manuel.fuchs/.m2/repository/com/google/errorprone/error_prone_annotations/2.5.1/error_prone_annotations-2.5.1.jar -- module com.google.errorprone.annotations [auto]
+[INFO]    com.google.j2objc:j2objc-annotations:jar:1.3:compile:/Users/manuel.fuchs/.m2/repository/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3.jar -- module j2objc.annotations (auto)
+[INFO]    com.google.code.gson:gson:jar:2.8.6:compile:/Users/manuel.fuchs/.m2/repository/com/google/code/gson/gson/2.8.6/gson-2.8.6.jar -- module com.google.gson
+[INFO]    ch.qos.logback:logback-classic:jar:1.2.3:compile:/Users/manuel.fuchs/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar -- module logback.classic (auto)
+[INFO]    ch.qos.logback:logback-core:jar:1.2.3:compile:/Users/manuel.fuchs/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar -- module logback.core (auto)
+[INFO]    org.mockito:mockito-core:jar:3.6.28:compile:/Users/manuel.fuchs/.m2/repository/org/mockito/mockito-core/3.6.28/mockito-core-3.6.28.jar -- module org.mockito [auto]
+[INFO]    net.bytebuddy:byte-buddy:jar:1.10.18:compile:/Users/manuel.fuchs/.m2/repository/net/bytebuddy/byte-buddy/1.10.18/byte-buddy-1.10.18.jar -- module net.bytebuddy
+[INFO]    net.bytebuddy:byte-buddy-agent:jar:1.10.18:compile:/Users/manuel.fuchs/.m2/repository/net/bytebuddy/byte-buddy-agent/1.10.18/byte-buddy-agent-1.10.18.jar -- module net.bytebuddy.agent
+[INFO]    org.objenesis:objenesis:jar:3.1:compile:/Users/manuel.fuchs/.m2/repository/org/objenesis/objenesis/3.1/objenesis-3.1.jar -- module org.objenesis [auto]
+[INFO]    org.tomlj:tomlj:jar:1.0.0:compile:/Users/manuel.fuchs/.m2/repository/org/tomlj/tomlj/1.0.0/tomlj-1.0.0.jar -- module tomlj (auto)
+[INFO]    org.antlr:antlr4-runtime:jar:4.7.2:compile:/Users/manuel.fuchs/.m2/repository/org/antlr/antlr4-runtime/4.7.2/antlr4-runtime-4.7.2.jar -- module org.antlr.antlr4.runtime [auto]
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary for sf-fx-runtime-java 0.1.0-ea:
+[INFO]
+[INFO] sf-fx-runtime-java ................................. SUCCESS [  0.497 s]
+[INFO] sf-fx-runtime-java-cloudevent ...................... SUCCESS [  0.034 s]
+[INFO] sf-fx-runtime-java-sdk-impl-v0 ..................... SUCCESS [  0.043 s]
+[INFO] sf-fx-runtime-java-logger .......................... SUCCESS [  0.012 s]
+[INFO] sf-fx-runtime-java-runtime ......................... SUCCESS [  0.730 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.014 s
+[INFO] Finished at: 2021-04-07T13:06:31+02:00
+[INFO] ------------------------------------------------------------------------

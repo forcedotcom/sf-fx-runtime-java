@@ -20,6 +20,22 @@ public class JacksonReflectionJsonLibraryTest {
     assertEquals(((TestClass) testClass).getFoo(), "bar");
   }
 
+  @Test
+  public void testDeserializationWithPath() throws Exception {
+    JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
+    Object testClass =
+        jsonLibrary.deserializeAt("{\"inner\": {\"foo\": \"bar\"}}", TestClass.class, "inner");
+    assertEquals(((TestClass) testClass).getFoo(), "bar");
+  }
+
+  @Test
+  public void testSerialization() throws Exception {
+    JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
+
+    TestClass testClass = new TestClass("baar");
+    assertEquals("{\"foo\":\"baar\"}", jsonLibrary.serialize(testClass));
+  }
+
   @Test(expected = JsonDeserializationException.class)
   public void testExceptionWrapping() throws Exception {
     JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
@@ -27,7 +43,13 @@ public class JacksonReflectionJsonLibraryTest {
   }
 
   public static class TestClass {
-    public String foo;
+    private String foo;
+
+    public TestClass() {}
+
+    public TestClass(String foo) {
+      this.foo = foo;
+    }
 
     public String getFoo() {
       return foo;

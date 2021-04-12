@@ -10,14 +10,12 @@ import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceCloudEventExten
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunction;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.MalformedOrMissingSalesforceContextExtensionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.MalformedOrMissingSalesforceFunctionContextExtensionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.FunctionResultMarshaller;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PayloadUnmarshaller;
 import io.cloudevents.CloudEvent;
-import java.lang.reflect.InvocationTargetException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,31 +55,20 @@ public class SalesforceFunction
 
   @Override
   public SalesforceFunctionResult apply(CloudEvent cloudEvent) throws SalesforceFunctionException {
-    try {
-      SalesforceContextCloudEventExtension salesforceContext =
-          SalesforceCloudEventExtensionParser.parseSalesforceContext(cloudEvent)
-              .orElseThrow(MalformedOrMissingSalesforceContextExtensionException::new);
+    SalesforceContextCloudEventExtension salesforceContext =
+        SalesforceCloudEventExtensionParser.parseSalesforceContext(cloudEvent)
+            .orElseThrow(MalformedOrMissingSalesforceContextExtensionException::new);
 
-      SalesforceFunctionContextCloudEventExtension salesforceFunctionContext =
-          SalesforceCloudEventExtensionParser.parseSalesforceFunctionContext(cloudEvent)
-              .orElseThrow(MalformedOrMissingSalesforceFunctionContextExtensionException::new);
+    SalesforceFunctionContextCloudEventExtension salesforceFunctionContext =
+        SalesforceCloudEventExtensionParser.parseSalesforceFunctionContext(cloudEvent)
+            .orElseThrow(MalformedOrMissingSalesforceFunctionContextExtensionException::new);
 
-      Object payloadData = unmarshaller.unmarshall(cloudEvent);
-      Object returnValue =
-          invocationWrapper.invoke(
-              payloadData, cloudEvent, salesforceContext, salesforceFunctionContext);
-      return marshaller.marshall(returnValue);
+    Object payloadData = unmarshaller.unmarshall(cloudEvent);
+    Object returnValue =
+        invocationWrapper.invoke(
+            payloadData, cloudEvent, salesforceContext, salesforceFunctionContext);
 
-    } catch (InvocationTargetException e) {
-      e.getCause().printStackTrace();
-      throw new FunctionThrewExceptionException(e.getCause());
-    } catch (IllegalAccessException e) {
-      // This should never happen since the scanner will call setAccessible on the method.
-      throw new SalesforceFunctionException(
-          "Unexpected IllegalAccessException while calling function", e);
-    } catch (InstantiationException e) {
-      throw new RuntimeException(e);
-    }
+    return marshaller.marshall(returnValue);
   }
 
   public PayloadUnmarshaller getUnmarshaller() {

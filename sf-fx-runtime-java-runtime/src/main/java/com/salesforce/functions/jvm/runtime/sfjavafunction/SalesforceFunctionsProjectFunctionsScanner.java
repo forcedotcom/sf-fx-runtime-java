@@ -11,6 +11,7 @@ import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContext
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayFunctionResultMarshaller;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayPayloadUnmarshaller;
@@ -334,29 +335,44 @@ public class SalesforceFunctionsProjectFunctionsScanner
               "Could not find required method on org.slf4j.MDC. Invocation context data will not be available in logger.");
         }
 
-        final Method finalMdcClearMethod = mdcClearMethod;
-        final Method finalMdcPutMethod = mdcPutMethod;
         SalesforceFunction salesforceFunction =
             new SalesforceFunction(
                 unmarshaller,
                 marshaller,
                 functionClass.getName(),
-                (payload, cloudEvent, salesforceContext, functionContext) -> {
-                  Object event = eventClassConstructor.newInstance(cloudEvent, payload);
-                  Object context =
-                      contextClassConstructor.newInstance(
-                          cloudEvent, salesforceContext, functionContext);
+                new Slf4j1MdcDataInvocationWrapper(
+                    sdkClassLoader,
+                    (payload, cloudEvent, salesforceContext, functionContext) -> {
+                      Object event;
+                      try {
+                        event = eventClassConstructor.newInstance(cloudEvent, payload);
+                      } catch (InstantiationException
+                          | IllegalAccessException
+                          | InvocationTargetException e) {
+                        throw new SalesforceFunctionException(
+                            "Could not instantiate event class!", e);
+                      }
 
-                  if (finalMdcClearMethod != null) {
-                    finalMdcClearMethod.invoke(null);
-                  }
+                      Object context;
+                      try {
+                        context =
+                            contextClassConstructor.newInstance(
+                                cloudEvent, salesforceContext, functionContext);
+                      } catch (InstantiationException
+                          | IllegalAccessException
+                          | InvocationTargetException e) {
+                        throw new SalesforceFunctionException(
+                            "Could not instantiate context class!", e);
+                      }
 
-                  if (finalMdcPutMethod != null) {
-                    finalMdcPutMethod.invoke(null, "function-invocation-id", cloudEvent.getId());
-                  }
-
-                  return functionApplyMethod.invoke(functionInstance, event, context);
-                });
+                      try {
+                        return functionApplyMethod.invoke(functionInstance, event, context);
+                      } catch (IllegalAccessException e) {
+                        throw new SalesforceFunctionException("");
+                      } catch (InvocationTargetException e) {
+                        throw new FunctionThrewExceptionException(e.getCause());
+                      }
+                    }));
 
         foundFunctions.add(salesforceFunction);
       }

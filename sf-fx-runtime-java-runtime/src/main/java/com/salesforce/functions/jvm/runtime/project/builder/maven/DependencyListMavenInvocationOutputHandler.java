@@ -16,13 +16,13 @@ import java.util.regex.Pattern;
 
 final class DependencyListMavenInvocationOutputHandler
     implements MavenInvocationOutputHandler<List<Path>> {
-  private List<Path> collectedDependencyPaths = new ArrayList<>();
+  private final List<Path> collectedDependencyPaths = new ArrayList<>();
 
   @Override
   public void consumeLine(String line) {
     Matcher matcher = PATTERN.matcher(line);
     if (matcher.matches()) {
-      collectedDependencyPaths.add(Paths.get(matcher.group(6)));
+      collectedDependencyPaths.add(Paths.get(matcher.group(1)));
     }
   }
 
@@ -31,5 +31,6 @@ final class DependencyListMavenInvocationOutputHandler
     return Collections.unmodifiableList(collectedDependencyPaths);
   }
 
-  private static final Pattern PATTERN = Pattern.compile("^(.*?):(.*?):(.*?):(.*?):(.*?):(.*?)$");
+  private static final Pattern PATTERN =
+      Pattern.compile("^\\[INFO\\]\\s+.+?:.+?:.+?:.+?:.+?:(.+?)( -- .*)?$");
 }
