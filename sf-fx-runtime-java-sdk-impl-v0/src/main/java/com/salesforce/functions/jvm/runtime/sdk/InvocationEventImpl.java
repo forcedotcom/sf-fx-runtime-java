@@ -6,6 +6,7 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
+import com.salesforce.functions.jvm.sdk.InvocationEvent;
 import io.cloudevents.CloudEvent;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -13,12 +14,12 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 @SuppressWarnings("unused")
-public class InvocationEvent<T> implements com.salesforce.functions.jvm.sdk.InvocationEvent<T> {
+public class InvocationEventImpl<T> implements InvocationEvent<T> {
   private final CloudEvent cloudEvent;
   private final T payloadData;
 
   @SuppressWarnings("unused")
-  public InvocationEvent(CloudEvent cloudEvent, T payloadData) {
+  public InvocationEventImpl(CloudEvent cloudEvent, T payloadData) {
     this.cloudEvent = cloudEvent;
     this.payloadData = payloadData;
   }

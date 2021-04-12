@@ -10,10 +10,10 @@ import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEve
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
-public class User implements com.salesforce.functions.jvm.sdk.User {
+public class UserImpl implements com.salesforce.functions.jvm.sdk.User {
   private final SalesforceContextCloudEventExtension salesforceContext;
 
-  public User(SalesforceContextCloudEventExtension salesforceContext) {
+  public UserImpl(SalesforceContextCloudEventExtension salesforceContext) {
     this.salesforceContext = salesforceContext;
   }
 

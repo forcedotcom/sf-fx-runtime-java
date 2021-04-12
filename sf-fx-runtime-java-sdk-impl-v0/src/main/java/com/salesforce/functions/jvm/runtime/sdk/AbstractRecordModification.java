@@ -102,7 +102,7 @@ public abstract class AbstractRecordModification<T extends RecordModification<T>
   @Override
   @Nonnull
   public T setValue(String key, ReferenceId fkId) {
-    String apiString = ((com.salesforce.functions.jvm.runtime.sdk.ReferenceId) fkId).toApiString();
+    String apiString = ((ReferenceIdImpl) fkId).toApiString();
     return setValue(key, new JsonPrimitive(apiString));
   }
 

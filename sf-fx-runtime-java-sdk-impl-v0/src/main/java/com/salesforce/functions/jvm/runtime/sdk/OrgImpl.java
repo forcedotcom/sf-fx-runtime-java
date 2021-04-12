@@ -8,21 +8,23 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
+import com.salesforce.functions.jvm.sdk.Org;
+import com.salesforce.functions.jvm.sdk.User;
 import java.net.URI;
 import javax.annotation.Nonnull;
 
-public class Org implements com.salesforce.functions.jvm.sdk.Org {
+public class OrgImpl implements Org {
   private final SalesforceContextCloudEventExtension salesforceContext;
-  private final User user;
-  private final DataApi dataApi;
+  private final UserImpl user;
+  private final DataApiImpl dataApi;
 
-  public Org(
+  public OrgImpl(
       SalesforceContextCloudEventExtension salesforceContext,
       SalesforceFunctionContextCloudEventExtension functionContext) {
     this.salesforceContext = salesforceContext;
     this.dataApi =
-        new DataApi(this.getBaseUrl(), this.getApiVersion(), functionContext.getAccessToken());
-    this.user = new com.salesforce.functions.jvm.runtime.sdk.User(salesforceContext);
+        new DataApiImpl(this.getBaseUrl(), this.getApiVersion(), functionContext.getAccessToken());
+    this.user = new UserImpl(salesforceContext);
   }
 
   @Override
@@ -51,13 +53,13 @@ public class Org implements com.salesforce.functions.jvm.sdk.Org {
 
   @Override
   @Nonnull
-  public DataApi getDataApi() {
+  public DataApiImpl getDataApi() {
     return dataApi;
   }
 
   @Override
   @Nonnull
-  public com.salesforce.functions.jvm.sdk.User getUser() {
+  public User getUser() {
     return user;
   }
 }

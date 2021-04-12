@@ -12,7 +12,13 @@ import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryE
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.*;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayFunctionResultMarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayPayloadUnmarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.FunctionResultMarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PayloadUnmarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PojoAsJsonFunctionResultMarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PojoFromJsonPayloadUnmarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.StringFunctionResultMarshaller;
 import io.cloudevents.CloudEvent;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -28,7 +34,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,11 +147,11 @@ public class SalesforceFunctionsProjectFunctionsScanner
     final Constructor<?> contextClassConstructor;
     try {
       Class<?> eventClass =
-          sdkClassLoader.loadClass("com.salesforce.functions.jvm.runtime.sdk.InvocationEvent");
+          sdkClassLoader.loadClass("com.salesforce.functions.jvm.runtime.sdk.InvocationEventImpl");
       eventClassConstructor = eventClass.getConstructor(CloudEvent.class, Object.class);
 
       Class<?> contextClass =
-          sdkClassLoader.loadClass("com.salesforce.functions.jvm.runtime.sdk.Context");
+          sdkClassLoader.loadClass("com.salesforce.functions.jvm.runtime.sdk.ContextImpl");
       contextClassConstructor =
           contextClass.getConstructor(
               CloudEvent.class,

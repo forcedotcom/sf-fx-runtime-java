@@ -8,16 +8,17 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonPrimitive;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
+import com.salesforce.functions.jvm.sdk.data.Record;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Optional;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 
-public class Record implements com.salesforce.functions.jvm.sdk.data.Record {
+public class RecordImpl implements Record {
   private final QueryRecordResult.Record innerRecord;
 
-  public Record(QueryRecordResult.Record innerRecord) {
+  public RecordImpl(QueryRecordResult.Record innerRecord) {
     this.innerRecord = innerRecord;
   }
 

@@ -7,13 +7,13 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
+import com.salesforce.functions.jvm.sdk.data.RecordModificationResult;
 import javax.annotation.Nonnull;
 
-public class RecordModificationResult
-    implements com.salesforce.functions.jvm.sdk.data.RecordModificationResult {
+public class RecordModificationResultImpl implements RecordModificationResult {
   private final ModifyRecordResult result;
 
-  public RecordModificationResult(ModifyRecordResult result) {
+  public RecordModificationResultImpl(ModifyRecordResult result) {
     this.result = result;
   }
 
