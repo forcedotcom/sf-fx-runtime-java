@@ -5,7 +5,7 @@
     <parent>
         <artifactId>sf-fx-runtime-java</artifactId>
         <groupId>com.salesforce.functions</groupId>
-        <version>0.1.0-ea</version>
+        <version>0.1.2-ea-SNAPSHOT</version>
     </parent>
 
     <artifactId>sf-fx-runtime-java-cloudevent</artifactId>
