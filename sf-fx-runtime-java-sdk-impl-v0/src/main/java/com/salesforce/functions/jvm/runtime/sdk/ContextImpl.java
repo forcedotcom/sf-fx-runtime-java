@@ -8,28 +8,34 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
+import com.salesforce.functions.jvm.sdk.Context;
+import com.salesforce.functions.jvm.sdk.Org;
 import io.cloudevents.CloudEvent;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
-public class Context implements com.salesforce.functions.jvm.sdk.Context {
+@SuppressWarnings("unused")
+public class ContextImpl implements Context {
   private final CloudEvent cloudEvent;
-  private final Org org;
+  private final OrgImpl org;
 
-  public Context(
+  public ContextImpl(
       CloudEvent cloudEvent,
       SalesforceContextCloudEventExtension salesforceContext,
       SalesforceFunctionContextCloudEventExtension functionContext) {
     this.cloudEvent = cloudEvent;
-    this.org = new Org(salesforceContext, functionContext);
+    this.org = new OrgImpl(salesforceContext, functionContext);
   }
 
   @Override
+  @Nonnull
   public String getId() {
     return cloudEvent.getId();
   }
 
   @Override
-  public Optional<com.salesforce.functions.jvm.sdk.Org> getOrg() {
+  @Nonnull
+  public Optional<Org> getOrg() {
     return Optional.of(org);
   }
 }

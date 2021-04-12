@@ -13,7 +13,7 @@
     <dependency>
       <groupId>com.salesforce.functions</groupId>
       <artifactId>sf-fx-sdk-java</artifactId>
-      <version>0.1.0-ea</version>
+      <version>0.2.0-ea</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -33,8 +33,14 @@
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>fluent-hc</artifactId>
+      <artifactId>httpclient</artifactId>
       <version>4.5.13</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

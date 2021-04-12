@@ -8,49 +8,58 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
+import com.salesforce.functions.jvm.sdk.Org;
+import com.salesforce.functions.jvm.sdk.User;
 import java.net.URI;
+import javax.annotation.Nonnull;
 
-public class Org implements com.salesforce.functions.jvm.sdk.Org {
+public class OrgImpl implements Org {
   private final SalesforceContextCloudEventExtension salesforceContext;
-  private final User user;
-  private final DataApi dataApi;
+  private final UserImpl user;
+  private final DataApiImpl dataApi;
 
-  public Org(
+  public OrgImpl(
       SalesforceContextCloudEventExtension salesforceContext,
       SalesforceFunctionContextCloudEventExtension functionContext) {
     this.salesforceContext = salesforceContext;
     this.dataApi =
-        new DataApi(this.getBaseUrl(), this.getApiVersion(), functionContext.getAccessToken());
-    this.user = new com.salesforce.functions.jvm.runtime.sdk.User(salesforceContext);
+        new DataApiImpl(this.getBaseUrl(), this.getApiVersion(), functionContext.getAccessToken());
+    this.user = new UserImpl(salesforceContext);
   }
 
   @Override
+  @Nonnull
   public String getId() {
     return salesforceContext.getUserContext().getOrgId();
   }
 
   @Override
+  @Nonnull
   public URI getBaseUrl() {
     return salesforceContext.getUserContext().getSalesforceBaseUrl();
   }
 
   @Override
+  @Nonnull
   public URI getDomainUrl() {
     return salesforceContext.getUserContext().getOrgDomainUrl();
   }
 
   @Override
+  @Nonnull
   public String getApiVersion() {
     return salesforceContext.getApiVersion();
   }
 
   @Override
-  public DataApi getDataApi() {
+  @Nonnull
+  public DataApiImpl getDataApi() {
     return dataApi;
   }
 
   @Override
-  public com.salesforce.functions.jvm.sdk.User getUser() {
+  @Nonnull
+  public User getUser() {
     return user;
   }
 }

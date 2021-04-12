@@ -7,14 +7,17 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
+import com.salesforce.functions.jvm.sdk.data.Record;
+import com.salesforce.functions.jvm.sdk.data.RecordQueryResult;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
-public class RecordQueryResult implements com.salesforce.functions.jvm.sdk.data.RecordQueryResult {
+public class RecordQueryResultImpl implements RecordQueryResult {
   private final QueryRecordResult queryRecordResult;
 
-  public RecordQueryResult(QueryRecordResult queryRecordResult) {
+  public RecordQueryResultImpl(QueryRecordResult queryRecordResult) {
     this.queryRecordResult = queryRecordResult;
   }
 
@@ -29,8 +32,11 @@ public class RecordQueryResult implements com.salesforce.functions.jvm.sdk.data.
   }
 
   @Override
-  public List<com.salesforce.functions.jvm.sdk.data.Record> getRecords() {
-    return queryRecordResult.getRecords().stream().map(Record::new).collect(Collectors.toList());
+  @Nonnull
+  public List<Record> getRecords() {
+    return queryRecordResult.getRecords().stream()
+        .map(RecordImpl::new)
+        .collect(Collectors.toList());
   }
 
   public Optional<String> getNextRecordsPath() {

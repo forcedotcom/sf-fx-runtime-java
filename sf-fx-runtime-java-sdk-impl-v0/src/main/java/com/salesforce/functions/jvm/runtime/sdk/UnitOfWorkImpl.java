@@ -10,38 +10,43 @@ import com.salesforce.functions.jvm.runtime.sdk.restapi.CreateRecordRestApiReque
 import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.UpdateRecordRestApiRequest;
+import com.salesforce.functions.jvm.sdk.data.RecordCreate;
+import com.salesforce.functions.jvm.sdk.data.RecordUpdate;
+import com.salesforce.functions.jvm.sdk.data.ReferenceId;
+import com.salesforce.functions.jvm.sdk.data.UnitOfWork;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 
-public class UnitOfWork implements com.salesforce.functions.jvm.sdk.data.UnitOfWork {
+public class UnitOfWorkImpl implements UnitOfWork {
   // Order is important, don't replace LinkedHashMap without verifying the new implementation
   // also preserves insertion order!
   private final Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
 
   @Override
-  public com.salesforce.functions.jvm.sdk.data.ReferenceId insert(
-      com.salesforce.functions.jvm.sdk.data.RecordInsert insert) {
-    RecordInsert impl = (RecordInsert) insert;
+  @Nonnull
+  public ReferenceId registerCreate(RecordCreate create) {
+    RecordCreateImpl impl = (RecordCreateImpl) create;
 
     String referenceId = generateReferenceId();
     subrequests.put(referenceId, new CreateRecordRestApiRequest(impl.getType(), impl.getValues()));
 
-    return new ReferenceId(referenceId);
+    return new ReferenceIdImpl(referenceId);
   }
 
   @Override
-  public com.salesforce.functions.jvm.sdk.data.ReferenceId update(
-      com.salesforce.functions.jvm.sdk.data.RecordUpdate update) {
-    RecordUpdate impl = (RecordUpdate) update;
+  @Nonnull
+  public ReferenceId registerUpdate(RecordUpdate update) {
+    RecordUpdateImpl impl = (RecordUpdateImpl) update;
 
     String referenceId = generateReferenceId();
     subrequests.put(
         referenceId,
         new UpdateRecordRestApiRequest(impl.getType(), impl.getId(), impl.getValues()));
 
-    return new ReferenceId(referenceId);
+    return new ReferenceIdImpl(referenceId);
   }
 
   public Map<String, RestApiRequest<ModifyRecordResult>> getSubrequests() {
