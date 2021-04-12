@@ -29,7 +29,7 @@ public class Slf4j1MdcDataInvocationWrapper implements InvocationWrapper {
     Method mdcClearMethod;
     Method mdcPutMethod;
     try {
-      // We look for in the class loader to make sure if a class in the tree wants to log, it can,
+      // We look in the class loader to make sure if a class in the tree wants to log, it can,
       // even when the user project does not declare a dependency on slf4j.
       Class<?> mdcClass = classLoader.loadClass("org.slf4j.MDC");
       mdcClearMethod = mdcClass.getMethod("clear");
