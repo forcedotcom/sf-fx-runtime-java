@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import javax.annotation.Nonnull;
 
 public class UnitOfWork implements com.salesforce.functions.jvm.sdk.data.UnitOfWork {
   // Order is important, don't replace LinkedHashMap without verifying the new implementation
@@ -21,6 +22,7 @@ public class UnitOfWork implements com.salesforce.functions.jvm.sdk.data.UnitOfW
   private final Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.data.ReferenceId registerCreate(
       com.salesforce.functions.jvm.sdk.data.RecordCreate create) {
     RecordCreate impl = (RecordCreate) create;
@@ -32,6 +34,7 @@ public class UnitOfWork implements com.salesforce.functions.jvm.sdk.data.UnitOfW
   }
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.data.ReferenceId registerUpdate(
       com.salesforce.functions.jvm.sdk.data.RecordUpdate update) {
     RecordUpdate impl = (RecordUpdate) update;

@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonPrimitive;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class RecordUpdate
     extends AbstractRecordModification<com.salesforce.functions.jvm.sdk.data.RecordUpdate>
@@ -28,11 +29,13 @@ public class RecordUpdate
   }
 
   @Override
+  @Nonnull
   public String getType() {
     return type;
   }
 
   @Override
+  @Nonnull
   public String getId() {
     return id;
   }

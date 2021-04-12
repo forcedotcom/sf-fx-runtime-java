@@ -9,6 +9,7 @@ package com.salesforce.functions.jvm.runtime.sdk;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
 import java.net.URI;
+import javax.annotation.Nonnull;
 
 public class Org implements com.salesforce.functions.jvm.sdk.Org {
   private final SalesforceContextCloudEventExtension salesforceContext;
@@ -25,31 +26,37 @@ public class Org implements com.salesforce.functions.jvm.sdk.Org {
   }
 
   @Override
+  @Nonnull
   public String getId() {
     return salesforceContext.getUserContext().getOrgId();
   }
 
   @Override
+  @Nonnull
   public URI getBaseUrl() {
     return salesforceContext.getUserContext().getSalesforceBaseUrl();
   }
 
   @Override
+  @Nonnull
   public URI getDomainUrl() {
     return salesforceContext.getUserContext().getOrgDomainUrl();
   }
 
   @Override
+  @Nonnull
   public String getApiVersion() {
     return salesforceContext.getApiVersion();
   }
 
   @Override
+  @Nonnull
   public DataApi getDataApi() {
     return dataApi;
   }
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.User getUser() {
     return user;
   }

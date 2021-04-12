@@ -7,6 +7,7 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
+import javax.annotation.Nonnull;
 
 public class RecordModificationResult
     implements com.salesforce.functions.jvm.sdk.data.RecordModificationResult {
@@ -17,6 +18,7 @@ public class RecordModificationResult
   }
 
   @Override
+  @Nonnull
   public String getId() {
     return result.getId();
   }

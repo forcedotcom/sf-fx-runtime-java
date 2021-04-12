@@ -10,47 +10,57 @@ import io.cloudevents.CloudEvent;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
+@SuppressWarnings("unused")
 public class InvocationEvent<T> implements com.salesforce.functions.jvm.sdk.InvocationEvent<T> {
   private final CloudEvent cloudEvent;
   private final T payloadData;
 
+  @SuppressWarnings("unused")
   public InvocationEvent(CloudEvent cloudEvent, T payloadData) {
     this.cloudEvent = cloudEvent;
     this.payloadData = payloadData;
   }
 
   @Override
+  @Nonnull
   public String getId() {
     return cloudEvent.getId();
   }
 
   @Override
+  @Nonnull
   public String getType() {
     return cloudEvent.getType();
   }
 
   @Override
+  @Nonnull
   public URI getSource() {
     return cloudEvent.getSource();
   }
 
   @Override
+  @Nonnull
   public T getData() {
     return payloadData;
   }
 
   @Override
+  @Nonnull
   public Optional<String> getDataContentType() {
     return Optional.ofNullable(cloudEvent.getDataContentType());
   }
 
   @Override
+  @Nonnull
   public Optional<URI> getDataSchema() {
     return Optional.ofNullable(cloudEvent.getDataSchema());
   }
 
   @Override
+  @Nonnull
   public Optional<OffsetDateTime> getTime() {
     return Optional.ofNullable(cloudEvent.getTime());
   }

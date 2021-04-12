@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractRecordModification<T extends RecordModification<T>>
     implements RecordModification<T> {
@@ -27,66 +28,79 @@ public abstract class AbstractRecordModification<T extends RecordModification<T>
   protected abstract T copy(Map<String, JsonPrimitive> values);
 
   @Override
+  @Nonnull
   public T setValue(String key, String value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, short value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, Number value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, long value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, int value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, float value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, double value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, char value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, byte value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, boolean value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, BigInteger value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, BigDecimal value) {
     return setValue(key, new JsonPrimitive(value));
   }
 
   @Override
+  @Nonnull
   public T setValue(String key, ReferenceId fkId) {
     String apiString = ((com.salesforce.functions.jvm.runtime.sdk.ReferenceId) fkId).toApiString();
     return setValue(key, new JsonPrimitive(apiString));

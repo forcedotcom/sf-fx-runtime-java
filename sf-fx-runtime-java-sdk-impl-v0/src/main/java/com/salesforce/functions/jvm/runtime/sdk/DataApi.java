@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
   private final RestApi restApi;
@@ -21,6 +22,7 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
   }
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.data.RecordQueryResult query(String soql)
       throws DataApiException {
     RestApiRequest<QueryRecordResult> request = new QueryRecordRestApiRequest(soql);
@@ -32,6 +34,7 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
   }
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.data.RecordModificationResult create(
       com.salesforce.functions.jvm.sdk.data.RecordCreate create) throws DataApiException {
     RecordCreate impl = (RecordCreate) create;
@@ -46,6 +49,7 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
   }
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.data.RecordModificationResult update(
       com.salesforce.functions.jvm.sdk.data.RecordUpdate update) throws DataApiException {
     RecordUpdate impl = (RecordUpdate) update;
@@ -60,6 +64,7 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
   }
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.data.RecordQueryResult queryMore(
       com.salesforce.functions.jvm.sdk.data.RecordQueryResult queryResult) throws DataApiException {
     RecordQueryResult impl = (RecordQueryResult) queryResult;
@@ -74,6 +79,7 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
   }
 
   @Override
+  @Nonnull
   public Map<
           com.salesforce.functions.jvm.sdk.data.ReferenceId,
           com.salesforce.functions.jvm.sdk.data.RecordModificationResult>
@@ -85,7 +91,7 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
         new CompositeRestApiRequest<>(
             restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), impl.getSubrequests());
 
-    Map<String, ModifyRecordResult> result = null;
+    Map<String, ModifyRecordResult> result;
     try {
       result = restApi.execute(request);
     } catch (IOException e) {
@@ -106,22 +112,26 @@ public class DataApi implements com.salesforce.functions.jvm.sdk.data.DataApi {
   }
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.data.UnitOfWork newUnitOfWork() {
     return new UnitOfWork();
   }
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.data.RecordCreate newRecordCreate(String type) {
     return new RecordCreate(type, new HashMap<>());
   }
 
   @Override
+  @Nonnull
   public com.salesforce.functions.jvm.sdk.data.RecordUpdate newRecordUpdate(
       String type, String id) {
     return new RecordUpdate(type, id, new HashMap<>());
   }
 
   @Override
+  @Nonnull
   public String getAccessToken() {
     return restApi.getAccessToken();
   }

@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonPrimitive;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class RecordCreate
     extends AbstractRecordModification<com.salesforce.functions.jvm.sdk.data.RecordCreate>
@@ -26,6 +27,7 @@ public class RecordCreate
   }
 
   @Override
+  @Nonnull
   public String getType() {
     return type;
   }

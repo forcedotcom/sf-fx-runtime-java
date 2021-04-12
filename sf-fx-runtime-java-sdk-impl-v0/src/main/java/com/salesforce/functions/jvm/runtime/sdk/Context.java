@@ -10,7 +10,9 @@ import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEve
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
 import io.cloudevents.CloudEvent;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
+@SuppressWarnings("unused")
 public class Context implements com.salesforce.functions.jvm.sdk.Context {
   private final CloudEvent cloudEvent;
   private final Org org;
@@ -24,11 +26,13 @@ public class Context implements com.salesforce.functions.jvm.sdk.Context {
   }
 
   @Override
+  @Nonnull
   public String getId() {
     return cloudEvent.getId();
   }
 
   @Override
+  @Nonnull
   public Optional<com.salesforce.functions.jvm.sdk.Org> getOrg() {
     return Optional.of(org);
   }

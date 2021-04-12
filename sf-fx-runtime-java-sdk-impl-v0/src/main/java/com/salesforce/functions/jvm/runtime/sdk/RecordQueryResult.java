@@ -10,6 +10,7 @@ import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 public class RecordQueryResult implements com.salesforce.functions.jvm.sdk.data.RecordQueryResult {
   private final QueryRecordResult queryRecordResult;
@@ -29,6 +30,7 @@ public class RecordQueryResult implements com.salesforce.functions.jvm.sdk.data.
   }
 
   @Override
+  @Nonnull
   public List<com.salesforce.functions.jvm.sdk.data.Record> getRecords() {
     return queryRecordResult.getRecords().stream().map(Record::new).collect(Collectors.toList());
   }
