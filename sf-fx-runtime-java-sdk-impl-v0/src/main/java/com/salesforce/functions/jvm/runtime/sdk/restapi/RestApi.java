@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +18,11 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
@@ -47,7 +52,7 @@ public final class RestApi {
     return accessToken;
   }
 
-  public <T> T execute(RestApiRequest<T> apiRequest) throws IOException {
+  public <T> T execute(RestApiRequest<T> apiRequest) throws RestApiException, IOException {
     URI uri = apiRequest.createUri(salesforceBaseUrl, apiVersion);
 
     HttpClient client = HttpClients.createDefault();
@@ -93,9 +98,13 @@ public final class RestApi {
     } else {
       String bodyString = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
-      JsonElement bodyJsonElement = gson.fromJson(bodyString, JsonElement.class);
-      return apiRequest.processResponse(
-          response.getStatusLine().getStatusCode(), headers, bodyJsonElement);
+      try {
+        JsonElement bodyJsonElement = gson.fromJson(bodyString, JsonElement.class);
+        return apiRequest.processResponse(
+            response.getStatusLine().getStatusCode(), headers, bodyJsonElement);
+      } catch (JsonSyntaxException e) {
+        throw new IOException(bodyString, e);
+      }
     }
   }
 }

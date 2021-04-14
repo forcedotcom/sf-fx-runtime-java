@@ -13,6 +13,7 @@ import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryNextRecordsRestApiR
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApi;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiException;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.UpdateRecordRestApiRequest;
 import com.salesforce.functions.jvm.sdk.data.DataApi;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 public class DataApiImpl implements DataApi {
@@ -44,6 +46,25 @@ public class DataApiImpl implements DataApi {
       return new RecordQueryResultImpl(restApi.execute(request));
     } catch (IOException e) {
       throw new DataApiException("I/O error during query", e);
+    } catch (RestApiException e) {
+      throw mapException(e);
+    }
+  }
+
+  @Override
+  @Nonnull
+  public RecordQueryResultImpl queryMore(RecordQueryResult queryResult) throws DataApiException {
+    RecordQueryResultImpl impl = (RecordQueryResultImpl) queryResult;
+
+    QueryNextRecordsRestApiRequest request =
+        new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get());
+
+    try {
+      return new RecordQueryResultImpl(restApi.execute(request));
+    } catch (IOException e) {
+      throw new DataApiException("I/O error during queryMore", e);
+    } catch (RestApiException e) {
+      throw mapException(e);
     }
   }
 
@@ -58,6 +79,8 @@ public class DataApiImpl implements DataApi {
       return new RecordModificationResultImpl(restApi.execute(request));
     } catch (IOException e) {
       throw new DataApiException("I/O error during create", e);
+    } catch (RestApiException e) {
+      throw mapException(e);
     }
   }
 
@@ -72,20 +95,8 @@ public class DataApiImpl implements DataApi {
       return new RecordModificationResultImpl(restApi.execute(request));
     } catch (IOException e) {
       throw new DataApiException("I/O error during update", e);
-    }
-  }
-
-  @Override
-  @Nonnull
-  public RecordQueryResultImpl queryMore(RecordQueryResult queryResult) throws DataApiException {
-    RecordQueryResultImpl impl = (RecordQueryResultImpl) queryResult;
-
-    QueryNextRecordsRestApiRequest request =
-        new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get());
-    try {
-      return new RecordQueryResultImpl(restApi.execute(request));
-    } catch (IOException e) {
-      throw new DataApiException("I/O error during query more", e);
+    } catch (RestApiException e) {
+      throw mapException(e);
     }
   }
 
@@ -103,7 +114,9 @@ public class DataApiImpl implements DataApi {
     try {
       result = restApi.execute(request);
     } catch (IOException e) {
-      throw new DataApiException("I/O error while committing UnitOfWork", e);
+      throw new DataApiException("I/O error during commitUnitOfWork", e);
+    } catch (RestApiException e) {
+      throw mapException(e);
     }
 
     Map<ReferenceId, RecordModificationResult> actualResult = new HashMap<>();
@@ -138,5 +151,31 @@ public class DataApiImpl implements DataApi {
   @Nonnull
   public String getAccessToken() {
     return restApi.getAccessToken();
+  }
+
+  private static DataApiException mapException(RestApiException exception) {
+    StringBuilder builder = new StringBuilder("One or more API errors occurred:\n");
+    exception
+        .getApiErrors()
+        .forEach(
+            error -> {
+              builder.append("\n");
+
+              builder.append("Code: ");
+              builder.append(error.getErrorCode());
+              builder.append("\n");
+
+              builder.append("Message: ");
+              builder.append(error.getMessage());
+              builder.append("\n");
+
+              builder.append("Fields: ");
+              builder.append(String.join(", ", error.getFields()));
+              builder.append("\n");
+            });
+
+    return new DataApiException(
+        builder.toString(),
+        exception.getApiErrors().stream().map(DataApiErrorImpl::new).collect(Collectors.toList()));
   }
 }
