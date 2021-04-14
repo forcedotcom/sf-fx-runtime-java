@@ -47,12 +47,11 @@ public class CreateRecordRestApiRequest implements RestApiRequest<ModifyRecordRe
 
   @Override
   public ModifyRecordResult processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) {
+      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiException {
     if (statusCode == 201) {
       return new ModifyRecordResult(body.getAsJsonObject().get("id").getAsString());
+    } else {
+      throw new RestApiException(ErrorResponseParser.parse(body));
     }
-
-    throw new RuntimeException(
-        "Unimplemented error handling! Status code: " + statusCode + "\n" + body.toString());
   }
 }
