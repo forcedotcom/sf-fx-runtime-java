@@ -7,7 +7,6 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonPrimitive;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
 import com.salesforce.functions.jvm.sdk.data.Record;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -16,9 +15,9 @@ import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 public class RecordImpl implements Record {
-  private final QueryRecordResult.Record innerRecord;
+  private final com.salesforce.functions.jvm.runtime.sdk.restapi.Record innerRecord;
 
-  public RecordImpl(QueryRecordResult.Record innerRecord) {
+  public RecordImpl(com.salesforce.functions.jvm.runtime.sdk.restapi.Record innerRecord) {
     this.innerRecord = innerRecord;
   }
 

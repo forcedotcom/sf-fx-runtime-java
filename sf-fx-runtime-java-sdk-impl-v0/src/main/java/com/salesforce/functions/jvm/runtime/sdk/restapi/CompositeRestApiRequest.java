@@ -88,7 +88,7 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
 
   @Override
   public Map<String, T> processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) {
+      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiException {
     Map<String, T> result = new HashMap<>();
 
     if (statusCode == 200) {

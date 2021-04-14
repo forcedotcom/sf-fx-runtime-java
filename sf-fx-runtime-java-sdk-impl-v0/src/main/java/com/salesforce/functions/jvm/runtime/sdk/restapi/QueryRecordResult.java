@@ -6,7 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import com.google.gson.JsonPrimitive;
 import java.util.*;
 
 public final class QueryRecordResult {
@@ -37,23 +36,5 @@ public final class QueryRecordResult {
 
   public Optional<String> getNextRecordsPath() {
     return Optional.ofNullable(nextRecordsPath);
-  }
-
-  public static final class Record {
-    private final Map<String, JsonPrimitive> attributes;
-    private final Map<String, JsonPrimitive> values;
-
-    public Record(Map<String, JsonPrimitive> attributes, Map<String, JsonPrimitive> values) {
-      this.attributes = attributes;
-      this.values = values;
-    }
-
-    public Map<String, JsonPrimitive> getAttributes() {
-      return Collections.unmodifiableMap(attributes);
-    }
-
-    public Map<String, JsonPrimitive> getValues() {
-      return Collections.unmodifiableMap(values);
-    }
   }
 }
