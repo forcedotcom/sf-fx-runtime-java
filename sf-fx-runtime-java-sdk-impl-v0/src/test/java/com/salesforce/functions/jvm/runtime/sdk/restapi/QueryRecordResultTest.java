@@ -6,9 +6,13 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-public class RestApiException extends Exception {
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.Test;
 
-  public RestApiException(String message, Throwable cause) {
-    super(message, cause);
+public class QueryRecordResultTest {
+
+  @Test
+  public void testEqualsAndHashCode() {
+    EqualsVerifier.forClass(QueryRecordResult.class).verify();
   }
 }

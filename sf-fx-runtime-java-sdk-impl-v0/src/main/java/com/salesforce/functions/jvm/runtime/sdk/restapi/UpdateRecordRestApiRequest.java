@@ -33,14 +33,10 @@ public class UpdateRecordRestApiRequest implements RestApiRequest<ModifyRecordRe
   }
 
   @Override
-  public URI createUri(URI baseUri, String apiVersion) {
-    try {
-      return new URIBuilder(baseUri)
-          .setPathSegments("services", "data", "v" + apiVersion, "sobjects", this.type, this.id)
-          .build();
-    } catch (URISyntaxException e) {
-      throw new RuntimeException("Unexpected URISyntaxException!", e);
-    }
+  public URI createUri(URI baseUri, String apiVersion) throws URISyntaxException {
+    return new URIBuilder(baseUri)
+        .setPathSegments("services", "data", "v" + apiVersion, "sobjects", this.type, this.id)
+        .build();
   }
 
   @Override
@@ -50,12 +46,11 @@ public class UpdateRecordRestApiRequest implements RestApiRequest<ModifyRecordRe
 
   @Override
   public ModifyRecordResult processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) {
+      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiErrorsException {
     if (statusCode == 204) {
       return new ModifyRecordResult(id);
+    } else {
+      throw new RestApiErrorsException(ErrorResponseParser.parse(body));
     }
-
-    throw new RuntimeException(
-        "Unimplemented error handling! Status code: " + statusCode + "\n" + body.toString());
   }
 }

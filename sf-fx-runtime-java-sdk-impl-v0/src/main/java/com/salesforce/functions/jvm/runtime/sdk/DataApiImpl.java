@@ -13,6 +13,7 @@ import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryNextRecordsRestApiR
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApi;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiErrorsException;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiException;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.UpdateRecordRestApiRequest;
@@ -42,13 +43,8 @@ public class DataApiImpl implements DataApi {
   @Nonnull
   public RecordQueryResultImpl query(String soql) throws DataApiException {
     RestApiRequest<QueryRecordResult> request = new QueryRecordRestApiRequest(soql);
-    try {
-      return new RecordQueryResultImpl(restApi.execute(request));
-    } catch (IOException e) {
-      throw new DataApiException("I/O error during query", e);
-    } catch (RestApiException e) {
-      throw mapException(e);
-    }
+
+    return new RecordQueryResultImpl(executeRequest(request));
   }
 
   @Override
@@ -59,13 +55,7 @@ public class DataApiImpl implements DataApi {
     QueryNextRecordsRestApiRequest request =
         new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get());
 
-    try {
-      return new RecordQueryResultImpl(restApi.execute(request));
-    } catch (IOException e) {
-      throw new DataApiException("I/O error during queryMore", e);
-    } catch (RestApiException e) {
-      throw mapException(e);
-    }
+    return new RecordQueryResultImpl(executeRequest(request));
   }
 
   @Override
@@ -75,13 +65,8 @@ public class DataApiImpl implements DataApi {
 
     CreateRecordRestApiRequest request =
         new CreateRecordRestApiRequest(impl.getType(), impl.getValues());
-    try {
-      return new RecordModificationResultImpl(restApi.execute(request));
-    } catch (IOException e) {
-      throw new DataApiException("I/O error during create", e);
-    } catch (RestApiException e) {
-      throw mapException(e);
-    }
+
+    return new RecordModificationResultImpl(executeRequest(request));
   }
 
   @Override
@@ -91,13 +76,8 @@ public class DataApiImpl implements DataApi {
 
     UpdateRecordRestApiRequest request =
         new UpdateRecordRestApiRequest(impl.getId(), impl.getType(), impl.getValues());
-    try {
-      return new RecordModificationResultImpl(restApi.execute(request));
-    } catch (IOException e) {
-      throw new DataApiException("I/O error during update", e);
-    } catch (RestApiException e) {
-      throw mapException(e);
-    }
+
+    return new RecordModificationResultImpl(executeRequest(request));
   }
 
   @Override
@@ -110,14 +90,7 @@ public class DataApiImpl implements DataApi {
         new CompositeRestApiRequest<>(
             restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), impl.getSubrequests());
 
-    Map<String, ModifyRecordResult> result;
-    try {
-      result = restApi.execute(request);
-    } catch (IOException e) {
-      throw new DataApiException("I/O error during commitUnitOfWork", e);
-    } catch (RestApiException e) {
-      throw mapException(e);
-    }
+    Map<String, ModifyRecordResult> result = executeRequest(request);
 
     Map<ReferenceId, RecordModificationResult> actualResult = new HashMap<>();
     for (Map.Entry<String, ModifyRecordResult> stringModifyRecordResultEntry : result.entrySet()) {
@@ -153,7 +126,19 @@ public class DataApiImpl implements DataApi {
     return restApi.getAccessToken();
   }
 
-  private static DataApiException mapException(RestApiException exception) {
+  private <T> T executeRequest(RestApiRequest<T> request) throws DataApiException {
+    try {
+      return restApi.execute(request);
+    } catch (RestApiErrorsException restApiException) {
+      throw mapException(restApiException);
+    } catch (RestApiException e) {
+      throw new DataApiException("InternalRestApiException while executing API request!", e);
+    } catch (IOException e) {
+      throw new DataApiException("IOException while executing API request!", e);
+    }
+  }
+
+  private static DataApiException mapException(RestApiErrorsException exception) {
     StringBuilder builder = new StringBuilder("One or more API errors occurred:\n");
     exception
         .getApiErrors()
