@@ -51,16 +51,7 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
     JsonArray subrequestJsonArray = new JsonArray();
 
     for (Map.Entry<String, RestApiRequest<T>> entry : subrequests.entrySet()) {
-      String method;
-      if (entry.getValue().getHttpMethod() == HttpMethod.GET) {
-        method = "GET";
-      } else if (entry.getValue().getHttpMethod() == HttpMethod.POST) {
-        method = "POST";
-      } else if (entry.getValue().getHttpMethod() == HttpMethod.PATCH) {
-        method = "PATCH";
-      } else {
-        throw new RuntimeException("Unexpected HTTP method: " + entry.getValue().getHttpMethod());
-      }
+      String method = httpMethodToCompositeMethodString(entry.getValue().getHttpMethod());
 
       // RestApiRequest#createUri returns an absolute URL. For a composite request, we need to strip
       // off the base URL from the returned value.
@@ -135,5 +126,24 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
     }
 
     throw new RestApiException(ErrorResponseParser.parse(body));
+  }
+
+  private static String httpMethodToCompositeMethodString(HttpMethod method) {
+    // We use an explicit mapping to strictly decouple internal representation from what is being
+    // sent over to the API even though this currently is the default toString of the enum.
+    switch (method) {
+      case GET:
+        return "GET";
+      case POST:
+        return "POST";
+      case PATCH:
+        return "PATCH";
+      default:
+        // Since we don't get exhaustive switch/cases (JEP 361, previews since Java 12+) we put
+        // this as our own safeguard here. If another HttpMethod would be added, the code would
+        // compile but at least fail with a useful exception at runtime. There is no way we can
+        // get test coverage for this branch though.
+        throw new RuntimeException("Unexpected HTTP method: " + method.toString());
+    }
   }
 }
