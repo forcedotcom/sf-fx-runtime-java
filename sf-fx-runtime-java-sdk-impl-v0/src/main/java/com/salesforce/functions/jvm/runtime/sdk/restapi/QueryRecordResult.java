@@ -37,4 +37,24 @@ public final class QueryRecordResult {
   public Optional<String> getNextRecordsPath() {
     return Optional.ofNullable(nextRecordsPath);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    QueryRecordResult result = (QueryRecordResult) o;
+    return totalSize == result.totalSize
+        && done == result.done
+        && Objects.equals(records, result.records)
+        && Objects.equals(nextRecordsPath, result.nextRecordsPath);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(totalSize, done, records, nextRecordsPath);
+  }
 }

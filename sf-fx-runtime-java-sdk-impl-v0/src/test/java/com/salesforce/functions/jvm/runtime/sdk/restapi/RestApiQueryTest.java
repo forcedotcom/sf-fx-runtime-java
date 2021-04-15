@@ -6,18 +6,17 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.gson.JsonPrimitive;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.Tuple;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -157,47 +156,5 @@ public class RestApiQueryTest {
             map(new Tuple("Name", "Sample Account for Entitlements"))));
 
     assertThat("records match", result.getRecords(), equalTo(expectedRecords));
-  }
-
-  private static Map<String, JsonPrimitive> map(Tuple... data) {
-    HashMap<String, JsonPrimitive> result = new HashMap<>();
-    for (Tuple tuple : data) {
-      result.put(tuple.getKey(), tuple.getValue());
-    }
-
-    return result;
-  }
-
-  private static class Tuple {
-    private final String key;
-    private final JsonPrimitive value;
-
-    public Tuple(String key, String value) {
-      this.key = key;
-      this.value = new JsonPrimitive(value);
-    }
-
-    public Tuple(String key, Number value) {
-      this.key = key;
-      this.value = new JsonPrimitive(value);
-    }
-
-    public Tuple(String key, Boolean value) {
-      this.key = key;
-      this.value = new JsonPrimitive(value);
-    }
-
-    public Tuple(String key, Character value) {
-      this.key = key;
-      this.value = new JsonPrimitive(value);
-    }
-
-    public String getKey() {
-      return key;
-    }
-
-    public JsonPrimitive getValue() {
-      return value;
-    }
   }
 }

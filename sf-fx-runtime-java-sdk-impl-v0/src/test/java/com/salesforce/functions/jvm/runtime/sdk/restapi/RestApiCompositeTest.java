@@ -6,6 +6,7 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -13,6 +14,7 @@ import static org.hamcrest.Matchers.hasEntry;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonPrimitive;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.Tuple;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -50,6 +52,33 @@ public class RestApiCompositeTest {
         "",
         result,
         hasEntry(equalTo("insert-anh"), equalTo(new ModifyRecordResult("a00B000000FSkgxIAD"))));
+  }
+
+  @Test
+  public void compositeSingleQuery() throws RestApiException, IOException {
+    Map<String, RestApiRequest<QueryRecordResult>> subrequests = new HashMap<>();
+    subrequests.put("query", new QueryRecordRestApiRequest("SELECT Name FROM Franchise__c"));
+
+    CompositeRestApiRequest<QueryRecordResult> request =
+        new CompositeRestApiRequest<>(
+            restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
+
+    Map<String, QueryRecordResult> result = restApi.execute(request);
+
+    Record expectedRecord =
+        new Record(
+            map(
+                new Tuple("type", "Franchise__c"),
+                new Tuple("url", "/services/data/v51.0/sobjects/Franchise__c/a03B0000007BhQVIA0")),
+            map(new Tuple("Name", "Star Wars")));
+
+    assertThat(
+        "The result contains the correct data",
+        result,
+        hasEntry(
+            equalTo("query"),
+            equalTo(
+                new QueryRecordResult(1, true, Collections.singletonList(expectedRecord), null))));
   }
 
   @Test
