@@ -89,10 +89,7 @@ public class RestApiCreateTest {
           error.getMessage(),
           equalTo("The requested resource does not exist"));
 
-      assertThat(
-          "The error has the correct code",
-          error.getErrorCode(),
-          equalTo("NOT_FOUND"));
+      assertThat("The error has the correct code", error.getErrorCode(), equalTo("NOT_FOUND"));
 
       assertThat("The error has the correct fields", error.getFields(), empty());
 
@@ -119,10 +116,7 @@ public class RestApiCreateTest {
           error.getMessage(),
           equalTo("No such column 'FavoritePet__c' on sobject of type Account"));
 
-      assertThat(
-          "The error has the correct code",
-          error.getErrorCode(),
-          equalTo("INVALID_FIELD"));
+      assertThat("The error has the correct code", error.getErrorCode(), equalTo("INVALID_FIELD"));
 
       assertThat("The error has the correct fields", error.getFields(), empty());
 

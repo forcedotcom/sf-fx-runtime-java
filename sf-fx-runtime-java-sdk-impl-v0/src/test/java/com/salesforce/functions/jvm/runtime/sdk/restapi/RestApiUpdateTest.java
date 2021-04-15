@@ -35,7 +35,8 @@ public class RestApiUpdateTest {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
 
-    UpdateRecordRestApiRequest request = new UpdateRecordRestApiRequest("a00B000000FSjVUIA1", "Movie__c", values);
+    UpdateRecordRestApiRequest request =
+        new UpdateRecordRestApiRequest("a00B000000FSjVUIA1", "Movie__c", values);
     ModifyRecordResult result = restApi.execute(request);
     assertThat("id equals expected value", result.getId(), equalTo("a00B000000FSjVUIA1"));
   }
@@ -45,7 +46,8 @@ public class RestApiUpdateTest {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
 
-    UpdateRecordRestApiRequest request = new UpdateRecordRestApiRequest("a00B000000FSjVUIB1", "Movie__c", values);
+    UpdateRecordRestApiRequest request =
+        new UpdateRecordRestApiRequest("a00B000000FSjVUIB1", "Movie__c", values);
 
     try {
       restApi.execute(request);
@@ -57,10 +59,7 @@ public class RestApiUpdateTest {
           error.getMessage(),
           equalTo("Record ID: id value of incorrect type: a00B000000FSjVUIB1"));
 
-      assertThat(
-          "The error has the correct code",
-          error.getErrorCode(),
-          equalTo("MALFORMED_ID"));
+      assertThat("The error has the correct code", error.getErrorCode(), equalTo("MALFORMED_ID"));
 
       assertThat("The error has the correct fields", error.getFields(), contains("Id"));
 
@@ -70,13 +69,13 @@ public class RestApiUpdateTest {
     Assert.fail("Expected exception!");
   }
 
-
   @Test
   public void updateWithInvalidField() throws RestApiException, IOException {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("Color__c", new JsonPrimitive("Red"));
 
-    UpdateRecordRestApiRequest request = new UpdateRecordRestApiRequest("a00B000000FSjVUIB1", "Movie__c", values);
+    UpdateRecordRestApiRequest request =
+        new UpdateRecordRestApiRequest("a00B000000FSjVUIB1", "Movie__c", values);
 
     try {
       restApi.execute(request);
@@ -88,10 +87,7 @@ public class RestApiUpdateTest {
           error.getMessage(),
           equalTo("No such column 'Color__c' on sobject of type Movie__c"));
 
-      assertThat(
-          "The error has the correct code",
-          error.getErrorCode(),
-          equalTo("INVALID_FIELD"));
+      assertThat("The error has the correct code", error.getErrorCode(), equalTo("INVALID_FIELD"));
 
       assertThat("The error has the correct fields", error.getFields(), empty());
 

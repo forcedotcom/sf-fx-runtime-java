@@ -6,11 +6,17 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.http.client.utils.URIBuilder;
@@ -95,6 +101,8 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
       JsonArray compositeResponses =
           body.getAsJsonObject().get("compositeResponse").getAsJsonArray();
 
+      List<RestApiError> errors = new ArrayList<>();
+
       for (JsonElement response : compositeResponses) {
         JsonObject responseAsObject = response.getAsJsonObject();
 
@@ -106,18 +114,25 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
                 new TypeToken<Map<String, String>>() {}.getType());
         JsonElement subrequestBody = responseAsObject.get("body");
 
-        T t =
-            subrequests
-                .get(referenceId)
-                .processResponse(subrequestStatusCode, subrequestHeaders, subrequestBody);
+        try {
+          result.put(
+              referenceId,
+              subrequests
+                  .get(referenceId)
+                  .processResponse(subrequestStatusCode, subrequestHeaders, subrequestBody));
 
-        result.put(referenceId, t);
+        } catch (RestApiException e) {
+          errors.addAll(e.getApiErrors());
+        }
+      }
+
+      if (!errors.isEmpty()) {
+        throw new RestApiException(errors);
       }
 
       return result;
     }
 
-    throw new RuntimeException(
-        "Unimplemented error handling! Status code: " + statusCode + "\n" + body.toString());
+    throw new RestApiException(ErrorResponseParser.parse(body));
   }
 }
