@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -63,30 +64,8 @@ public final class RestApi {
 
     HttpClient client = HttpClients.createDefault();
 
-    HttpUriRequest request;
-    if (apiRequest.getHttpMethod() == HttpMethod.GET) {
-      request = new HttpGet(uri);
-    } else if (apiRequest.getHttpMethod() == HttpMethod.POST
-        || apiRequest.getHttpMethod() == HttpMethod.PATCH) {
-      HttpEntityEnclosingRequestBase base;
-      if (apiRequest.getHttpMethod() == HttpMethod.POST) {
-        base = new HttpPost(uri);
-      } else if (apiRequest.getHttpMethod() == HttpMethod.PATCH) {
-        base = new HttpPatch(uri);
-      } else {
-        throw new IllegalStateException("Unexpected HTTP method " + apiRequest.getHttpMethod());
-      }
-
-      if (apiRequest.getBody().isPresent()) {
-        base.setEntity(
-            new StringEntity(
-                gson.toJson(apiRequest.getBody().get()), ContentType.APPLICATION_JSON));
-      }
-
-      request = base;
-    } else {
-      throw new IllegalStateException("Unexpected HTTP method " + apiRequest.getHttpMethod());
-    }
+    HttpUriRequest request =
+        createBaseHttpRequest(apiRequest.getHttpMethod(), uri, apiRequest.getBody());
 
     request.addHeader("Authorization", "Bearer " + accessToken);
     HttpResponse response = client.execute(request);
@@ -112,5 +91,36 @@ public final class RestApi {
         throw new IOException(bodyString, e);
       }
     }
+  }
+
+  private HttpUriRequest createBaseHttpRequest(
+      HttpMethod method, URI uri, Optional<JsonElement> optionalBody) {
+
+    if (method == HttpMethod.GET) {
+      return new HttpGet(uri);
+    }
+
+    HttpEntityEnclosingRequestBase httpEntityEnclosingRequest;
+    switch (method) {
+      case POST:
+        httpEntityEnclosingRequest = new HttpPost(uri);
+        break;
+      case PATCH:
+        httpEntityEnclosingRequest = new HttpPatch(uri);
+        break;
+      default:
+        // Since we don't get exhaustive switch/cases (JEP 361, previews since Java 12+) we put
+        // this as our own safeguard here. If another HttpMethod would be added, the code would
+        // compile but at least fail with a useful exception at runtime. There is no way we can
+        // get test coverage for this branch though.
+        throw new RuntimeException("Unexpected HTTP method: " + method.toString());
+    }
+
+    optionalBody.ifPresent(
+        body ->
+            httpEntityEnclosingRequest.setEntity(
+                new StringEntity(gson.toJson(body), ContentType.APPLICATION_JSON)));
+
+    return httpEntityEnclosingRequest;
   }
 }
