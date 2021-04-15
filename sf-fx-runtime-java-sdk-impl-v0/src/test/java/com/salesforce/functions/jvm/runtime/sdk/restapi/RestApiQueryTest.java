@@ -32,7 +32,8 @@ public class RestApiQueryTest {
           "00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS");
 
   @Test
-  public void queryWithNextRecordsUrl() throws IOException, RestApiException {
+  public void queryWithNextRecordsUrl()
+      throws IOException, RestApiErrorsException, RestApiException {
     QueryRecordRestApiRequest queryRequest =
         new QueryRecordRestApiRequest("SELECT RANDOM_1__c, RANDOM_2__c FROM Random__c");
     QueryRecordResult result = restApi.execute(queryRequest);
@@ -46,7 +47,7 @@ public class RestApiQueryTest {
   }
 
   @Test
-  public void queryMoreRecords() throws IOException, RestApiException {
+  public void queryMoreRecords() throws IOException, RestApiErrorsException, RestApiException {
     QueryRecordRestApiRequest queryRequest =
         new QueryRecordRestApiRequest("SELECT RANDOM_1__c, RANDOM_2__c FROM Random__c");
     QueryRecordResult result = restApi.execute(queryRequest);
@@ -59,13 +60,13 @@ public class RestApiQueryTest {
   }
 
   @Test
-  public void queryWithUnknownColumn() throws IOException {
+  public void queryWithUnknownColumn() throws IOException, RestApiException {
     QueryRecordRestApiRequest queryRequest =
         new QueryRecordRestApiRequest("SELECT Bacon__c FROM Account LIMIT 2");
 
     try {
       restApi.execute(queryRequest);
-    } catch (RestApiException e) {
+    } catch (RestApiErrorsException e) {
       assertThat("Exactly one error is returned", e.getApiErrors().size(), is(1));
 
       RestApiError apiError = e.getApiErrors().get(0);
@@ -85,13 +86,13 @@ public class RestApiQueryTest {
   }
 
   @Test
-  public void queryWithMalformedSoql() throws IOException {
+  public void queryWithMalformedSoql() throws IOException, RestApiException {
     QueryRecordRestApiRequest queryRequest =
         new QueryRecordRestApiRequest("SELEKT Name FROM Account");
 
     try {
       restApi.execute(queryRequest);
-    } catch (RestApiException e) {
+    } catch (RestApiErrorsException e) {
       assertThat("Exactly one error is returned", e.getApiErrors().size(), is(1));
 
       RestApiError apiError = e.getApiErrors().get(0);
@@ -110,7 +111,7 @@ public class RestApiQueryTest {
   }
 
   @Test
-  public void queryAccountNames() throws IOException, RestApiException {
+  public void queryAccountNames() throws IOException, RestApiErrorsException, RestApiException {
     QueryRecordRestApiRequest queryRequest =
         new QueryRecordRestApiRequest("SELECT Name FROM Account");
     QueryRecordResult result = restApi.execute(queryRequest);

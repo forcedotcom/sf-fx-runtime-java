@@ -31,7 +31,7 @@ public class RestApiUpdateTest {
           "00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS");
 
   @Test
-  public void update() throws RestApiException, IOException {
+  public void update() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
 
@@ -42,7 +42,7 @@ public class RestApiUpdateTest {
   }
 
   @Test
-  public void updateWithMalformedId() throws RestApiException, IOException {
+  public void updateWithMalformedId() throws IOException, RestApiException {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
 
@@ -51,7 +51,7 @@ public class RestApiUpdateTest {
 
     try {
       restApi.execute(request);
-    } catch (RestApiException e) {
+    } catch (RestApiErrorsException e) {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(
@@ -70,7 +70,7 @@ public class RestApiUpdateTest {
   }
 
   @Test
-  public void updateWithInvalidField() throws RestApiException, IOException {
+  public void updateWithInvalidField() throws IOException, RestApiException {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("Color__c", new JsonPrimitive("Red"));
 
@@ -79,7 +79,7 @@ public class RestApiUpdateTest {
 
     try {
       restApi.execute(request);
-    } catch (RestApiException e) {
+    } catch (RestApiErrorsException e) {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(

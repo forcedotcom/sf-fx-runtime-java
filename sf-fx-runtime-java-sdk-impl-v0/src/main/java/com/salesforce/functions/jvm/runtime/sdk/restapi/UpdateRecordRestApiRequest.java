@@ -46,11 +46,11 @@ public class UpdateRecordRestApiRequest implements RestApiRequest<ModifyRecordRe
 
   @Override
   public ModifyRecordResult processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiException {
+      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiErrorsException {
     if (statusCode == 204) {
       return new ModifyRecordResult(id);
     } else {
-      throw new RestApiException(ErrorResponseParser.parse(body));
+      throw new RestApiErrorsException(ErrorResponseParser.parse(body));
     }
   }
 }

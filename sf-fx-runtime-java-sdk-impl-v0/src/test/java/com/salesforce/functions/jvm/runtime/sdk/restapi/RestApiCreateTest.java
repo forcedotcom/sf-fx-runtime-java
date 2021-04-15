@@ -31,7 +31,7 @@ public class RestApiCreateTest {
           "00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS");
 
   @Test
-  public void create() throws RestApiException, IOException {
+  public void create() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Star Wars Episode V: The Empire Strikes Back"));
     values.put("Rating__c", new JsonPrimitive("Excellent"));
@@ -42,7 +42,7 @@ public class RestApiCreateTest {
   }
 
   @Test
-  public void createWithInvalidPicklistValue() throws IOException {
+  public void createWithInvalidPicklistValue() throws IOException, RestApiException {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Star Wars Episode VIII: The Last Jedi"));
     values.put("Rating__c", new JsonPrimitive("Terrible"));
@@ -51,7 +51,7 @@ public class RestApiCreateTest {
 
     try {
       restApi.execute(request);
-    } catch (RestApiException e) {
+    } catch (RestApiErrorsException e) {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(
@@ -73,7 +73,7 @@ public class RestApiCreateTest {
   }
 
   @Test
-  public void createWithUnknownObjectType() throws IOException {
+  public void createWithUnknownObjectType() throws IOException, RestApiException {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Ace of Spades"));
 
@@ -81,7 +81,7 @@ public class RestApiCreateTest {
 
     try {
       restApi.execute(request);
-    } catch (RestApiException e) {
+    } catch (RestApiErrorsException e) {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(
@@ -100,7 +100,7 @@ public class RestApiCreateTest {
   }
 
   @Test
-  public void createWithInvalidField() throws IOException {
+  public void createWithInvalidField() throws IOException, RestApiException {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("FavoritePet__c", new JsonPrimitive("Dog"));
 
@@ -108,7 +108,7 @@ public class RestApiCreateTest {
 
     try {
       restApi.execute(request);
-    } catch (RestApiException e) {
+    } catch (RestApiErrorsException e) {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(
@@ -127,7 +127,7 @@ public class RestApiCreateTest {
   }
 
   @Test
-  public void createWithRequiredFieldMissing() throws IOException {
+  public void createWithRequiredFieldMissing() throws IOException, RestApiException {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Falcon 9"));
 
@@ -135,7 +135,7 @@ public class RestApiCreateTest {
 
     try {
       restApi.execute(request);
-    } catch (RestApiException e) {
+    } catch (RestApiErrorsException e) {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(

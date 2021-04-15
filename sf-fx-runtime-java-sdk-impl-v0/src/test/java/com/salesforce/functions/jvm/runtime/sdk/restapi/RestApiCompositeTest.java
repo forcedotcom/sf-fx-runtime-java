@@ -35,7 +35,7 @@ public class RestApiCompositeTest {
           "00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS");
 
   @Test
-  public void compositeSingleCreate() throws RestApiException, IOException {
+  public void compositeSingleCreate() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
 
     Map<String, JsonPrimitive> values = new HashMap<>();
@@ -55,7 +55,7 @@ public class RestApiCompositeTest {
   }
 
   @Test
-  public void compositeSingleQuery() throws RestApiException, IOException {
+  public void compositeSingleQuery() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, RestApiRequest<QueryRecordResult>> subrequests = new HashMap<>();
     subrequests.put("query", new QueryRecordRestApiRequest("SELECT Name FROM Franchise__c"));
 
@@ -82,7 +82,7 @@ public class RestApiCompositeTest {
   }
 
   @Test
-  public void compositeSingleCreateWithError() throws IOException {
+  public void compositeSingleCreateWithError() throws IOException, RestApiException {
     Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
 
     Map<String, JsonPrimitive> values = new HashMap<>();
@@ -96,7 +96,7 @@ public class RestApiCompositeTest {
 
     try {
       restApi.execute(request);
-    } catch (RestApiException e) {
+    } catch (RestApiErrorsException e) {
       assertThat(
           "the error from the inner create request is in the error from the composite request",
           e.getApiErrors(),
@@ -113,7 +113,7 @@ public class RestApiCompositeTest {
   }
 
   @Test
-  public void compositeSingleUpdate() throws RestApiException, IOException {
+  public void compositeSingleUpdate() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
 
     Map<String, JsonPrimitive> values = new HashMap<>();
@@ -133,7 +133,7 @@ public class RestApiCompositeTest {
   }
 
   @Test
-  public void compositeCreateTree() throws RestApiException, IOException {
+  public void compositeCreateTree() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
 
     Map<String, JsonPrimitive> valuesFranchise = new HashMap<>();

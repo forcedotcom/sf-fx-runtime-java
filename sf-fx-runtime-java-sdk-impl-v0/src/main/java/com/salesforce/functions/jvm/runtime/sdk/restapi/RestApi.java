@@ -54,7 +54,8 @@ public final class RestApi {
     return accessToken;
   }
 
-  public <T> T execute(RestApiRequest<T> apiRequest) throws RestApiException, IOException {
+  public <T> T execute(RestApiRequest<T> apiRequest)
+      throws RestApiErrorsException, RestApiException, IOException {
     URI uri;
     try {
       uri = apiRequest.createUri(salesforceBaseUrl, apiVersion);
@@ -88,7 +89,7 @@ public final class RestApi {
         return apiRequest.processResponse(
             response.getStatusLine().getStatusCode(), headers, bodyJsonElement);
       } catch (JsonSyntaxException e) {
-        throw new IOException(bodyString, e);
+        throw new RestApiException("Could not parse API response as JSON!", e);
       }
     }
   }

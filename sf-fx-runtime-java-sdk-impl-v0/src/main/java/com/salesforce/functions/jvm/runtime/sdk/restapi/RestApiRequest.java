@@ -20,5 +20,5 @@ public interface RestApiRequest<T> {
   Optional<JsonElement> getBody();
 
   T processResponse(int statusCode, Map<String, String> headers, JsonElement body)
-      throws RestApiException;
+      throws RestApiErrorsException;
 }

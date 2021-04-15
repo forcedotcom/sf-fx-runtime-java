@@ -6,18 +6,9 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class RestApiException extends Exception {
-  private final List<RestApiError> apiErrors;
 
-  public RestApiException(List<RestApiError> apiErrors) {
-    this.apiErrors = Collections.unmodifiableList(new ArrayList<>(apiErrors));
-  }
-
-  public List<RestApiError> getApiErrors() {
-    return apiErrors;
+  public RestApiException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

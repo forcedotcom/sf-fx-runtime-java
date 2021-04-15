@@ -20,12 +20,12 @@ public abstract class AbstractQueryRestApiRequest implements RestApiRequest<Quer
 
   @Override
   public final QueryRecordResult processResponse(
-      int statusCode, Map<String, String> headers, JsonElement json) throws RestApiException {
+      int statusCode, Map<String, String> headers, JsonElement json) throws RestApiErrorsException {
 
     final Gson gson = new Gson();
 
     if (statusCode != 200) {
-      throw new RestApiException(ErrorResponseParser.parse(json));
+      throw new RestApiErrorsException(ErrorResponseParser.parse(json));
     } else {
       final JsonObject body = json.getAsJsonObject();
       final boolean done = body.get("done").getAsBoolean();

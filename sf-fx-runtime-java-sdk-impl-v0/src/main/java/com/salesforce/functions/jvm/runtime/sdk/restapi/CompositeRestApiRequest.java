@@ -86,7 +86,7 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
 
   @Override
   public Map<String, T> processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiException {
+      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiErrorsException {
     Map<String, T> result = new HashMap<>();
 
     if (statusCode == 200) {
@@ -113,19 +113,19 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
                   .get(referenceId)
                   .processResponse(subrequestStatusCode, subrequestHeaders, subrequestBody));
 
-        } catch (RestApiException e) {
+        } catch (RestApiErrorsException e) {
           errors.addAll(e.getApiErrors());
         }
       }
 
       if (!errors.isEmpty()) {
-        throw new RestApiException(errors);
+        throw new RestApiErrorsException(errors);
       }
 
       return result;
     }
 
-    throw new RestApiException(ErrorResponseParser.parse(body));
+    throw new RestApiErrorsException(ErrorResponseParser.parse(body));
   }
 
   private static String httpMethodToCompositeMethodString(HttpMethod method) {
