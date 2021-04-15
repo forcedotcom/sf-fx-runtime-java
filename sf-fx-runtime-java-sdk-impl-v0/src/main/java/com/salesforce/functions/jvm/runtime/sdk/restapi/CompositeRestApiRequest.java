@@ -40,14 +40,10 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
   }
 
   @Override
-  public URI createUri(URI baseUri, String apiVersion) {
-    try {
-      return new URIBuilder(baseUri)
-          .setPathSegments("services", "data", "v" + apiVersion, "composite")
-          .build();
-    } catch (URISyntaxException e) {
-      throw new RuntimeException("Unexpected URISyntaxException!", e);
-    }
+  public URI createUri(URI baseUri, String apiVersion) throws URISyntaxException {
+    return new URIBuilder(baseUri)
+        .setPathSegments("services", "data", "v" + apiVersion, "composite")
+        .build();
   }
 
   @Override
@@ -66,14 +62,19 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
         throw new RuntimeException("Unexpected HTTP method: " + entry.getValue().getHttpMethod());
       }
 
-      // RestApiRequest#createUri return an absolute URL. For a composite request, we need to strip
+      // RestApiRequest#createUri returns an absolute URL. For a composite request, we need to strip
       // off the base URL from the returned value.
-      final String url =
-          entry
-              .getValue()
-              .createUri(baseUri, apiVersion)
-              .toString()
-              .substring(baseUri.toString().length());
+      final String url;
+      try {
+        url =
+            entry
+                .getValue()
+                .createUri(baseUri, apiVersion)
+                .toString()
+                .substring(baseUri.toString().length());
+      } catch (URISyntaxException e) {
+        throw new RuntimeException("Unexpected URISyntaxException!", e);
+      }
 
       JsonObject subrequestJson = new JsonObject();
       subrequestJson.addProperty("method", method);

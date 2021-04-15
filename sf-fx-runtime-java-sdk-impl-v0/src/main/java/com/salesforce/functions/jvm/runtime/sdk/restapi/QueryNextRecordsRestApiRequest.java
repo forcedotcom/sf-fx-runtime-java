@@ -25,12 +25,8 @@ public class QueryNextRecordsRestApiRequest extends AbstractQueryRestApiRequest 
   }
 
   @Override
-  public URI createUri(URI baseUri, String apiVersion) {
-    try {
-      return new URIBuilder(baseUri).setPath(nextRecordsPath).build();
-    } catch (URISyntaxException e) {
-      throw new RuntimeException("Unexpected URISyntaxException!", e);
-    }
+  public URI createUri(URI baseUri, String apiVersion) throws URISyntaxException {
+    return new URIBuilder(baseUri).setPath(nextRecordsPath).build();
   }
 
   @Override

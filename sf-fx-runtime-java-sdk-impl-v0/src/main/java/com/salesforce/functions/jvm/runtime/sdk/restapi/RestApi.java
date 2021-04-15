@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +54,12 @@ public final class RestApi {
   }
 
   public <T> T execute(RestApiRequest<T> apiRequest) throws RestApiException, IOException {
-    URI uri = apiRequest.createUri(salesforceBaseUrl, apiVersion);
+    URI uri;
+    try {
+      uri = apiRequest.createUri(salesforceBaseUrl, apiVersion);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException("Unexpected URISyntaxException!", e);
+    }
 
     HttpClient client = HttpClients.createDefault();
 

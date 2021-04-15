@@ -33,14 +33,10 @@ public class UpdateRecordRestApiRequest implements RestApiRequest<ModifyRecordRe
   }
 
   @Override
-  public URI createUri(URI baseUri, String apiVersion) {
-    try {
-      return new URIBuilder(baseUri)
-          .setPathSegments("services", "data", "v" + apiVersion, "sobjects", this.type, this.id)
-          .build();
-    } catch (URISyntaxException e) {
-      throw new RuntimeException("Unexpected URISyntaxException!", e);
-    }
+  public URI createUri(URI baseUri, String apiVersion) throws URISyntaxException {
+    return new URIBuilder(baseUri)
+        .setPathSegments("services", "data", "v" + apiVersion, "sobjects", this.type, this.id)
+        .build();
   }
 
   @Override
