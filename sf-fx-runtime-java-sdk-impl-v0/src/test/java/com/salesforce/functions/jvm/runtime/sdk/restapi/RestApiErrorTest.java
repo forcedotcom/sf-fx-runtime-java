@@ -12,7 +12,7 @@ import org.junit.Test;
 public class RestApiErrorTest {
 
   @Test
-  public void name() {
+  public void testEqualsAndHashCode() {
     EqualsVerifier.forClass(RestApiError.class).verify();
   }
 }

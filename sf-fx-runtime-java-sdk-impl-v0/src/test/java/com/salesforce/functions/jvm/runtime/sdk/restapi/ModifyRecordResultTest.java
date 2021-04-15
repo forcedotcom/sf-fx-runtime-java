@@ -12,7 +12,7 @@ import org.junit.Test;
 public class ModifyRecordResultTest {
 
   @Test
-  public void name() {
+  public void testEqualsAndHashCode() {
     EqualsVerifier.forClass(ModifyRecordResult.class).verify();
   }
 }

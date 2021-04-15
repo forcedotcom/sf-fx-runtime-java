@@ -12,7 +12,7 @@ import org.junit.Test;
 public class RecordTest {
 
   @Test
-  public void name() {
+  public void testEqualsAndHashCode() {
     EqualsVerifier.forClass(Record.class).verify();
   }
 }
