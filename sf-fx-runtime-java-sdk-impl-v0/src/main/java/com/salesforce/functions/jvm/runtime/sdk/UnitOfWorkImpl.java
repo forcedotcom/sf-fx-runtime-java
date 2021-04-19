@@ -45,7 +45,7 @@ public class UnitOfWorkImpl implements UnitOfWork {
     String referenceId = nextReferenceId();
     subrequests.put(
         referenceId,
-        new UpdateRecordRestApiRequest(impl.getType(), impl.getId(), impl.getValues()));
+        new UpdateRecordRestApiRequest(impl.getId(), impl.getType(), impl.getValues()));
 
     return new ReferenceIdImpl(referenceId);
   }
