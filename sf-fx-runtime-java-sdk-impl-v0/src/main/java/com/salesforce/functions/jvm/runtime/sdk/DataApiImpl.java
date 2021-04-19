@@ -95,10 +95,9 @@ public class DataApiImpl implements DataApi {
     Map<String, ModifyRecordResult> result = executeRequest(request);
 
     Map<ReferenceId, RecordModificationResult> actualResult = new HashMap<>();
-    for (Map.Entry<String, ModifyRecordResult> stringModifyRecordResultEntry : result.entrySet()) {
+    for (Map.Entry<String, ModifyRecordResult> entry : result.entrySet()) {
       actualResult.put(
-          new ReferenceIdImpl(stringModifyRecordResultEntry.getKey()),
-          new RecordModificationResultImpl(stringModifyRecordResultEntry.getValue()));
+          new ReferenceIdImpl(entry.getKey()), new RecordModificationResultImpl(entry.getValue()));
     }
 
     return actualResult;
