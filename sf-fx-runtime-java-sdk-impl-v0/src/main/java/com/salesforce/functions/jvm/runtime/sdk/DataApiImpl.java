@@ -133,7 +133,7 @@ public class DataApiImpl implements DataApi {
     } catch (RestApiErrorsException restApiException) {
       throw mapException(restApiException);
     } catch (RestApiException e) {
-      throw new DataApiException("InternalRestApiException while executing API request!", e);
+      throw new DataApiException("Exception while executing API request!", e);
     } catch (IOException e) {
       throw new DataApiException("IOException while executing API request!", e);
     }
