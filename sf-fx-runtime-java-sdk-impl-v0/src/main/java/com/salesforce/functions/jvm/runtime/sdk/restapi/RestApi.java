@@ -89,7 +89,7 @@ public final class RestApi {
         return apiRequest.processResponse(
             response.getStatusLine().getStatusCode(), headers, bodyJsonElement);
       } catch (JsonSyntaxException e) {
-        throw new RestApiException("Could not parse API response as JSON!", e);
+        throw new RestApiException("Could not parse API response as JSON!\n" + bodyString, e);
       }
     }
   }
