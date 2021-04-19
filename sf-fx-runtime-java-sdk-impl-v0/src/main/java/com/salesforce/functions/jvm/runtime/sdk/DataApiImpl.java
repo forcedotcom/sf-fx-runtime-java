@@ -41,7 +41,7 @@ public class DataApiImpl implements DataApi {
 
   @Override
   @Nonnull
-  public RecordQueryResultImpl query(String soql) throws DataApiException {
+  public RecordQueryResult query(String soql) throws DataApiException {
     RestApiRequest<QueryRecordResult> request = new QueryRecordRestApiRequest(soql);
 
     return new RecordQueryResultImpl(executeRequest(request));
@@ -49,13 +49,15 @@ public class DataApiImpl implements DataApi {
 
   @Override
   @Nonnull
-  public RecordQueryResultImpl queryMore(RecordQueryResult queryResult) throws DataApiException {
+  public RecordQueryResult queryMore(RecordQueryResult queryResult) throws DataApiException {
     RecordQueryResultImpl impl = (RecordQueryResultImpl) queryResult;
 
-    QueryNextRecordsRestApiRequest request =
-        new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get());
+    if (impl.getNextRecordsPath().isPresent()) {
+      return new RecordQueryResultImpl(
+          executeRequest(new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get())));
+    }
 
-    return new RecordQueryResultImpl(executeRequest(request));
+    return new EmptyRecordQueryResultImpl(impl.getQueryRecordResult());
   }
 
   @Override
@@ -93,10 +95,9 @@ public class DataApiImpl implements DataApi {
     Map<String, ModifyRecordResult> result = executeRequest(request);
 
     Map<ReferenceId, RecordModificationResult> actualResult = new HashMap<>();
-    for (Map.Entry<String, ModifyRecordResult> stringModifyRecordResultEntry : result.entrySet()) {
+    for (Map.Entry<String, ModifyRecordResult> entry : result.entrySet()) {
       actualResult.put(
-          new ReferenceIdImpl(stringModifyRecordResultEntry.getKey()),
-          new RecordModificationResultImpl(stringModifyRecordResultEntry.getValue()));
+          new ReferenceIdImpl(entry.getKey()), new RecordModificationResultImpl(entry.getValue()));
     }
 
     return actualResult;
@@ -132,7 +133,7 @@ public class DataApiImpl implements DataApi {
     } catch (RestApiErrorsException restApiException) {
       throw mapException(restApiException);
     } catch (RestApiException e) {
-      throw new DataApiException("InternalRestApiException while executing API request!", e);
+      throw new DataApiException("Exception while executing API request!", e);
     } catch (IOException e) {
       throw new DataApiException("IOException while executing API request!", e);
     }

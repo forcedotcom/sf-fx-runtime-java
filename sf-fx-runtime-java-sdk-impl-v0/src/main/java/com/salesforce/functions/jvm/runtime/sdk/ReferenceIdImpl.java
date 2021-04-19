@@ -9,7 +9,7 @@ package com.salesforce.functions.jvm.runtime.sdk;
 import com.salesforce.functions.jvm.sdk.data.ReferenceId;
 import java.util.Objects;
 
-public class ReferenceIdImpl implements ReferenceId {
+public final class ReferenceIdImpl implements ReferenceId {
   private final String id;
 
   public ReferenceIdImpl(String id) {

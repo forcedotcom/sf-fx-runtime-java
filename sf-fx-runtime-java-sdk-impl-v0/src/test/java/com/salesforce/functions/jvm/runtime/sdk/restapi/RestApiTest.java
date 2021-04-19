@@ -7,6 +7,7 @@
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -36,7 +37,7 @@ public class RestApiTest {
       assertThat(
           "the exception message is matching the error",
           e.getMessage(),
-          equalTo("Could not parse API response as JSON!"));
+          startsWith("Could not parse API response as JSON!"));
 
       return;
     }

@@ -6,7 +6,7 @@
     "method": "POST",
     "bodyPatterns": [
       {
-        "equalToJson": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [{\n        \"url\": \"services/data/v51.0/sobjects/Movie__c/a00B000000FSjVUIA1\",\n        \"method\": \"PATCH\",\n        \"referenceId\": \"update-esb\",\n        \"body\": {\n            \"ReleaseDate__c\": \"1980-05-21\"\n        }\n    }]\n}",
+        "equalToJson": "{\n    \"allOrNone\": true,\n    \"compositeRequest\": [{\n        \"url\": \"services/data/v51.0/sobjects/Movie__c/a00B000000FSjVUIA1\",\n        \"method\": \"PATCH\",\n        \"referenceId\": \"referenceId0\",\n        \"body\": {\n            \"ReleaseDate__c\": \"1980-05-21\"\n        }\n    }]\n}",
         "ignoreArrayOrder": true,
         "ignoreExtraElements": false
       }
@@ -19,7 +19,7 @@
   },
   "response": {
     "status": 200,
-    "body": "{\"compositeResponse\":[{\"body\":null,\"httpHeaders\":{},\"httpStatusCode\":204,\"referenceId\":\"update-esb\"}]}",
+    "body": "{\"compositeResponse\":[{\"body\":null,\"httpHeaders\":{},\"httpStatusCode\":204,\"referenceId\":\"referenceId0\"}]}",
     "headers": {
       "Date": "Wed, 14 Apr 2021 15:36:33 GMT",
       "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
