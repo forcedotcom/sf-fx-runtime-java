@@ -71,12 +71,6 @@ public class RecordImpl implements Record {
 
   @Override
   @Nonnull
-  public Optional<Number> getNumberValue(String key) {
-    return getValue(key, JsonPrimitive::getAsNumber);
-  }
-
-  @Override
-  @Nonnull
   public Optional<Character> getCharacterValue(String key) {
     return getValue(key, JsonPrimitive::getAsCharacter);
   }
