@@ -41,7 +41,7 @@ public class DataApiImpl implements DataApi {
 
   @Override
   @Nonnull
-  public RecordQueryResultImpl query(String soql) throws DataApiException {
+  public RecordQueryResult query(String soql) throws DataApiException {
     RestApiRequest<QueryRecordResult> request = new QueryRecordRestApiRequest(soql);
 
     return new RecordQueryResultImpl(executeRequest(request));
@@ -49,7 +49,7 @@ public class DataApiImpl implements DataApi {
 
   @Override
   @Nonnull
-  public RecordQueryResultImpl queryMore(RecordQueryResult queryResult) throws DataApiException {
+  public RecordQueryResult queryMore(RecordQueryResult queryResult) throws DataApiException {
     RecordQueryResultImpl impl = (RecordQueryResultImpl) queryResult;
 
     if (impl.getNextRecordsPath().isPresent()) {
