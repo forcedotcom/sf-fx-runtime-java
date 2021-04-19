@@ -52,10 +52,12 @@ public class DataApiImpl implements DataApi {
   public RecordQueryResultImpl queryMore(RecordQueryResult queryResult) throws DataApiException {
     RecordQueryResultImpl impl = (RecordQueryResultImpl) queryResult;
 
-    QueryNextRecordsRestApiRequest request =
-        new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get());
+    if (impl.getNextRecordsPath().isPresent()) {
+      return new RecordQueryResultImpl(
+          executeRequest(new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get())));
+    }
 
-    return new RecordQueryResultImpl(executeRequest(request));
+    return new EmptyRecordQueryResultImpl(impl.getQueryRecordResult());
   }
 
   @Override
