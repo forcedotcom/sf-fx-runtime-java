@@ -119,7 +119,7 @@ public class RestApiCompositeTest {
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
     subrequests.put(
-        "update-esb", new UpdateRecordRestApiRequest("a00B000000FSjVUIA1", "Movie__c", values));
+        "referenceId0", new UpdateRecordRestApiRequest("a00B000000FSjVUIA1", "Movie__c", values));
 
     CompositeRestApiRequest<ModifyRecordResult> request =
         new CompositeRestApiRequest<>(
@@ -129,7 +129,7 @@ public class RestApiCompositeTest {
     assertThat(
         "",
         result,
-        hasEntry(equalTo("update-esb"), equalTo(new ModifyRecordResult("a00B000000FSjVUIA1"))));
+        hasEntry(equalTo("referenceId0"), equalTo(new ModifyRecordResult("a00B000000FSjVUIA1"))));
   }
 
   @Test
@@ -139,22 +139,22 @@ public class RestApiCompositeTest {
     Map<String, JsonPrimitive> valuesFranchise = new HashMap<>();
     valuesFranchise.put("Name", new JsonPrimitive("Star Wars"));
     subrequests.put(
-        "createFranchise", new CreateRecordRestApiRequest("Franchise__c", valuesFranchise));
+        "referenceId0", new CreateRecordRestApiRequest("Franchise__c", valuesFranchise));
 
     Map<String, JsonPrimitive> valuesEp1 = new HashMap<>();
     valuesEp1.put("Name", new JsonPrimitive("Star Wars Episode I - A Phantom Menace"));
-    valuesEp1.put("Franchise__c", new JsonPrimitive("@{createFranchise.id}"));
-    subrequests.put("createEp1", new CreateRecordRestApiRequest("Movie__c", valuesEp1));
+    valuesEp1.put("Franchise__c", new JsonPrimitive("@{referenceId0.id}"));
+    subrequests.put("referenceId1", new CreateRecordRestApiRequest("Movie__c", valuesEp1));
 
     Map<String, JsonPrimitive> valuesEp2 = new HashMap<>();
     valuesEp2.put("Name", new JsonPrimitive("Star Wars Episode II - Attack Of The Clones"));
-    valuesEp2.put("Franchise__c", new JsonPrimitive("@{createFranchise.id}"));
-    subrequests.put("createEp2", new CreateRecordRestApiRequest("Movie__c", valuesEp2));
+    valuesEp2.put("Franchise__c", new JsonPrimitive("@{referenceId0.id}"));
+    subrequests.put("referenceId2", new CreateRecordRestApiRequest("Movie__c", valuesEp2));
 
     Map<String, JsonPrimitive> valuesEp3 = new HashMap<>();
     valuesEp3.put("Name", new JsonPrimitive("Star Wars Episode III - Revenge Of The Sith"));
-    valuesEp3.put("Franchise__c", new JsonPrimitive("@{createFranchise.id}"));
-    subrequests.put("createEp3", new CreateRecordRestApiRequest("Movie__c", valuesEp3));
+    valuesEp3.put("Franchise__c", new JsonPrimitive("@{referenceId0.id}"));
+    subrequests.put("referenceId3", new CreateRecordRestApiRequest("Movie__c", valuesEp3));
 
     CompositeRestApiRequest<ModifyRecordResult> request =
         new CompositeRestApiRequest<>(
@@ -164,22 +164,21 @@ public class RestApiCompositeTest {
     assertThat(
         "the franchise was created",
         result,
-        hasEntry(
-            equalTo("createFranchise"), equalTo(new ModifyRecordResult("a03B0000007BhQQIA0"))));
+        hasEntry(equalTo("referenceId0"), equalTo(new ModifyRecordResult("a03B0000007BhQQIA0"))));
 
     assertThat(
         "the first movie was created",
         result,
-        hasEntry(equalTo("createEp1"), equalTo(new ModifyRecordResult("a00B000000FSkioIAD"))));
+        hasEntry(equalTo("referenceId1"), equalTo(new ModifyRecordResult("a00B000000FSkioIAD"))));
 
     assertThat(
         "the second movie was created",
         result,
-        hasEntry(equalTo("createEp2"), equalTo(new ModifyRecordResult("a00B000000FSkipIAD"))));
+        hasEntry(equalTo("referenceId2"), equalTo(new ModifyRecordResult("a00B000000FSkipIAD"))));
 
     assertThat(
         "the third movie was created",
         result,
-        hasEntry(equalTo("createEp3"), equalTo(new ModifyRecordResult("a00B000000FSkiqIAD"))));
+        hasEntry(equalTo("referenceId3"), equalTo(new ModifyRecordResult("a00B000000FSkiqIAD"))));
   }
 }
