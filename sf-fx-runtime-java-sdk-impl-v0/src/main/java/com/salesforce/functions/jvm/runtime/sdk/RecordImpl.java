@@ -90,7 +90,7 @@ public class RecordImpl implements Record {
   @Override
   @Nonnull
   public Optional<BigInteger> getBigIntegerValue(String key) {
-    return getValue(key, JsonPrimitive::getAsBigInteger);
+    return getBigDecimalValue(key).map(BigDecimal::toBigInteger);
   }
 
   @Override
