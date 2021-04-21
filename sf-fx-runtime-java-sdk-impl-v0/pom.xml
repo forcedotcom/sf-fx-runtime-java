@@ -6,7 +6,7 @@
   <parent>
     <artifactId>sf-fx-runtime-java</artifactId>
     <groupId>com.salesforce.functions</groupId>
-    <version>0.1.2-ea-SNAPSHOT</version>
+    <version>0.1.4-ea-SNAPSHOT</version>
   </parent>
 
   <artifactId>sf-fx-runtime-java-sdk-impl-v0</artifactId>
