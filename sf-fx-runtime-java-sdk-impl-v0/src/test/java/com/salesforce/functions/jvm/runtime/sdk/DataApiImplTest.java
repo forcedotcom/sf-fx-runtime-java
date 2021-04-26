@@ -16,12 +16,12 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.salesforce.functions.jvm.sdk.data.DataApiException;
 import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.RecordModificationResult;
 import com.salesforce.functions.jvm.sdk.data.RecordQueryResult;
 import com.salesforce.functions.jvm.sdk.data.ReferenceId;
-import com.salesforce.functions.jvm.sdk.data.UnitOfWork;
+import com.salesforce.functions.jvm.sdk.data.builder.UnitOfWorkBuilder;
+import com.salesforce.functions.jvm.sdk.data.error.DataApiException;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
@@ -46,17 +46,17 @@ public class DataApiImplTest {
 
     List<Record> records = result.getRecords();
     assertThat(
-        records.get(0).getStringValue("Name"),
+        records.get(0).getStringField("Name"),
         optionalWithValue(equalTo("An awesome test account")));
 
-    assertThat(records.get(1).getStringValue("Name"), optionalWithValue(equalTo("Global Media")));
+    assertThat(records.get(1).getStringField("Name"), optionalWithValue(equalTo("Global Media")));
 
-    assertThat(records.get(2).getStringValue("Name"), optionalWithValue(equalTo("Acme")));
+    assertThat(records.get(2).getStringField("Name"), optionalWithValue(equalTo("Acme")));
 
-    assertThat(records.get(3).getStringValue("Name"), optionalWithValue(equalTo("salesforce.com")));
+    assertThat(records.get(3).getStringField("Name"), optionalWithValue(equalTo("salesforce.com")));
 
     assertThat(
-        records.get(4).getStringValue("Name"),
+        records.get(4).getStringField("Name"),
         optionalWithValue(equalTo("Sample Account for Entitlements")));
   }
 
@@ -107,9 +107,10 @@ public class DataApiImplTest {
     RecordModificationResult result =
         dataApi.create(
             dataApi
-                .newRecordCreate("Movie__c")
-                .setValue("Name", "Star Wars Episode V: The Empire Strikes Back")
-                .setValue("Rating__c", "Excellent"));
+                .newRecordBuilder("Movie__c")
+                .withField("Name", "Star Wars Episode V: The Empire Strikes Back")
+                .withField("Rating__c", "Excellent")
+                .build());
 
     assertThat(result.getId(), equalTo("a00B000000FSkcvIAD"));
   }
@@ -119,39 +120,45 @@ public class DataApiImplTest {
     RecordModificationResult result =
         dataApi.update(
             dataApi
-                .newRecordUpdate("Movie__c", "a00B000000FSjVUIA1")
-                .setValue("ReleaseDate__c", "1980-05-21"));
+                .newRecordBuilder("Movie__c")
+                .withField("Id", "a00B000000FSjVUIA1")
+                .withField("ReleaseDate__c", "1980-05-21")
+                .build());
 
     assertThat(result.getId(), equalTo("a00B000000FSjVUIA1"));
   }
 
   @Test
   public void testUnitOfWork() throws DataApiException {
-    UnitOfWork unitOfWork = dataApi.newUnitOfWork();
+    UnitOfWorkBuilder unitOfWorkBuilder = dataApi.newUnitOfWorkBuilder();
 
     ReferenceId franchiseReference =
-        unitOfWork.registerCreate(
-            dataApi.newRecordCreate("Franchise__c").setValue("Name", "Star Wars"));
+        unitOfWorkBuilder.registerCreate(
+            dataApi.newRecordBuilder("Franchise__c").withField("Name", "Star Wars").build());
 
-    unitOfWork.registerCreate(
+    unitOfWorkBuilder.registerCreate(
         dataApi
-            .newRecordCreate("Movie__c")
-            .setValue("Name", "Star Wars Episode I - A Phantom Menace")
-            .setValue("Franchise__c", franchiseReference));
+            .newRecordBuilder("Movie__c")
+            .withField("Name", "Star Wars Episode I - A Phantom Menace")
+            .withField("Franchise__c", franchiseReference)
+            .build());
 
-    unitOfWork.registerCreate(
+    unitOfWorkBuilder.registerCreate(
         dataApi
-            .newRecordCreate("Movie__c")
-            .setValue("Name", "Star Wars Episode II - Attack Of The Clones")
-            .setValue("Franchise__c", franchiseReference));
+            .newRecordBuilder("Movie__c")
+            .withField("Name", "Star Wars Episode II - Attack Of The Clones")
+            .withField("Franchise__c", franchiseReference)
+            .build());
 
-    unitOfWork.registerCreate(
+    unitOfWorkBuilder.registerCreate(
         dataApi
-            .newRecordCreate("Movie__c")
-            .setValue("Name", "Star Wars Episode III - Revenge Of The Sith")
-            .setValue("Franchise__c", franchiseReference));
+            .newRecordBuilder("Movie__c")
+            .withField("Name", "Star Wars Episode III - Revenge Of The Sith")
+            .withField("Franchise__c", franchiseReference)
+            .build());
 
-    Map<ReferenceId, RecordModificationResult> results = dataApi.commitUnitOfWork(unitOfWork);
+    Map<ReferenceId, RecordModificationResult> results =
+        dataApi.commitUnitOfWork(unitOfWorkBuilder.build());
 
     assertThat(results, is(aMapWithSize(4)));
     assertThat(results, hasKey(equalTo(franchiseReference)));
@@ -159,15 +166,19 @@ public class DataApiImplTest {
 
   @Test
   public void testUnitOfWorkUpdate() throws DataApiException {
-    UnitOfWork unitOfWork = dataApi.newUnitOfWork();
+    UnitOfWorkBuilder unitOfWorkBuilder = dataApi.newUnitOfWorkBuilder();
 
     ReferenceId updateRecordReference =
-        unitOfWork.registerUpdate(
+        unitOfWorkBuilder.registerUpdate(
             dataApi
-                .newRecordUpdate("Movie__c", "a00B000000FSjVUIA1")
-                .setValue("ReleaseDate__c", "1980-05-21"));
+                .newRecordBuilder("Movie__c")
+                .withField("Id", "a00B000000FSjVUIA1")
+                .withField("ReleaseDate__c", "1980-05-21")
+                .build());
 
-    Map<ReferenceId, RecordModificationResult> result = dataApi.commitUnitOfWork(unitOfWork);
+    Map<ReferenceId, RecordModificationResult> result =
+        dataApi.commitUnitOfWork(unitOfWorkBuilder.build());
+
     assertThat(result, is(aMapWithSize(1)));
     assertThat(result, hasKey(updateRecordReference));
   }

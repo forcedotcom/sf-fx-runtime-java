@@ -8,7 +8,6 @@ package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -19,9 +18,9 @@ import org.apache.http.client.utils.URIBuilder;
 public class UpdateRecordRestApiRequest implements RestApiRequest<ModifyRecordResult> {
   private final String id;
   private final String type;
-  private final Map<String, JsonPrimitive> values;
+  private final Map<String, JsonElement> values;
 
-  public UpdateRecordRestApiRequest(String id, String type, Map<String, JsonPrimitive> values) {
+  public UpdateRecordRestApiRequest(String id, String type, Map<String, JsonElement> values) {
     this.id = id;
     this.type = type;
     this.values = new HashMap<>(values);

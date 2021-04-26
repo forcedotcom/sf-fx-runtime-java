@@ -6,8 +6,10 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
+import com.google.gson.JsonElement;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.CompositeRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.CreateRecordRestApiRequest;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.DeleteRecordRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryNextRecordsRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordRestApiRequest;
@@ -18,21 +20,29 @@ import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiException;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.UpdateRecordRestApiRequest;
 import com.salesforce.functions.jvm.sdk.data.DataApi;
-import com.salesforce.functions.jvm.sdk.data.DataApiException;
-import com.salesforce.functions.jvm.sdk.data.RecordCreate;
+import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.RecordModificationResult;
 import com.salesforce.functions.jvm.sdk.data.RecordQueryResult;
-import com.salesforce.functions.jvm.sdk.data.RecordUpdate;
 import com.salesforce.functions.jvm.sdk.data.ReferenceId;
 import com.salesforce.functions.jvm.sdk.data.UnitOfWork;
+import com.salesforce.functions.jvm.sdk.data.builder.RecordBuilder;
+import com.salesforce.functions.jvm.sdk.data.builder.UnitOfWorkBuilder;
+import com.salesforce.functions.jvm.sdk.data.error.DataApiException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 public class DataApiImpl implements DataApi {
+  private static final String INCOMPATIBLE_RECORD_MESSAGE =
+      "Given Record is not compatible with this DataApi instance!";
+
+  private static final String INCOMPATIBLE_UNIT_OF_WORK_MESSAGE =
+      "Given UnitOfWork is not compatible with this DataApi instance!";
+
   private final RestApi restApi;
 
   public DataApiImpl(URI salesforceBaseUrl, String apiVersion, String accessToken) {
@@ -60,32 +70,58 @@ public class DataApiImpl implements DataApi {
     return new EmptyRecordQueryResultImpl(impl.getQueryRecordResult());
   }
 
-  @Override
   @Nonnull
-  public RecordModificationResult create(RecordCreate create) throws DataApiException {
-    RecordCreateImpl impl = (RecordCreateImpl) create;
-
-    CreateRecordRestApiRequest request =
-        new CreateRecordRestApiRequest(impl.getType(), impl.getValues());
-
-    return new RecordModificationResultImpl(executeRequest(request));
+  @Override
+  public RecordModificationResult create(Record record) throws DataApiException {
+    return new RecordModificationResultImpl(executeRequest(apiRequestForCreate(record)));
   }
 
-  @Override
   @Nonnull
-  public RecordModificationResult update(RecordUpdate update) throws DataApiException {
-    RecordUpdateImpl impl = (RecordUpdateImpl) update;
+  @Override
+  public RecordModificationResult update(Record record) throws DataApiException {
+    return new RecordModificationResultImpl(executeRequest(apiRequestForUpdate(record)));
+  }
 
-    UpdateRecordRestApiRequest request =
-        new UpdateRecordRestApiRequest(impl.getId(), impl.getType(), impl.getValues());
+  @Nonnull
+  @Override
+  public RecordModificationResult delete(String type, String id) throws DataApiException {
+    return new RecordModificationResultImpl(
+        executeRequest(new DeleteRecordRestApiRequest(type, id)));
+  }
 
-    return new RecordModificationResultImpl(executeRequest(request));
+  @Nonnull
+  @Override
+  public RecordBuilder newRecordBuilder(String type) {
+    return new RecordBuilderImpl(type);
+  }
+
+  @Nonnull
+  @Override
+  public RecordBuilder newRecordBuilder(Record record) {
+    if (!(record instanceof RecordImpl)) {
+      throw new IllegalArgumentException(INCOMPATIBLE_RECORD_MESSAGE);
+    }
+
+    RecordImpl recordImpl = (RecordImpl) record;
+
+    return new RecordBuilderImpl(recordImpl.getType(), recordImpl.getFieldValues());
+  }
+
+  @Nonnull
+  @Override
+  public UnitOfWorkBuilder newUnitOfWorkBuilder() {
+    return new UnitOfWorkBuilderImpl();
   }
 
   @Override
   @Nonnull
   public Map<ReferenceId, RecordModificationResult> commitUnitOfWork(UnitOfWork unitOfWork)
       throws DataApiException {
+
+    if (!(unitOfWork instanceof UnitOfWorkImpl)) {
+      throw new IllegalArgumentException(INCOMPATIBLE_UNIT_OF_WORK_MESSAGE);
+    }
+
     UnitOfWorkImpl impl = (UnitOfWorkImpl) unitOfWork;
 
     CompositeRestApiRequest<ModifyRecordResult> request =
@@ -105,26 +141,40 @@ public class DataApiImpl implements DataApi {
 
   @Override
   @Nonnull
-  public UnitOfWork newUnitOfWork() {
-    return new UnitOfWorkImpl();
-  }
-
-  @Override
-  @Nonnull
-  public RecordCreate newRecordCreate(String type) {
-    return new RecordCreateImpl(type, new HashMap<>());
-  }
-
-  @Override
-  @Nonnull
-  public RecordUpdate newRecordUpdate(String type, String id) {
-    return new RecordUpdateImpl(type, id, new HashMap<>());
-  }
-
-  @Override
-  @Nonnull
   public String getAccessToken() {
     return restApi.getAccessToken();
+  }
+
+  public static RestApiRequest<ModifyRecordResult> apiRequestForUpdate(Record record) {
+    if (!(record instanceof RecordImpl)) {
+      throw new IllegalArgumentException(INCOMPATIBLE_RECORD_MESSAGE);
+    }
+
+    RecordImpl recordImpl = (RecordImpl) record;
+
+    String id =
+        recordImpl
+            .getStringField("id")
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "Given Record does not have an Id field and therefore cannot be updated."));
+
+    Map<String, JsonElement> fieldValues = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    fieldValues.putAll(recordImpl.getFieldValues());
+    fieldValues.remove("id");
+
+    return new UpdateRecordRestApiRequest(id, recordImpl.getType(), fieldValues);
+  }
+
+  public static RestApiRequest<ModifyRecordResult> apiRequestForCreate(Record record) {
+    if (!(record instanceof RecordImpl)) {
+      throw new IllegalArgumentException(INCOMPATIBLE_RECORD_MESSAGE);
+    }
+
+    RecordImpl recordImpl = (RecordImpl) record;
+
+    return new CreateRecordRestApiRequest(recordImpl.getType(), recordImpl.getFieldValues());
   }
 
   private <T> T executeRequest(RestApiRequest<T> request) throws DataApiException {
