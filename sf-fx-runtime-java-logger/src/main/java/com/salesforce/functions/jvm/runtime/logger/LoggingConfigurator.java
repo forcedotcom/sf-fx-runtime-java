@@ -83,7 +83,7 @@ public class LoggingConfigurator {
     System.err.printf("WARNING: Environment variable '%s' will be ignored!\n", envVarKey);
   }
 
-  private static final String ROOT_LOGLEVEL_ENV_VAR_NAME = "SF_FN_LOGLEVEL";
+  private static final String ROOT_LOGLEVEL_ENV_VAR_NAME = "SF_FX_LOGLEVEL";
   private static final String LOGLEVEL_ENV_VAR_PREFIX = ROOT_LOGLEVEL_ENV_VAR_NAME + "_";
   private static final String ENV_VAR_LOGGER_NAME_SEGMENT_DELIMITER = "_";
 }
