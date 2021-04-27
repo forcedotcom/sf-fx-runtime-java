@@ -7,7 +7,7 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiError;
-import com.salesforce.functions.jvm.sdk.data.DataApiError;
+import com.salesforce.functions.jvm.sdk.data.error.DataApiError;
 import java.util.List;
 import javax.annotation.Nonnull;
 

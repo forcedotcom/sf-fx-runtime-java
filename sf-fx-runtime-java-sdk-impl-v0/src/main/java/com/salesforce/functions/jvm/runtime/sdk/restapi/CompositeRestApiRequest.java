@@ -138,6 +138,8 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
         return "POST";
       case PATCH:
         return "PATCH";
+      case DELETE:
+        return "DELETE";
       default:
         // Since we don't get exhaustive switch/cases (JEP 361, previews since Java 12+) we put
         // this as our own safeguard here. If another HttpMethod would be added, the code would

@@ -41,6 +41,7 @@
                     <includeConstructors>true</includeConstructors>
                     <includeSetters>false</includeSetters>
                     <useOptionalForGetters>true</useOptionalForGetters>
+                    <includeGeneratedAnnotation>false</includeGeneratedAnnotation>
                     <sourcePaths>
                         <sourcePath>${project.basedir}/src/main/resources/context-schema.json</sourcePath>
                         <sourcePath>${project.basedir}/src/main/resources/function-context-schema.json</sourcePath>

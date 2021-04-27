@@ -20,6 +20,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
@@ -99,6 +100,8 @@ public final class RestApi {
 
     if (method == HttpMethod.GET) {
       return new HttpGet(uri);
+    } else if (method == HttpMethod.DELETE) {
+      return new HttpDelete(uri);
     }
 
     HttpEntityEnclosingRequestBase httpEntityEnclosingRequest;

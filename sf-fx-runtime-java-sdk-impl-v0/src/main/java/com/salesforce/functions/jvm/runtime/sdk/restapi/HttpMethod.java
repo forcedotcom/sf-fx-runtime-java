@@ -9,5 +9,6 @@ package com.salesforce.functions.jvm.runtime.sdk.restapi;
 public enum HttpMethod {
   GET,
   POST,
-  PATCH
+  PATCH,
+  DELETE
 }

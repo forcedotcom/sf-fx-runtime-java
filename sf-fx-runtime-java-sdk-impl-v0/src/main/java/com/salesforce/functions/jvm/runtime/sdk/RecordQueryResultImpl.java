@@ -35,7 +35,10 @@ public class RecordQueryResultImpl implements RecordQueryResult {
   @Nonnull
   public List<Record> getRecords() {
     return queryRecordResult.getRecords().stream()
-        .map(RecordImpl::new)
+        .map(
+            record ->
+                new RecordImpl(
+                    record.getAttributes().get("type").getAsString(), record.getValues()))
         .collect(Collectors.toList());
   }
 
