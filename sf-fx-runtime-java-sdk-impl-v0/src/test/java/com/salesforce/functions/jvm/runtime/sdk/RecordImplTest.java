@@ -13,11 +13,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -41,6 +43,7 @@ public class RecordImplTest {
     values.put(STRING_TRUE_UPPERCASE_KEY, new JsonPrimitive("TRUE"));
     values.put(BOOLEAN_TRUE_KEY, new JsonPrimitive(true));
     values.put(BOOLEAN_FALSE_KEY, new JsonPrimitive(false));
+    values.put(NULL_KEY, JsonNull.INSTANCE);
 
     record = new RecordImpl("Movie__c", values);
   }
@@ -950,6 +953,227 @@ public class RecordImplTest {
     record.getBigDecimalField(BOOLEAN_FALSE_KEY);
   }
 
+  @Test
+  public void testGetStringValue_NULL_KEY() {
+    assertThat(record.getStringField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetBooleanValue_NULL_KEY() {
+    assertThat(record.getBooleanField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetIntValue_NULL_KEY() {
+    assertThat(record.getIntField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetLongValue_NULL_KEY() {
+    assertThat(record.getLongField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetFloatValue_NULL_KEY() {
+    assertThat(record.getFloatField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetDoubleValue_NULL_KEY() {
+    assertThat(record.getDoubleField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetShortValue_NULL_KEY() {
+    assertThat(record.getShortField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetByteValue_NULL_KEY() {
+    assertThat(record.getByteField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetBigIntegerValue_NULL_KEY() {
+    assertThat(record.getBigIntegerField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetBigDecimalValue_NULL_KEY() {
+    assertThat(record.getBigIntegerField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testIsNullField_MISSING_VALUE_KEY() {
+    assertThat(record.isNullField(MISSING_VALUE_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_NUMBER_MAX_BYTE_KEY() {
+    assertThat(record.isNullField(NUMBER_MAX_BYTE_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_NUMBER_MAX_SHORT_KEY() {
+    assertThat(record.isNullField(NUMBER_MAX_SHORT_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_NUMBER_MAX_INT_KEY() {
+    assertThat(record.isNullField(NUMBER_MAX_INT_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_NUMBER_MAX_LONG_KEY() {
+    assertThat(record.isNullField(NUMBER_MAX_LONG_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_NUMBER_MAX_FLOAT_KEY() {
+    assertThat(record.isNullField(NUMBER_MAX_FLOAT_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_NUMBER_MAX_DOUBLE_KEY() {
+    assertThat(record.isNullField(NUMBER_MAX_DOUBLE_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_NUMBER_BIG_INT_KEY() {
+    assertThat(record.isNullField(NUMBER_BIG_INTEGER_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_NUMBER_BIG_DECIMAL_KEY() {
+    assertThat(record.isNullField(NUMBER_BIG_DECIMAL_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_STRING_ABC_KEY() {
+    assertThat(record.isNullField(STRING_ABC_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_STRING_EMPTY_KEY() {
+    assertThat(record.isNullField(STRING_EMPTY_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_STRING_TRUE_KEY() {
+    assertThat(record.isNullField(STRING_TRUE_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_STRING_TRUE_UPPERCASE_KEY() {
+    assertThat(record.isNullField(STRING_TRUE_UPPERCASE_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_BOOLEAN_TRUE_KEY() {
+    assertThat(record.isNullField(BOOLEAN_TRUE_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_BOOLEAN_FALSE_KEY() {
+    assertThat(record.isNullField(BOOLEAN_FALSE_KEY), is(false));
+  }
+
+  @Test
+  public void testIsNullField_NULL_KEY() {
+    assertThat(record.isNullField(NULL_KEY), is(true));
+  }
+
+  @Test
+  public void testIsNullFieldCaseSensitiveness() {
+    assertThat(record.isNullField(randomizeCasing(NULL_KEY)), is(true));
+  }
+
+  @Test
+  public void testGetStringValueCaseSensitiveness() {
+    assertThat(
+        record.getStringField(randomizeCasing(STRING_ABC_KEY)),
+        is(optionalWithValue(equalTo("abc"))));
+  }
+
+  @Test
+  public void testGetBooleanValueCaseSensitiveness() {
+    assertThat(
+        record.getBooleanField(randomizeCasing(BOOLEAN_TRUE_KEY)),
+        is(optionalWithValue(equalTo(true))));
+  }
+
+  @Test
+  public void testGetIntValueCaseSensitiveness() {
+    assertThat(
+        record.getIntField(randomizeCasing(NUMBER_MAX_INT_KEY)),
+        is(optionalWithValue(equalTo(Integer.MAX_VALUE))));
+  }
+
+  @Test
+  public void testGetLongValueCaseSensitiveness() {
+    assertThat(
+        record.getLongField(randomizeCasing(NUMBER_MAX_LONG_KEY)),
+        is(optionalWithValue(equalTo(Long.MAX_VALUE))));
+  }
+
+  @Test
+  public void testGetFloatValueCaseSensitiveness() {
+    assertThat(
+        record.getFloatField(randomizeCasing(NUMBER_MAX_FLOAT_KEY)),
+        is(optionalWithValue(equalTo(Float.MAX_VALUE))));
+  }
+
+  @Test
+  public void testGetDoubleValueCaseSensitiveness() {
+    assertThat(
+        record.getDoubleField(randomizeCasing(NUMBER_MAX_DOUBLE_KEY)),
+        is(optionalWithValue(equalTo(Double.MAX_VALUE))));
+  }
+
+  @Test
+  public void testGetShortValueCaseSensitiveness() {
+    assertThat(
+        record.getShortField(randomizeCasing(NUMBER_MAX_SHORT_KEY)),
+        is(optionalWithValue(equalTo(Short.MAX_VALUE))));
+  }
+
+  @Test
+  public void testGetByteValueCaseSensitiveness() {
+    assertThat(
+        record.getByteField(randomizeCasing(NUMBER_MAX_BYTE_KEY)),
+        is(optionalWithValue(equalTo(Byte.MAX_VALUE))));
+  }
+
+  @Test
+  public void testGetBigIntValueCaseSensitiveness() {
+    assertThat(
+        record.getBigIntegerField(randomizeCasing(NUMBER_BIG_INTEGER_KEY)),
+        is(optionalWithValue(equalTo(BIG_INTEGER_TEST_VALUE))));
+  }
+
+  @Test
+  public void testGetBigDecimalValueCaseSensitiveness() {
+    assertThat(
+        record.getBigDecimalField(randomizeCasing(NUMBER_BIG_DECIMAL_KEY)),
+        is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE))));
+  }
+
+  private static String randomizeCasing(String s) {
+    Random random = new Random(0x5FDC);
+    char[] chars = new char[s.length()];
+    s.getChars(0, s.length(), chars, 0);
+
+    for (int i = 0; i < chars.length; i++) {
+      if (random.nextBoolean()) {
+        chars[i] = Character.toUpperCase(chars[i]);
+      } else {
+        chars[i] = Character.toLowerCase(chars[i]);
+      }
+    }
+
+    return new String(chars);
+  }
+
   private static final String MISSING_VALUE_KEY = "DOES_NOT_EXIST";
   private static final String NUMBER_MAX_BYTE_KEY = "NumberMaxByte__c";
   private static final String NUMBER_MAX_SHORT_KEY = "NumberMaxShort__c";
@@ -965,6 +1189,7 @@ public class RecordImplTest {
   private static final String STRING_TRUE_UPPERCASE_KEY = "StringTrueUppercase__c";
   private static final String BOOLEAN_TRUE_KEY = "BooleanTrue__c";
   private static final String BOOLEAN_FALSE_KEY = "BooleanFalse__c";
+  private static final String NULL_KEY = "Null__c";
 
   private static final BigInteger BIG_INTEGER_TEST_VALUE =
       BigInteger.valueOf(Long.MAX_VALUE).multiply(BigInteger.valueOf(2));
