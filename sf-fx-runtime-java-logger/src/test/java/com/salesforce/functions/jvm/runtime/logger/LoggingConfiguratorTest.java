@@ -51,7 +51,7 @@ public class LoggingConfiguratorTest {
 
     for (Map.Entry<String, Level> entry : expectations.entrySet()) {
       Map<String, String> environment = new HashMap<>();
-      environment.put("SF_FN_LOGLEVEL", entry.getKey());
+      environment.put("SF_FX_LOGLEVEL", entry.getKey());
 
       LoggingConfiguration configuration =
           LoggingConfigurator.configureFromEnvironment(environment);
@@ -65,21 +65,21 @@ public class LoggingConfiguratorTest {
   @Test
   public void testInvalidRootLevelConfiguration() {
     Map<String, String> environment = new HashMap<>();
-    environment.put("SF_FN_LOGLEVEL", "debugg");
+    environment.put("SF_FX_LOGLEVEL", "debugg");
 
     LoggingConfiguration configuration = LoggingConfigurator.configureFromEnvironment(environment);
     Assert.assertEquals(Level.INFO, configuration.getRootLogLevel());
     Assert.assertEquals("", systemOutContent.toString());
     Assert.assertEquals(
-        "WARNING: Environment variable 'SF_FN_LOGLEVEL' contains unknown log level 'debugg'.\nWARNING: Environment variable 'SF_FN_LOGLEVEL' will be ignored!\n",
+        "WARNING: Environment variable 'SF_FX_LOGLEVEL' contains unknown log level 'debugg'.\nWARNING: Environment variable 'SF_FX_LOGLEVEL' will be ignored!\n",
         systemErrContent.toString());
   }
 
   @Test
   public void testLoggerSpecificLevelConfiguration() {
     Map<String, String> environment = new HashMap<>();
-    environment.put("SF_FN_LOGLEVEL_com_salesforce", "debug");
-    environment.put("SF_FN_LOGLEVEL_com_salesforce_functions_jvm_internal", "WARN");
+    environment.put("SF_FX_LOGLEVEL_com_salesforce", "debug");
+    environment.put("SF_FX_LOGLEVEL_com_salesforce_functions_jvm_internal", "WARN");
 
     LoggingConfiguration configuration = LoggingConfigurator.configureFromEnvironment(environment);
 
@@ -100,8 +100,8 @@ public class LoggingConfiguratorTest {
   @Test
   public void testInvalidLoggerSpecificLevelConfiguration() {
     Map<String, String> environment = new HashMap<>();
-    environment.put("SF_FN_LOGLEVEL_com_salesforce", "debug");
-    environment.put("SF_FN_LOGLEVEL_com_salesforce_functions_jvm_internal", "HORSE");
+    environment.put("SF_FX_LOGLEVEL_com_salesforce", "debug");
+    environment.put("SF_FX_LOGLEVEL_com_salesforce_functions_jvm_internal", "HORSE");
 
     LoggingConfiguration configuration = LoggingConfigurator.configureFromEnvironment(environment);
 
@@ -117,7 +117,7 @@ public class LoggingConfiguratorTest {
     Assert.assertEquals(Level.INFO, configuration.getRootLogLevel());
     Assert.assertEquals("", systemOutContent.toString());
     Assert.assertEquals(
-        "WARNING: Environment variable 'SF_FN_LOGLEVEL_com_salesforce_functions_jvm_internal' contains unknown log level 'HORSE'.\nWARNING: Environment variable 'SF_FN_LOGLEVEL_com_salesforce_functions_jvm_internal' will be ignored!\n",
+        "WARNING: Environment variable 'SF_FX_LOGLEVEL_com_salesforce_functions_jvm_internal' contains unknown log level 'HORSE'.\nWARNING: Environment variable 'SF_FX_LOGLEVEL_com_salesforce_functions_jvm_internal' will be ignored!\n",
         systemErrContent.toString());
   }
 }
