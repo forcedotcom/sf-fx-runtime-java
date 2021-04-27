@@ -13,10 +13,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.salesforce.functions.jvm.sdk.data.Record;
-import com.salesforce.functions.jvm.sdk.data.RecordModificationResult;
-import com.salesforce.functions.jvm.sdk.data.RecordQueryResult;
-import com.salesforce.functions.jvm.sdk.data.ReferenceId;
+import com.salesforce.functions.jvm.sdk.data.*;
 import com.salesforce.functions.jvm.sdk.data.builder.UnitOfWorkBuilder;
 import com.salesforce.functions.jvm.sdk.data.error.DataApiException;
 import java.net.URI;
@@ -25,6 +22,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 public class DataApiImplTest {
   @Rule public WireMockRule wireMock = new WireMockRule();
@@ -125,6 +123,12 @@ public class DataApiImplTest {
     assertThat(result.getId(), equalTo("a00B000000FSjVUIA1"));
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void testUpdateWithoutIdField() throws DataApiException {
+    dataApi.update(
+        dataApi.newRecordBuilder("Movie__c").withField("ReleaseDate__c", "1980-05-21").build());
+  }
+
   @Test
   public void testDelete() throws DataApiException {
     RecordModificationResult result = dataApi.delete("Account", "001B000001Lp1FxIAJ");
@@ -200,6 +204,26 @@ public class DataApiImplTest {
     assertThat(result, is(aMapWithSize(1)));
     assertThat(result, hasKey(deleteRecordReference));
     assertThat(result.get(deleteRecordReference).getId(), is(equalTo("a00B000000FeYyKIAV")));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testCommitUnitOfWorkWithForeignUnitOfWork() throws DataApiException {
+    dataApi.commitUnitOfWork(Mockito.mock(UnitOfWork.class));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testCreateWithForeignRecord() throws DataApiException {
+    dataApi.create(Mockito.mock(Record.class));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testUpdateWithForeignRecord() throws DataApiException {
+    dataApi.update(Mockito.mock(Record.class));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void testNewRecordBuilderWithForeignRecord() {
+    dataApi.newRecordBuilder(Mockito.mock(Record.class));
   }
 
   @Test
