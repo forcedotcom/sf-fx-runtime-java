@@ -182,4 +182,20 @@ public class RestApiCompositeTest {
         result,
         hasEntry(equalTo("referenceId3"), equalTo(new ModifyRecordResult("a00B000000FSkiqIAD"))));
   }
+
+  @Test
+  public void compositeDeleteTest() throws RestApiErrorsException, IOException, RestApiException {
+    Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
+    subrequests.put(
+        "referenceId0", new DeleteRecordRestApiRequest("Movie__c", "a00B000000FeYyKIAV"));
+
+    CompositeRestApiRequest<ModifyRecordResult> request =
+        new CompositeRestApiRequest<>(
+            restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
+    Map<String, ModifyRecordResult> result = restApi.execute(request);
+
+    assertThat(
+        result,
+        hasEntry(equalTo("referenceId0"), equalTo(new ModifyRecordResult("a00B000000FeYyKIAV"))));
+  }
 }
