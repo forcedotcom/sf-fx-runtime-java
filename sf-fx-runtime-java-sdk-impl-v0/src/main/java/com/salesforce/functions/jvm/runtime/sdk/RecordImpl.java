@@ -15,10 +15,6 @@ public class RecordImpl extends AbstractRecordAccessorImpl implements Record {
   private final TreeMap<String, JsonElement> fieldValues =
       new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-  public RecordImpl(String type) {
-    super(type);
-  }
-
   public <A extends JsonElement> RecordImpl(String type, Map<String, A> fieldValues) {
     super(type);
     this.fieldValues.putAll(fieldValues);
