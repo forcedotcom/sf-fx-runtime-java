@@ -6,22 +6,21 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
-import com.salesforce.functions.jvm.sdk.data.Record;
-import com.salesforce.functions.jvm.sdk.data.ReferenceId;
-import com.salesforce.functions.jvm.sdk.data.builder.RecordBuilder;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.net.URI;
-
 import static com.spotify.hamcrest.optional.OptionalMatchers.emptyOptional;
 import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
+
+import com.salesforce.functions.jvm.sdk.data.Record;
+import com.salesforce.functions.jvm.sdk.data.ReferenceId;
+import com.salesforce.functions.jvm.sdk.data.builder.RecordBuilder;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URI;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class RecordBuilderImplTest {
   private final DataApiImpl dataApi =
