@@ -10,10 +10,7 @@ import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.salesforce.functions.jvm.sdk.data.Record;
@@ -129,6 +126,13 @@ public class DataApiImplTest {
   }
 
   @Test
+  public void testDelete() throws DataApiException {
+    RecordModificationResult result = dataApi.delete("Account", "001B000001Lp1FxIAJ");
+
+    assertThat(result.getId(), equalTo("001B000001Lp1FxIAJ"));
+  }
+
+  @Test
   public void testUnitOfWork() throws DataApiException {
     UnitOfWorkBuilder unitOfWorkBuilder = dataApi.newUnitOfWorkBuilder();
 
@@ -181,6 +185,21 @@ public class DataApiImplTest {
 
     assertThat(result, is(aMapWithSize(1)));
     assertThat(result, hasKey(updateRecordReference));
+  }
+
+  @Test
+  public void testUnitOfWorkDelete() throws DataApiException {
+    UnitOfWorkBuilder unitOfWorkBuilder = dataApi.newUnitOfWorkBuilder();
+
+    ReferenceId deleteRecordReference =
+        unitOfWorkBuilder.registerDelete("Movie__c", "a00B000000FeYyKIAV");
+
+    Map<ReferenceId, RecordModificationResult> result =
+        dataApi.commitUnitOfWork(unitOfWorkBuilder.build());
+
+    assertThat(result, is(aMapWithSize(1)));
+    assertThat(result, hasKey(deleteRecordReference));
+    assertThat(result.get(deleteRecordReference).getId(), is(equalTo("a00B000000FeYyKIAV")));
   }
 
   @Test
