@@ -6,9 +6,11 @@
  */
 package com.salesforce.functions.jvm.runtime.logger;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.event.Level;
 
@@ -23,22 +25,14 @@ public class LoggingConfigurationTest {
     LoggingConfiguration configuration =
         new LoggingConfiguration(Level.INFO, logLevelByLoggerNames);
 
-    Map<String, Level> expectedLogLevels = new HashMap<>();
-    expectedLogLevels.put("foo", Level.ERROR);
-    expectedLogLevels.put("foo.bar", Level.WARN);
-    expectedLogLevels.put("x.y.z", Level.DEBUG);
-
-    expectedLogLevels.put("foo.bar.baz", Level.WARN);
-    expectedLogLevels.put("x.y.z.foo.bar", Level.DEBUG);
-
-    expectedLogLevels.put("x.y", Level.INFO);
-    expectedLogLevels.put("com.salesforce", Level.INFO);
-
-    expectedLogLevels.put("", Level.INFO);
-    expectedLogLevels.put("....", Level.INFO);
-
-    for (Map.Entry<String, Level> entry : expectedLogLevels.entrySet()) {
-      Assert.assertEquals(entry.getValue(), configuration.getLogLevelForLoggerName(entry.getKey()));
-    }
+    assertThat(configuration.getLogLevelForLoggerName("foo"), is(Level.ERROR));
+    assertThat(configuration.getLogLevelForLoggerName("foo.bar"), is(Level.WARN));
+    assertThat(configuration.getLogLevelForLoggerName("x.y.z"), is(Level.DEBUG));
+    assertThat(configuration.getLogLevelForLoggerName("foo.bar.baz"), is(Level.WARN));
+    assertThat(configuration.getLogLevelForLoggerName("x.y.z.foo.bar"), is(Level.DEBUG));
+    assertThat(configuration.getLogLevelForLoggerName("x.y"), is(Level.INFO));
+    assertThat(configuration.getLogLevelForLoggerName("com.salesforce"), is(Level.INFO));
+    assertThat(configuration.getLogLevelForLoggerName(""), is(Level.INFO));
+    assertThat(configuration.getLogLevelForLoggerName("...."), is(Level.INFO));
   }
 }

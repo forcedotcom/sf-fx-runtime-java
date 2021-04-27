@@ -6,10 +6,13 @@
  */
 package com.salesforce.functions.jvm.runtime.logger;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.MDC;
@@ -28,9 +31,11 @@ public class DefaultLoggingFormatterTest {
   @Test
   public void test_1() {
     String result = formatter.format("foo.bar.baz", Level.DEBUG, "This is a message!");
-    Assert.assertEquals(
-        "00:00:00.000 DEBUG [INVOCATION e3a4ae2b-fefb-4277-89d0-7068e7e39b99] foo.bar.baz - This is a message!\n",
-        result);
+    assertThat(
+        result,
+        is(
+            equalTo(
+                "00:00:00.000 DEBUG [INVOCATION e3a4ae2b-fefb-4277-89d0-7068e7e39b99] foo.bar.baz - This is a message!\n")));
   }
 
   @Test
@@ -40,9 +45,12 @@ public class DefaultLoggingFormatterTest {
             "com.salesforce.functions.jvm.runtime.logger.ClassName",
             Level.WARN,
             "This is a message!");
-    Assert.assertEquals(
-        "00:00:00.000 WARN  [INVOCATION e3a4ae2b-fefb-4277-89d0-7068e7e39b99] c.s.f.jvm.runtime.logger.ClassName - This is a message!\n",
-        result);
+
+    assertThat(
+        result,
+        is(
+            equalTo(
+                "00:00:00.000 WARN  [INVOCATION e3a4ae2b-fefb-4277-89d0-7068e7e39b99] c.s.f.jvm.runtime.logger.ClassName - This is a message!\n")));
   }
 
   @Test
@@ -53,8 +61,11 @@ public class DefaultLoggingFormatterTest {
             "com.salesforce.functions.jvm.runtime.logger.EmptyMDC",
             Level.TRACE,
             "This is a message!");
-    Assert.assertEquals(
-        "00:00:00.000 TRACE [INVOCATION null] c.s.f.jvm.runtime.logger.EmptyMDC - This is a message!\n",
-        result);
+
+    assertThat(
+        result,
+        is(
+            equalTo(
+                "00:00:00.000 TRACE [INVOCATION null] c.s.f.jvm.runtime.logger.EmptyMDC - This is a message!\n")));
   }
 }

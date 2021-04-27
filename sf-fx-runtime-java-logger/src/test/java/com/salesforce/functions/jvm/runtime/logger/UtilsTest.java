@@ -6,9 +6,10 @@
  */
 package com.salesforce.functions.jvm.runtime.logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+
 import org.junit.Test;
 
 public class UtilsTest {
@@ -17,22 +18,17 @@ public class UtilsTest {
   public void testShortenLoggerName() {
     String loggerName = "mainPackage.sub.sample.Bar";
 
-    Map<Integer, String> expectations = new HashMap<>();
-    expectations.put(0, "m.s.s.Bar");
-    expectations.put(5, "m.s.s.Bar");
-    expectations.put(10, "m.s.s.Bar");
-    expectations.put(15, "m.s.sample.Bar");
-    expectations.put(16, "m.sub.sample.Bar");
-    expectations.put(26, "mainPackage.sub.sample.Bar");
-
-    for (Map.Entry<Integer, String> entry : expectations.entrySet()) {
-      Assert.assertEquals(entry.getValue(), Utils.shortenLoggerName(loggerName, entry.getKey()));
-    }
+    assertThat(Utils.shortenLoggerName(loggerName, 0), is(equalTo("m.s.s.Bar")));
+    assertThat(Utils.shortenLoggerName(loggerName, 5), is(equalTo("m.s.s.Bar")));
+    assertThat(Utils.shortenLoggerName(loggerName, 10), is(equalTo("m.s.s.Bar")));
+    assertThat(Utils.shortenLoggerName(loggerName, 15), is(equalTo("m.s.sample.Bar")));
+    assertThat(Utils.shortenLoggerName(loggerName, 16), is(equalTo("m.sub.sample.Bar")));
+    assertThat(Utils.shortenLoggerName(loggerName, 26), is(equalTo("mainPackage.sub.sample.Bar")));
   }
 
   @Test
   public void testShortenLoggerNameWithEmptySegment() {
     String loggerName = "foo.bar.baz..blah.Logger";
-    Assert.assertEquals("f.b.b..b.Logger", Utils.shortenLoggerName(loggerName, 10));
+    assertThat(Utils.shortenLoggerName(loggerName, 10), is(equalTo("f.b.b..b.Logger")));
   }
 }
