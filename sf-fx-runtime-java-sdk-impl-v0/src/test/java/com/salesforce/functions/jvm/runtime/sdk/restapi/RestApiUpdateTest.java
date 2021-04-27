@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import java.io.IOException;
 import java.net.URI;
@@ -32,7 +33,7 @@ public class RestApiUpdateTest {
 
   @Test
   public void update() throws RestApiErrorsException, IOException, RestApiException {
-    Map<String, JsonPrimitive> values = new HashMap<>();
+    Map<String, JsonElement> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
 
     UpdateRecordRestApiRequest request =
@@ -43,7 +44,7 @@ public class RestApiUpdateTest {
 
   @Test
   public void updateWithMalformedId() throws IOException, RestApiException {
-    Map<String, JsonPrimitive> values = new HashMap<>();
+    Map<String, JsonElement> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
 
     UpdateRecordRestApiRequest request =
@@ -71,7 +72,7 @@ public class RestApiUpdateTest {
 
   @Test
   public void updateWithInvalidField() throws IOException, RestApiException {
-    Map<String, JsonPrimitive> values = new HashMap<>();
+    Map<String, JsonElement> values = new HashMap<>();
     values.put("Color__c", new JsonPrimitive("Red"));
 
     UpdateRecordRestApiRequest request =
