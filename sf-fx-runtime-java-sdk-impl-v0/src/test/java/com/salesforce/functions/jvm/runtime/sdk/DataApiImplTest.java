@@ -206,6 +206,31 @@ public class DataApiImplTest {
     assertThat(result.get(deleteRecordReference).getId(), is(equalTo("a00B000000FeYyKIAV")));
   }
 
+  @Test
+  public void testNewRecordBuilderFromRecord() {
+    Record record =
+        dataApi
+            .newRecordBuilder("Movie__c")
+            .withField("Name", "Star Wars")
+            .withField("Rating__c", "Excellent")
+            .build();
+
+    Record record2 =
+        dataApi
+            .newRecordBuilder(record)
+            .withField("Name", "Star Wars Episode VI - Return Of The Jedi")
+            .build();
+
+    assertThat(record2.getType(), is(equalTo("Movie__c")));
+
+    assertThat(
+        record2.getStringField("Rating__c"), is(equalTo(record.getStringField("Rating__c"))));
+
+    assertThat(
+        record2.getStringField("Name"),
+        is(optionalWithValue(equalTo("Star Wars Episode VI - Return Of The Jedi"))));
+  }
+
   @Test(expected = IllegalArgumentException.class)
   public void testCommitUnitOfWorkWithForeignUnitOfWork() throws DataApiException {
     dataApi.commitUnitOfWork(Mockito.mock(UnitOfWork.class));
