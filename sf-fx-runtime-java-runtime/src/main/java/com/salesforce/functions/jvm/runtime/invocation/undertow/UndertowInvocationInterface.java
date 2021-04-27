@@ -165,6 +165,7 @@ public class UndertowInvocationInterface
         String message = "Could not marshall function result: " + e.getCause().getMessage();
         makePlainTextErrorResponse(exchange, StatusCodes.BAD_REQUEST, message);
       } catch (SalesforceFunctionException e) {
+        e.printStackTrace();
         String message = "Unknown error while executing function: " + e.getMessage();
         makePlainTextErrorResponse(exchange, StatusCodes.INTERNAL_SERVER_ERROR, message);
       }
