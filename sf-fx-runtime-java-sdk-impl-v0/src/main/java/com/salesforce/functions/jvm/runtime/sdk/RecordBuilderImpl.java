@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements RecordBuilder {
   private final TreeMap<String, JsonElement> fieldValues =
@@ -53,7 +54,11 @@ public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements Rec
 
   @Nonnull
   @Override
-  public RecordBuilder withField(String name, String value) {
+  public RecordBuilder withField(String name, @Nullable String value) {
+    if (value == null) {
+      return withNullField(name);
+    }
+
     fieldValues.put(name, new JsonPrimitive(value));
     return this;
   }
@@ -109,21 +114,33 @@ public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements Rec
 
   @Nonnull
   @Override
-  public RecordBuilder withField(String name, BigInteger value) {
+  public RecordBuilder withField(String name, @Nullable BigInteger value) {
+    if (value == null) {
+      return withNullField(name);
+    }
+
     fieldValues.put(name, new JsonPrimitive(value));
     return this;
   }
 
   @Nonnull
   @Override
-  public RecordBuilder withField(String name, BigDecimal value) {
+  public RecordBuilder withField(String name, @Nullable BigDecimal value) {
+    if (value == null) {
+      return withNullField(name);
+    }
+
     fieldValues.put(name, new JsonPrimitive(value));
     return this;
   }
 
   @Nonnull
   @Override
-  public RecordBuilder withField(String name, ReferenceId value) {
+  public RecordBuilder withField(String name, @Nullable ReferenceId value) {
+    if (value == null) {
+      return withNullField(name);
+    }
+
     if (!(value instanceof ReferenceIdImpl)) {
       throw new IllegalArgumentException(
           "Given ReferenceId is not compatible with this RecordBuilder instance!");
