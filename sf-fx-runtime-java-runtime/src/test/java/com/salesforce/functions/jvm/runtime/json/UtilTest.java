@@ -6,14 +6,17 @@
  */
 package com.salesforce.functions.jvm.runtime.json;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import io.leangen.geantyref.AnnotationFormatException;
 import io.leangen.geantyref.TypeFactory;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 
 public class UtilTest {
@@ -23,13 +26,13 @@ public class UtilTest {
     List<Annotation> annotationList =
         Util.getAnnotationsOnClassFieldsAndMethods(TestClassOne.class);
 
-    List<Annotation> expectedAnnotations = new ArrayList<>();
-    expectedAnnotations.add(createAnnotation(Foo.class, "publicField"));
-    expectedAnnotations.add(createAnnotation(Bar.class, "privateField"));
-    expectedAnnotations.add(createAnnotation(Foo.class, "publicMethod"));
-    expectedAnnotations.add(createAnnotation(Bar.class, "privateMethod"));
-
-    assertEquals(expectedAnnotations, annotationList);
+    assertThat(
+        annotationList,
+        contains(
+            equalTo(createAnnotation(Foo.class, "publicField")),
+            equalTo(createAnnotation(Bar.class, "privateField")),
+            equalTo(createAnnotation(Foo.class, "publicMethod")),
+            equalTo(createAnnotation(Bar.class, "privateMethod"))));
   }
 
   @Retention(RetentionPolicy.RUNTIME)

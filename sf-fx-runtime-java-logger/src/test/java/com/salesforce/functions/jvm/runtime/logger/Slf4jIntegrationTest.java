@@ -6,38 +6,21 @@
  */
 package com.salesforce.functions.jvm.runtime.logger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Slf4jIntegrationTest {
-  private final PrintStream previousSystemOut = System.out;
-  private final PrintStream previousSystemErr = System.err;
-  private final ByteArrayOutputStream systemOutContent = new ByteArrayOutputStream();
-  private final ByteArrayOutputStream systemErrContent = new ByteArrayOutputStream();
-
-  @Before
-  public void redirectOutputStreams() {
-    System.setOut(new PrintStream(systemOutContent));
-    System.setErr(new PrintStream(systemErrContent));
-  }
-
-  @After
-  public void restoreOutputStreams() {
-    System.setOut(previousSystemOut);
-    System.setErr(previousSystemErr);
-  }
+public class Slf4jIntegrationTest extends StdOutAndStdErrCapturingTest {
 
   @Test
   public void testShortenedLoggerName() {
     Logger logger = LoggerFactory.getLogger("foo");
     logger.info("Hello World!");
-    Assert.assertNotEquals("", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+
+    assertThat(systemErrContent.toString(), is(emptyString()));
+    assertThat(systemOutContent.toString(), is(not(emptyString())));
   }
 }

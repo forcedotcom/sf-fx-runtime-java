@@ -7,13 +7,15 @@
 package com.salesforce.functions.jvm.runtime.project.builder.bundle;
 
 import static com.salesforce.functions.jvm.runtime.test.Util.downloadFileToTemporary;
+import static com.spotify.hamcrest.optional.OptionalMatchers.emptyOptional;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import com.salesforce.functions.jvm.runtime.project.Project;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,20 +47,21 @@ public class FunctionBundleProjectBuilderTest {
 
   @Test
   public void testProjectName() {
-    Assert.assertEquals("Function Bundle", project.getTypeName());
+    assertThat(project.getTypeName(), is(equalTo("Function Bundle")));
   }
 
   @Test
   public void testClassLoaderLoadsClasses() throws Exception {
     ClassLoader classLoader = project.createClassLoader();
-    Assert.assertNotNull(classLoader.loadClass("ch.qos.logback.classic.Level"));
-    Assert.assertNotNull(classLoader.loadClass("org.slf4j.impl.VersionUtil"));
+
+    assertThat(classLoader.loadClass("ch.qos.logback.classic.Level"), is(notNullValue()));
+    assertThat(classLoader.loadClass("org.slf4j.impl.VersionUtil"), is(notNullValue()));
   }
 
   @Test
   public void testClassLoaderSharesBootstrapClassLoader() throws Exception {
     ClassLoader classLoader = project.createClassLoader();
-    Assert.assertSame(String.class, classLoader.loadClass("java.lang.String"));
+    assertThat(classLoader.loadClass("java.lang.String"), is(String.class));
   }
 
   @Test(expected = ClassNotFoundException.class)
@@ -70,6 +73,6 @@ public class FunctionBundleProjectBuilderTest {
   @Test
   public void testFailure() throws Exception {
     Optional<Project> optionalProject = new FunctionBundleProjectBuilder().build(Paths.get("."));
-    Assert.assertSame(Optional.empty(), optionalProject);
+    assertThat(optionalProject, is(emptyOptional()));
   }
 }

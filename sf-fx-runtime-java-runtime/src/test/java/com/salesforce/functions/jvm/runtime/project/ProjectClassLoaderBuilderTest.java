@@ -6,7 +6,8 @@
  */
 package com.salesforce.functions.jvm.runtime.project;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import com.salesforce.functions.jvm.runtime.project.util.ProjectClassLoaderBuilder;
 import java.nio.file.Path;
@@ -27,8 +28,8 @@ public class ProjectClassLoaderBuilderTest {
 
     // It's important that those are the exact same class so we can interface with loaded classes
     // via bootstrap classes easily.
-    assertSame(stringClass, String.class);
-    assertSame(systemClass, System.class);
+    assertThat(stringClass, is(String.class));
+    assertThat(systemClass, is(System.class));
   }
 
   @Test
@@ -37,7 +38,7 @@ public class ProjectClassLoaderBuilderTest {
 
     // Try to load the class with the class loader from this test to ensure it is loadable.
     Class<?> clazz = getClass().getClassLoader().loadClass(className);
-    assertNotNull(clazz);
+    assertThat(clazz, is(notNullValue()));
 
     // We cannot use 'expect' from @Test here since we need the first 'loadClass' call to succeed.
     try {
@@ -60,7 +61,7 @@ public class ProjectClassLoaderBuilderTest {
     ClassLoader classLoader = ProjectClassLoaderBuilder.build(paths);
     Class<?> clazz = classLoader.loadClass("com.example.ToUpperCaseFunction");
 
-    assertNotNull(clazz);
+    assertThat(clazz, is(notNullValue()));
   }
 
   @Test
@@ -71,6 +72,6 @@ public class ProjectClassLoaderBuilderTest {
     ClassLoader classLoader = ProjectClassLoaderBuilder.build(paths);
     Class<?> clazz = classLoader.loadClass("com.example.SquaredFunction");
 
-    assertNotNull(clazz);
+    assertThat(clazz, is(notNullValue()));
   }
 }

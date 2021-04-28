@@ -6,10 +6,12 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import com.google.common.net.MediaType;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunctionResult;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionResultMarshallingException;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ByteArrayFunctionResultMarshallerTest {
@@ -19,8 +21,9 @@ public class ByteArrayFunctionResultMarshallerTest {
     FunctionResultMarshaller marshaller = new ByteArrayFunctionResultMarshaller();
     byte[] data = new byte[] {(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE};
     SalesforceFunctionResult result = marshaller.marshall(data);
-    Assert.assertEquals(MediaType.OCTET_STREAM, result.getMediaType());
-    Assert.assertEquals(data, result.getData());
+
+    assertThat(result.getMediaType(), is(MediaType.OCTET_STREAM));
+    assertThat(result.getData(), equalTo(data));
   }
 
   @Test(expected = FunctionResultMarshallingException.class)
