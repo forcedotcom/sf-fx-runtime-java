@@ -6,6 +6,9 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import com.salesforce.functions.jvm.runtime.project.util.ProjectClassLoaderBuilder;
 import com.salesforce.functions.jvm.runtime.test.Util;
 import java.nio.file.Path;
@@ -100,7 +103,8 @@ public class AllowListClassLoaderTest {
     for (String className : classesAffectedByAllowList) {
       Class<?> allowListClass = allowListClassLoader.loadClass(className);
       Class<?> exposedClass = exposedClassLoader.loadClass(className);
-      Assert.assertSame(allowListClass, exposedClass);
+
+      assertThat(exposedClass, is(allowListClass));
     }
   }
 }

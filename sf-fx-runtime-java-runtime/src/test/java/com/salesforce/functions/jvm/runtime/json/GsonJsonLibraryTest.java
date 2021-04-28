@@ -6,9 +6,9 @@
  */
 package com.salesforce.functions.jvm.runtime.json;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import com.google.gson.annotations.SerializedName;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
@@ -20,7 +20,8 @@ public class GsonJsonLibraryTest {
   public void testDeserialization() throws Exception {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
     Object testClass = jsonLibrary.deserializeAt("{\"foo\": \"bar\"}", TestClass.class);
-    assertEquals(((TestClass) testClass).getFoo(), "bar");
+
+    assertThat(((TestClass) testClass).getFoo(), is(equalTo("bar")));
   }
 
   @Test(expected = JsonDeserializationException.class)
@@ -34,7 +35,8 @@ public class GsonJsonLibraryTest {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
     Object testClass =
         jsonLibrary.deserializeAt("{\"inner\": {\"foo\": \"bar\"}}", TestClass.class, "inner");
-    assertEquals(((TestClass) testClass).getFoo(), "bar");
+
+    assertThat(((TestClass) testClass).getFoo(), is(equalTo("bar")));
   }
 
   @Test
@@ -42,19 +44,19 @@ public class GsonJsonLibraryTest {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
 
     TestClass testClass = new TestClass("baar");
-    assertEquals("{\"foo\":\"baar\"}", jsonLibrary.serialize(testClass));
+    assertThat(jsonLibrary.serialize(testClass), is(equalTo("{\"foo\":\"baar\"}")));
   }
 
   @Test
   public void testMustBeUsedForNegative() {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
-    assertFalse(jsonLibrary.mustBeUsedFor(TestClass.class));
+    assertThat(jsonLibrary.mustBeUsedFor(TestClass.class), is(false));
   }
 
   @Test
   public void testMustBeUsedForPositive() {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
-    assertTrue(jsonLibrary.mustBeUsedFor(TestClassWithGsonAnnotations.class));
+    assertThat(jsonLibrary.mustBeUsedFor(TestClassWithGsonAnnotations.class), is(true));
   }
 
   public static class TestClass {

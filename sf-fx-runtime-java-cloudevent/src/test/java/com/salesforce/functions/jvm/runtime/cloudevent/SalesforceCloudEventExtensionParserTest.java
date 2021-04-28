@@ -6,7 +6,11 @@
  */
 package com.salesforce.functions.jvm.runtime.cloudevent;
 
-import static org.junit.Assert.*;
+import static com.spotify.hamcrest.optional.OptionalMatchers.emptyOptional;
+import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.builder.CloudEventBuilder;
@@ -23,7 +27,7 @@ public class SalesforceCloudEventExtensionParserTest {
     Optional<SalesforceContextCloudEventExtension> salesforceContext =
         SalesforceCloudEventExtensionParser.parseSalesforceContext(BASE_TESTING_CLOUD_EVENT);
 
-    assertEquals(Optional.empty(), salesforceContext);
+    assertThat(salesforceContext, is(emptyOptional()));
   }
 
   @Test
@@ -51,8 +55,7 @@ public class SalesforceCloudEventExtensionParserTest {
     Optional<SalesforceContextCloudEventExtension> result =
         SalesforceCloudEventExtensionParser.parseSalesforceContext(cloudEvent);
 
-    assertTrue(result.isPresent());
-    assertEquals(salesforceContext, result.get());
+    assertThat(result, is(optionalWithValue(equalTo(salesforceContext))));
   }
 
   @Test
@@ -77,8 +80,7 @@ public class SalesforceCloudEventExtensionParserTest {
     Optional<SalesforceFunctionContextCloudEventExtension> result =
         SalesforceCloudEventExtensionParser.parseSalesforceFunctionContext(cloudEvent);
 
-    assertTrue(result.isPresent());
-    assertEquals(salesforceFunctionContext, result.get());
+    assertThat(result, is(optionalWithValue(equalTo(salesforceFunctionContext))));
   }
 
   @Test
@@ -93,7 +95,7 @@ public class SalesforceCloudEventExtensionParserTest {
     Optional<SalesforceFunctionContextCloudEventExtension> result =
         SalesforceCloudEventExtensionParser.parseSalesforceFunctionContext(cloudEvent);
 
-    assertFalse(result.isPresent());
+    assertThat(result, is(emptyOptional()));
   }
 
   @Test
@@ -108,7 +110,7 @@ public class SalesforceCloudEventExtensionParserTest {
     Optional<SalesforceContextCloudEventExtension> result =
         SalesforceCloudEventExtensionParser.parseSalesforceContext(cloudEvent);
 
-    assertFalse(result.isPresent());
+    assertThat(result, is(emptyOptional()));
   }
 
   @Test
@@ -123,7 +125,7 @@ public class SalesforceCloudEventExtensionParserTest {
     Optional<SalesforceFunctionContextCloudEventExtension> result =
         SalesforceCloudEventExtensionParser.parseSalesforceFunctionContext(cloudEvent);
 
-    assertFalse(result.isPresent());
+    assertThat(result, is(emptyOptional()));
   }
 
   @Test
@@ -138,7 +140,7 @@ public class SalesforceCloudEventExtensionParserTest {
     Optional<SalesforceContextCloudEventExtension> result =
         SalesforceCloudEventExtensionParser.parseSalesforceContext(cloudEvent);
 
-    assertFalse(result.isPresent());
+    assertThat(result, is(emptyOptional()));
   }
 
   private final CloudEvent BASE_TESTING_CLOUD_EVENT =

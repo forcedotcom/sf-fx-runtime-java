@@ -6,11 +6,10 @@
  */
 package com.salesforce.functions.jvm.runtime.json;
 
-import static org.junit.Assert.*;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class JsonLibraryDetectorTest {
@@ -19,7 +18,7 @@ public class JsonLibraryDetectorTest {
   public void testGenericJsonLibrary() throws Exception {
     JsonLibrary lib = JsonLibraryDetector.detect(GenericJsonClass.class);
     if (!(lib instanceof GsonJsonLibrary)) {
-      fail("Expected GsonJsonLibrary for generic classes");
+      Assert.fail("Expected GsonJsonLibrary for generic classes");
     }
   }
 
@@ -27,7 +26,7 @@ public class JsonLibraryDetectorTest {
   public void testGsonJsonLibrary() throws Exception {
     JsonLibrary lib = JsonLibraryDetector.detect(GsonJsonClass.class);
     if (!(lib instanceof GsonReflectionJsonLibrary)) {
-      fail("Expected GsonReflectionJsonLibrary for classes with Gson annotations");
+      Assert.fail("Expected GsonReflectionJsonLibrary for classes with Gson annotations");
     }
   }
 
@@ -35,7 +34,7 @@ public class JsonLibraryDetectorTest {
   public void testJacksonJsonLibrary() throws Exception {
     JsonLibrary lib = JsonLibraryDetector.detect(JacksonJsonClass.class);
     if (!(lib instanceof JacksonReflectionJsonLibrary)) {
-      fail("Expected JacksonReflectionJsonLibrary for classes with Jackson annotations");
+      Assert.fail("Expected JacksonReflectionJsonLibrary for classes with Jackson annotations");
     }
   }
 
@@ -48,7 +47,7 @@ public class JsonLibraryDetectorTest {
   public void testBootstrapClass() throws Exception {
     JsonLibrary lib = JsonLibraryDetector.detect(String.class);
     if (!(lib instanceof GsonJsonLibrary)) {
-      fail("Expected GsonJsonLibrary for bootstrap classes");
+      Assert.fail("Expected GsonJsonLibrary for bootstrap classes");
     }
   }
 

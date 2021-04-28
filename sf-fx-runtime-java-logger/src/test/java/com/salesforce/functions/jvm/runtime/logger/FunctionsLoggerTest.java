@@ -6,23 +6,16 @@
  */
 package com.salesforce.functions.jvm.runtime.logger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import java.util.Scanner;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.slf4j.event.Level;
 
-public class FunctionsLoggerTest {
-  private final PrintStream previousSystemOut = System.out;
-  private final PrintStream previousSystemErr = System.err;
-  private final ByteArrayOutputStream systemOutContent = new ByteArrayOutputStream();
-  private final ByteArrayOutputStream systemErrContent = new ByteArrayOutputStream();
-
+public class FunctionsLoggerTest extends StdOutAndStdErrCapturingTest {
   private static final class TestingLoggingFormatter implements LoggingFormatter {
     @Override
     public String format(String loggerName, Level level, String message) {
@@ -37,78 +30,66 @@ public class FunctionsLoggerTest {
   private final FunctionsLogger barBazDebugLogger =
       new FunctionsLogger("bar.baz", Level.DEBUG, new TestingLoggingFormatter());
 
-  @Before
-  public void redirectOutputStreams() {
-    System.setOut(new PrintStream(systemOutContent));
-    System.setErr(new PrintStream(systemErrContent));
-  }
-
-  @After
-  public void restoreOutputStreams() {
-    System.setOut(previousSystemOut);
-    System.setErr(previousSystemErr);
-  }
-
   @Test
   public void setGetName() {
-    Assert.assertEquals("foo.bar", fooBarInfoLogger.getName());
-    Assert.assertEquals("bar.baz", barBazDebugLogger.getName());
-    Assert.assertEquals("traceLogger", traceLogger.getName());
+    assertThat(fooBarInfoLogger.getName(), is(equalTo("foo.bar")));
+    assertThat(barBazDebugLogger.getName(), is(equalTo("bar.baz")));
+    assertThat(traceLogger.getName(), is(equalTo("traceLogger")));
   }
 
   @Test
   public void testIsTraceEnabled() {
-    Assert.assertTrue(traceLogger.isTraceEnabled());
-    Assert.assertFalse(fooBarInfoLogger.isTraceEnabled());
-    Assert.assertFalse(barBazDebugLogger.isTraceEnabled());
+    assertThat(traceLogger.isTraceEnabled(), is(true));
+    assertThat(fooBarInfoLogger.isTraceEnabled(), is(false));
+    assertThat(barBazDebugLogger.isTraceEnabled(), is(false));
 
-    Assert.assertTrue(traceLogger.isTraceEnabled(TEST_MARKER));
-    Assert.assertFalse(fooBarInfoLogger.isTraceEnabled(TEST_MARKER));
-    Assert.assertFalse(barBazDebugLogger.isTraceEnabled(TEST_MARKER));
+    assertThat(traceLogger.isTraceEnabled(TEST_MARKER), is(true));
+    assertThat(fooBarInfoLogger.isTraceEnabled(TEST_MARKER), is(false));
+    assertThat(barBazDebugLogger.isTraceEnabled(TEST_MARKER), is(false));
   }
 
   @Test
   public void testIsDebugEnabled() {
-    Assert.assertTrue(traceLogger.isDebugEnabled());
-    Assert.assertFalse(fooBarInfoLogger.isDebugEnabled());
-    Assert.assertTrue(barBazDebugLogger.isDebugEnabled());
+    assertThat(traceLogger.isDebugEnabled(), is(true));
+    assertThat(fooBarInfoLogger.isDebugEnabled(), is(false));
+    assertThat(barBazDebugLogger.isDebugEnabled(), is(true));
 
-    Assert.assertTrue(traceLogger.isDebugEnabled(TEST_MARKER));
-    Assert.assertFalse(fooBarInfoLogger.isDebugEnabled(TEST_MARKER));
-    Assert.assertTrue(barBazDebugLogger.isDebugEnabled(TEST_MARKER));
+    assertThat(traceLogger.isDebugEnabled(TEST_MARKER), is(true));
+    assertThat(fooBarInfoLogger.isDebugEnabled(TEST_MARKER), is(false));
+    assertThat(barBazDebugLogger.isDebugEnabled(TEST_MARKER), is(true));
   }
 
   @Test
   public void testIsInfoEnabled() {
-    Assert.assertTrue(traceLogger.isInfoEnabled());
-    Assert.assertTrue(fooBarInfoLogger.isInfoEnabled());
-    Assert.assertTrue(barBazDebugLogger.isInfoEnabled());
+    assertThat(traceLogger.isInfoEnabled(), is(true));
+    assertThat(fooBarInfoLogger.isInfoEnabled(), is(true));
+    assertThat(barBazDebugLogger.isInfoEnabled(), is(true));
 
-    Assert.assertTrue(traceLogger.isInfoEnabled(TEST_MARKER));
-    Assert.assertTrue(fooBarInfoLogger.isInfoEnabled(TEST_MARKER));
-    Assert.assertTrue(barBazDebugLogger.isInfoEnabled(TEST_MARKER));
+    assertThat(traceLogger.isInfoEnabled(TEST_MARKER), is(true));
+    assertThat(fooBarInfoLogger.isInfoEnabled(TEST_MARKER), is(true));
+    assertThat(barBazDebugLogger.isInfoEnabled(TEST_MARKER), is(true));
   }
 
   @Test
   public void testIsWarnEnabled() {
-    Assert.assertTrue(traceLogger.isWarnEnabled());
-    Assert.assertTrue(fooBarInfoLogger.isWarnEnabled());
-    Assert.assertTrue(barBazDebugLogger.isWarnEnabled());
+    assertThat(traceLogger.isWarnEnabled(), is(true));
+    assertThat(fooBarInfoLogger.isWarnEnabled(), is(true));
+    assertThat(barBazDebugLogger.isWarnEnabled(), is(true));
 
-    Assert.assertTrue(traceLogger.isWarnEnabled(TEST_MARKER));
-    Assert.assertTrue(fooBarInfoLogger.isWarnEnabled(TEST_MARKER));
-    Assert.assertTrue(barBazDebugLogger.isWarnEnabled(TEST_MARKER));
+    assertThat(traceLogger.isWarnEnabled(TEST_MARKER), is(true));
+    assertThat(fooBarInfoLogger.isWarnEnabled(TEST_MARKER), is(true));
+    assertThat(barBazDebugLogger.isWarnEnabled(TEST_MARKER), is(true));
   }
 
   @Test
   public void testIsErrorEnabled() {
-    Assert.assertTrue(traceLogger.isErrorEnabled());
-    Assert.assertTrue(fooBarInfoLogger.isErrorEnabled());
-    Assert.assertTrue(barBazDebugLogger.isErrorEnabled());
+    assertThat(traceLogger.isErrorEnabled(), is(true));
+    assertThat(fooBarInfoLogger.isErrorEnabled(), is(true));
+    assertThat(barBazDebugLogger.isErrorEnabled(), is(true));
 
-    Assert.assertTrue(traceLogger.isErrorEnabled(TEST_MARKER));
-    Assert.assertTrue(fooBarInfoLogger.isErrorEnabled(TEST_MARKER));
-    Assert.assertTrue(barBazDebugLogger.isErrorEnabled(TEST_MARKER));
+    assertThat(traceLogger.isErrorEnabled(TEST_MARKER), is(true));
+    assertThat(fooBarInfoLogger.isErrorEnabled(TEST_MARKER), is(true));
+    assertThat(barBazDebugLogger.isErrorEnabled(TEST_MARKER), is(true));
   }
 
   @Test
@@ -125,8 +106,8 @@ public class FunctionsLoggerTest {
     fooBarInfoLogger.debug(TEST_MARKER, "Hello World! {} {} {}", "x", "y", "z");
     fooBarInfoLogger.debug(TEST_MARKER, "Hello World!", TEST_EXCEPTION);
 
-    Assert.assertEquals("", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(emptyString()));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
@@ -143,8 +124,8 @@ public class FunctionsLoggerTest {
     fooBarInfoLogger.trace(TEST_MARKER, "Hello World! {} {} {}", "x", "y", "z");
     fooBarInfoLogger.trace(TEST_MARKER, "Hello World!", TEST_EXCEPTION);
 
-    Assert.assertEquals("", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(emptyString()));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
@@ -161,50 +142,53 @@ public class FunctionsLoggerTest {
     barBazDebugLogger.trace(TEST_MARKER, "Hello World! {} {} {}", "x", "y", "z");
     barBazDebugLogger.trace(TEST_MARKER, "Hello World!", TEST_EXCEPTION);
 
-    Assert.assertEquals("", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(emptyString()));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void testExactLogLevel() {
     fooBarInfoLogger.info("Hello exact world!");
-    Assert.assertEquals("foo.bar INFO - Hello exact world!", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+
+    assertThat(systemOutContent.toString(), is(equalTo("foo.bar INFO - Hello exact world!")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void testHigherLogLevel_1() {
     fooBarInfoLogger.warn("Hello higher world!");
-    Assert.assertEquals("foo.bar WARN - Hello higher world!", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+
+    assertThat(systemOutContent.toString(), is(equalTo("foo.bar WARN - Hello higher world!")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void testHigherLogLevel_2() {
     fooBarInfoLogger.error("Hello higher world!");
-    Assert.assertEquals("foo.bar ERROR - Hello higher world!", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+
+    assertThat(systemOutContent.toString(), is(equalTo("foo.bar ERROR - Hello higher world!")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void testFormattedMessage_1() {
     barBazDebugLogger.debug("Hello {}!", "World");
-    Assert.assertEquals("bar.baz DEBUG - Hello World!", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("bar.baz DEBUG - Hello World!")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void testFormattedMessage_2() {
     barBazDebugLogger.debug("{} {}!", 23, "people");
-    Assert.assertEquals("bar.baz DEBUG - 23 people!", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("bar.baz DEBUG - 23 people!")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void testFormattedMessage_3() {
     fooBarInfoLogger.warn("{} {} {} {} {} {}...", 4, 8, 15, 16, 23, 42);
-    Assert.assertEquals("foo.bar WARN - 4 8 15 16 23 42...", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("foo.bar WARN - 4 8 15 16 23 42...")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
@@ -217,380 +201,384 @@ public class FunctionsLoggerTest {
     }
 
     fooBarInfoLogger.error("Result: {}", new Foo());
-    Assert.assertEquals("foo.bar ERROR - Result: Foo {internal=bar}", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(
+        systemOutContent.toString(), is(equalTo("foo.bar ERROR - Result: Foo {internal=bar}")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void testException_1() {
     fooBarInfoLogger.error("Exception while processing data!", TEST_EXCEPTION);
-    Assert.assertEquals(
-        "foo.bar ERROR - Exception while processing data!", systemOutContent.toString());
+
+    assertThat(
+        systemOutContent.toString(),
+        is(equalTo("foo.bar ERROR - Exception while processing data!")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void testException_2() {
     fooBarInfoLogger.error("{} = {} and Exception", "a", "b", TEST_EXCEPTION);
-    Assert.assertEquals("foo.bar ERROR - a = b and Exception", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("foo.bar ERROR - a = b and Exception")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_trace_1() {
     traceLogger.trace("message");
-    Assert.assertEquals("traceLogger TRACE - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_trace_2() {
     traceLogger.trace("message {}", "o");
-    Assert.assertEquals("traceLogger TRACE - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_trace_3() {
     traceLogger.trace("message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger TRACE - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_trace_4() {
     traceLogger.trace("message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger TRACE - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_trace_5() {
     traceLogger.trace("message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger TRACE - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_trace_6() {
     traceLogger.trace(TEST_MARKER, "message");
-    Assert.assertEquals("traceLogger TRACE - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_trace_7() {
     traceLogger.trace(TEST_MARKER, "message {}", "o");
-    Assert.assertEquals("traceLogger TRACE - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_trace_8() {
     traceLogger.trace(TEST_MARKER, "message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger TRACE - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_trace_9() {
     traceLogger.trace(TEST_MARKER, "message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger TRACE - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_trace_10() {
     traceLogger.trace(TEST_MARKER, "message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger TRACE - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger TRACE - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_debug_1() {
     traceLogger.debug("message");
-    Assert.assertEquals("traceLogger DEBUG - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_debug_2() {
     traceLogger.debug("message {}", "o");
-    Assert.assertEquals("traceLogger DEBUG - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_debug_3() {
     traceLogger.debug("message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger DEBUG - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_debug_4() {
     traceLogger.debug("message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger DEBUG - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_debug_5() {
     traceLogger.debug("message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger DEBUG - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_debug_6() {
     traceLogger.debug(TEST_MARKER, "message");
-    Assert.assertEquals("traceLogger DEBUG - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_debug_7() {
     traceLogger.debug(TEST_MARKER, "message {}", "o");
-    Assert.assertEquals("traceLogger DEBUG - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_debug_8() {
     traceLogger.debug(TEST_MARKER, "message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger DEBUG - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_debug_9() {
     traceLogger.debug(TEST_MARKER, "message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger DEBUG - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_debug_10() {
     traceLogger.debug(TEST_MARKER, "message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger DEBUG - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger DEBUG - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_info_1() {
     traceLogger.info("message");
-    Assert.assertEquals("traceLogger INFO - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_info_2() {
     traceLogger.info("message {}", "o");
-    Assert.assertEquals("traceLogger INFO - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_info_3() {
     traceLogger.info("message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger INFO - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_info_4() {
     traceLogger.info("message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger INFO - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_info_5() {
     traceLogger.info("message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger INFO - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_info_6() {
     traceLogger.info(TEST_MARKER, "message");
-    Assert.assertEquals("traceLogger INFO - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_info_7() {
     traceLogger.info(TEST_MARKER, "message {}", "o");
-    Assert.assertEquals("traceLogger INFO - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_info_8() {
     traceLogger.info(TEST_MARKER, "message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger INFO - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_info_9() {
     traceLogger.info(TEST_MARKER, "message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger INFO - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_info_10() {
     traceLogger.info(TEST_MARKER, "message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger INFO - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger INFO - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_warn_1() {
     traceLogger.warn("message");
-    Assert.assertEquals("traceLogger WARN - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_warn_2() {
     traceLogger.warn("message {}", "o");
-    Assert.assertEquals("traceLogger WARN - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_warn_3() {
     traceLogger.warn("message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger WARN - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_warn_4() {
     traceLogger.warn("message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger WARN - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_warn_5() {
     traceLogger.warn("message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger WARN - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_warn_6() {
     traceLogger.warn(TEST_MARKER, "message");
-    Assert.assertEquals("traceLogger WARN - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_warn_7() {
     traceLogger.warn(TEST_MARKER, "message {}", "o");
-    Assert.assertEquals("traceLogger WARN - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_warn_8() {
     traceLogger.warn(TEST_MARKER, "message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger WARN - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_warn_9() {
     traceLogger.warn(TEST_MARKER, "message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger WARN - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_warn_10() {
     traceLogger.warn(TEST_MARKER, "message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger WARN - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger WARN - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_error_1() {
     traceLogger.error("message");
-    Assert.assertEquals("traceLogger ERROR - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_error_2() {
     traceLogger.error("message {}", "o");
-    Assert.assertEquals("traceLogger ERROR - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_error_3() {
     traceLogger.error("message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger ERROR - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_error_4() {
     traceLogger.error("message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger ERROR - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_error_5() {
     traceLogger.error("message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger ERROR - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   @Test
   public void test_error_6() {
     traceLogger.error(TEST_MARKER, "message");
-    Assert.assertEquals("traceLogger ERROR - message", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_error_7() {
     traceLogger.error(TEST_MARKER, "message {}", "o");
-    Assert.assertEquals("traceLogger ERROR - message o", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message o")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_error_8() {
     traceLogger.error(TEST_MARKER, "message {} {}", "o", "o1");
-    Assert.assertEquals("traceLogger ERROR - message o o1", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message o o1")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_error_9() {
     traceLogger.error(TEST_MARKER, "message {} {} {} {}", "o", "o1", "o2", "o3");
-    Assert.assertEquals("traceLogger ERROR - message o o1 o2 o3", systemOutContent.toString());
-    Assert.assertEquals("", systemErrContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message o o1 o2 o3")));
+    assertThat(systemErrContent.toString(), is(emptyString()));
   }
 
   @Test
   public void test_error_10() {
     traceLogger.error(TEST_MARKER, "message {}", "s", TEST_EXCEPTION);
-    Assert.assertEquals("traceLogger ERROR - message s", systemOutContent.toString());
+    assertThat(systemOutContent.toString(), is(equalTo("traceLogger ERROR - message s")));
     testForExceptionOutput(TEST_EXCEPTION);
   }
 
   private void testForExceptionOutput(Throwable t) {
     Scanner scanner = new Scanner(systemErrContent.toString());
-    Assert.assertEquals(t.getClass().getName() + ": " + t.getMessage(), scanner.nextLine());
+
+    assertThat(scanner.nextLine(), is(equalTo(t.getClass().getName() + ": " + t.getMessage())));
     while (scanner.hasNext()) {
-      Assert.assertTrue(scanner.nextLine().matches("\tat .*?\\((.*?:\\d+|Native Method)\\)"));
+      assertThat(scanner.nextLine(), matchesRegex("\tat .*?\\((.*?:\\d+|Native Method)\\)"));
     }
   }
 

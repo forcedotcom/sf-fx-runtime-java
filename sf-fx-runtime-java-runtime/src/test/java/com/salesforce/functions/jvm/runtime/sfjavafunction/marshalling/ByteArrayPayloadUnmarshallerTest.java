@@ -6,10 +6,12 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.v1.CloudEventBuilder;
 import java.net.URI;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ByteArrayPayloadUnmarshallerTest {
@@ -21,8 +23,8 @@ public class ByteArrayPayloadUnmarshallerTest {
     byte[] data = new byte[] {(byte) 0xCA, (byte) 0xFE, (byte) 0xBA, (byte) 0xBE};
     Object result = unmarshaller.unmarshall(createCloudEventWithData(data));
 
-    Assert.assertTrue(result instanceof byte[]);
-    Assert.assertArrayEquals(data, (byte[]) result);
+    assertThat(result, is(instanceOf(byte[].class)));
+    assertThat(result, is(equalTo(data)));
   }
 
   @Test
@@ -38,8 +40,8 @@ public class ByteArrayPayloadUnmarshallerTest {
 
     Object result = unmarshaller.unmarshall(cloudEvent);
 
-    Assert.assertTrue(result instanceof byte[]);
-    Assert.assertArrayEquals(new byte[0], (byte[]) result);
+    assertThat(result, is(instanceOf(byte[].class)));
+    assertThat(result, is(equalTo(new byte[0])));
   }
 
   private CloudEvent createCloudEventWithData(byte[] data) {

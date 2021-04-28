@@ -6,11 +6,13 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import com.google.common.net.MediaType;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunctionResult;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionResultMarshallingException;
 import java.nio.charset.StandardCharsets;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class StringFunctionResultMarshallerTest {
@@ -20,8 +22,9 @@ public class StringFunctionResultMarshallerTest {
     FunctionResultMarshaller marshaller = new StringFunctionResultMarshaller();
     String data = "Hello 👋🏻!";
     SalesforceFunctionResult result = marshaller.marshall(data);
-    Assert.assertEquals(MediaType.PLAIN_TEXT_UTF_8, result.getMediaType());
-    Assert.assertArrayEquals(data.getBytes(StandardCharsets.UTF_8), result.getData());
+
+    assertThat(result.getMediaType(), is(MediaType.PLAIN_TEXT_UTF_8));
+    assertThat(result.getData(), is(equalTo(data.getBytes(StandardCharsets.UTF_8))));
   }
 
   @Test(expected = FunctionResultMarshallingException.class)

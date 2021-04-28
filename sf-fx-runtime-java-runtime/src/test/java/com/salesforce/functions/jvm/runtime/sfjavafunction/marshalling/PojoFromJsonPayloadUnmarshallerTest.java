@@ -6,6 +6,9 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
@@ -14,7 +17,6 @@ import io.cloudevents.CloudEvent;
 import io.cloudevents.core.v1.CloudEventBuilder;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class PojoFromJsonPayloadUnmarshallerTest {
@@ -27,8 +29,8 @@ public class PojoFromJsonPayloadUnmarshallerTest {
     Object result =
         unmarshaller.unmarshall(createCloudEventWithData("{\"data\": \"Hello 👋🏻!\"}"));
 
-    Assert.assertTrue(result instanceof PojoWithoutAnnotations);
-    Assert.assertEquals("Hello 👋🏻!", ((PojoWithoutAnnotations) result).getData());
+    assertThat(result, is(instanceOf(PojoWithoutAnnotations.class)));
+    assertThat(((PojoWithoutAnnotations) result).getData(), is(equalTo("Hello 👋🏻!")));
   }
 
   @Test
@@ -39,8 +41,8 @@ public class PojoFromJsonPayloadUnmarshallerTest {
     Object result =
         unmarshaller.unmarshall(createCloudEventWithData("{\"gsonData\": \"Hello 👋🏻!\"}"));
 
-    Assert.assertTrue(result instanceof PojoWithGsonAnnotations);
-    Assert.assertEquals("Hello 👋🏻!", ((PojoWithGsonAnnotations) result).getData());
+    assertThat(result, is(instanceOf(PojoWithGsonAnnotations.class)));
+    assertThat(((PojoWithGsonAnnotations) result).getData(), is(equalTo("Hello 👋🏻!")));
   }
 
   @Test
@@ -51,8 +53,8 @@ public class PojoFromJsonPayloadUnmarshallerTest {
     Object result =
         unmarshaller.unmarshall(createCloudEventWithData("{\"jacksonData\": \"Hello 👋🏻!\"}"));
 
-    Assert.assertTrue(result instanceof PojoWithJacksonAnnotations);
-    Assert.assertEquals("Hello 👋🏻!", ((PojoWithJacksonAnnotations) result).getData());
+    assertThat(result, is(instanceOf(PojoWithJacksonAnnotations.class)));
+    assertThat(((PojoWithJacksonAnnotations) result).getData(), is(equalTo("Hello 👋🏻!")));
   }
 
   @Test(expected = AmbiguousJsonLibraryException.class)

@@ -6,7 +6,9 @@
  */
 package com.salesforce.functions.jvm.runtime.json;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import org.junit.Test;
@@ -17,7 +19,8 @@ public class GsonReflectionJsonLibraryTest {
   public void testDeserialization() throws Exception {
     JsonLibrary jsonLibrary = new GsonReflectionJsonLibrary(getClass().getClassLoader());
     Object testClass = jsonLibrary.deserializeAt("{\"foo\": \"bar\"}", TestClass.class);
-    assertEquals(((TestClass) testClass).getFoo(), "bar");
+
+    assertThat(((TestClass) testClass).getFoo(), is(equalTo("bar")));
   }
 
   @Test(expected = JsonDeserializationException.class)
@@ -31,7 +34,8 @@ public class GsonReflectionJsonLibraryTest {
     JsonLibrary jsonLibrary = new GsonReflectionJsonLibrary(getClass().getClassLoader());
     Object testClass =
         jsonLibrary.deserializeAt("{\"inner\": {\"foo\": \"bar\"}}", TestClass.class, "inner");
-    assertEquals(((TestClass) testClass).getFoo(), "bar");
+
+    assertThat(((TestClass) testClass).getFoo(), is(equalTo("bar")));
   }
 
   @Test
@@ -39,7 +43,7 @@ public class GsonReflectionJsonLibraryTest {
     JsonLibrary jsonLibrary = new GsonReflectionJsonLibrary(getClass().getClassLoader());
 
     TestClass testClass = new TestClass("baar");
-    assertEquals("{\"foo\":\"baar\"}", jsonLibrary.serialize(testClass));
+    assertThat(jsonLibrary.serialize(testClass), is(equalTo("{\"foo\":\"baar\"}")));
   }
 
   public static class TestClass {

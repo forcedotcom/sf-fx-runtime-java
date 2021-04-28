@@ -9,6 +9,7 @@ package com.salesforce.functions.jvm.runtime.sdk.restapi;
 import static com.spotify.hamcrest.pojo.IsPojo.pojo;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
@@ -47,7 +48,7 @@ public class RestApiDeleteTest {
     } catch (RestApiErrorsException e) {
       assertThat(
           e.getApiErrors(),
-          hasItems(
+          contains(
               pojo(RestApiError.class)
                   .withProperty("message", is(equalTo("entity is deleted")))
                   .withProperty("errorCode", is(equalTo("ENTITY_IS_DELETED")))

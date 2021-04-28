@@ -7,6 +7,8 @@
 package com.salesforce.functions.jvm.runtime.project;
 
 import static com.salesforce.functions.jvm.runtime.test.Util.downloadFileToTemporary;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,7 +16,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ProjectTest {
@@ -54,12 +55,13 @@ public class ProjectTest {
     List<URL> classUrlsFromClassLoader =
         Collections.list(classLoader.getResources("org/slf4j/impl/StaticLoggerBinder.class"));
 
-    Assert.assertEquals(3, classUrlsFromClassLoader.size());
-    Assert.assertTrue(
-        classUrlsFromClassLoader.get(0).toString().contains(log4jBindingJarPath.toString()));
-    Assert.assertTrue(
-        classUrlsFromClassLoader.get(1).toString().contains(logbackClassicJarPath.toString()));
-    Assert.assertTrue(
-        classUrlsFromClassLoader.get(2).toString().contains(julBindingJarPath.toString()));
+    assertThat(classUrlsFromClassLoader, hasSize(3));
+
+    assertThat(
+        classUrlsFromClassLoader,
+        contains(
+            hasToString(containsString(log4jBindingJarPath.toString())),
+            hasToString(containsString(logbackClassicJarPath.toString())),
+            hasToString(containsString(julBindingJarPath.toString()))));
   }
 }

@@ -10,6 +10,7 @@ import static com.spotify.hamcrest.optional.OptionalMatchers.emptyOptional;
 import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 
@@ -44,7 +45,7 @@ public class RecordBuilderImplTest {
     recordBuilder.withField("Name", movieName);
     Record record = recordBuilder.build();
 
-    assertThat(record.getFieldNames(), hasItems(equalToIgnoringCase("name")));
+    assertThat(record.getFieldNames(), contains(equalToIgnoringCase("name")));
 
     assertThat(record.hasField("Name"), is(true));
     assertThat(record.hasField("name"), is(true));
@@ -65,7 +66,7 @@ public class RecordBuilderImplTest {
     recordBuilder.withField("NAME", movieName2);
     Record record = recordBuilder.build();
 
-    assertThat(record.getFieldNames(), hasItems(equalToIgnoringCase("name")));
+    assertThat(record.getFieldNames(), contains(equalToIgnoringCase("name")));
 
     assertThat(record.hasField("Name"), is(true));
     assertThat(record.hasField("NAME"), is(true));
@@ -95,7 +96,7 @@ public class RecordBuilderImplTest {
     assertThat(recordBuilder.isNullField("Flavor__c"), is(false));
 
     Record record = recordBuilder.build();
-    assertThat(record.getFieldNames(), hasItems(equalToIgnoringCase("Name")));
+    assertThat(record.getFieldNames(), contains(equalToIgnoringCase("Name")));
   }
 
   @Test
@@ -103,7 +104,7 @@ public class RecordBuilderImplTest {
     Record record = dataApi.newRecordBuilder("Movie__c").withNullField("Rating__c").build();
 
     assertThat(record.isNullField("Rating__c"), is(true));
-    assertThat(record.getFieldNames(), hasItems(equalToIgnoringCase("Rating__c")));
+    assertThat(record.getFieldNames(), contains(equalToIgnoringCase("Rating__c")));
   }
 
   @Test
@@ -112,7 +113,7 @@ public class RecordBuilderImplTest {
         dataApi.newRecordBuilder("Movie__c").withField("Rating__c", (String) null).build();
 
     assertThat(record.isNullField("Rating__c"), is(true));
-    assertThat(record.getFieldNames(), hasItems(equalToIgnoringCase("Rating__c")));
+    assertThat(record.getFieldNames(), contains(equalToIgnoringCase("Rating__c")));
   }
 
   @Test
@@ -121,7 +122,7 @@ public class RecordBuilderImplTest {
         dataApi.newRecordBuilder("Movie__c").withField("Rating__c", (BigDecimal) null).build();
 
     assertThat(record.isNullField("Rating__c"), is(true));
-    assertThat(record.getFieldNames(), hasItems(equalToIgnoringCase("Rating__c")));
+    assertThat(record.getFieldNames(), contains(equalToIgnoringCase("Rating__c")));
   }
 
   @Test
@@ -130,7 +131,7 @@ public class RecordBuilderImplTest {
         dataApi.newRecordBuilder("Movie__c").withField("Rating__c", (BigInteger) null).build();
 
     assertThat(record.isNullField("Rating__c"), is(true));
-    assertThat(record.getFieldNames(), hasItems(equalToIgnoringCase("Rating__c")));
+    assertThat(record.getFieldNames(), contains(equalToIgnoringCase("Rating__c")));
   }
 
   @Test
@@ -139,7 +140,7 @@ public class RecordBuilderImplTest {
         dataApi.newRecordBuilder("Movie__c").withField("Rating__c", (ReferenceId) null).build();
 
     assertThat(record.isNullField("Rating__c"), is(true));
-    assertThat(record.getFieldNames(), hasItems(equalToIgnoringCase("Rating__c")));
+    assertThat(record.getFieldNames(), contains(equalToIgnoringCase("Rating__c")));
   }
 
   @Test(expected = IllegalArgumentException.class)

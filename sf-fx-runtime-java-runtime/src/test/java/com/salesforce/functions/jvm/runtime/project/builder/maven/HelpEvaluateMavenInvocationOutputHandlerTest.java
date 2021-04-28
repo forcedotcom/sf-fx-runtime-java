@@ -6,11 +6,15 @@
  */
 package com.salesforce.functions.jvm.runtime.project.builder.maven;
 
+import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+
 import com.salesforce.functions.jvm.runtime.test.Util;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class HelpEvaluateMavenInvocationOutputHandlerTest {
@@ -25,8 +29,10 @@ public class HelpEvaluateMavenInvocationOutputHandlerTest {
       outputHandler.consumeLine(line);
     }
 
-    Assert.assertEquals(
-        Optional.of("/Users/manuel.fuchs/projects/sf-fx-runtime-java/target/classes"),
-        outputHandler.getResult());
+    assertThat(
+        outputHandler.getResult(),
+        is(
+            optionalWithValue(
+                equalTo("/Users/manuel.fuchs/projects/sf-fx-runtime-java/target/classes"))));
   }
 }
