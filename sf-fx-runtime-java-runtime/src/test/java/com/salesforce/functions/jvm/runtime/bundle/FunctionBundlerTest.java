@@ -6,6 +6,10 @@
  */
 package com.salesforce.functions.jvm.runtime.bundle;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.io.FileMatchers.anExistingDirectory;
 import static org.mockito.Mockito.mock;
 
 import com.salesforce.functions.jvm.runtime.project.Project;
@@ -20,15 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -128,17 +126,22 @@ public class FunctionBundlerTest {
 
     TomlParseResult result =
         Toml.parse(temporaryBundleFolder.getRoot().toPath().resolve("function-bundle.toml"));
-    Assert.assertEquals(functionClassName, result.get("function.class"));
-    Assert.assertEquals("[B", result.get("function.payload_class"));
-    Assert.assertEquals(
-        unmarshaller.getHandledMediaType().toString(), result.get("function.payload_media_type"));
-    Assert.assertEquals("java.lang.String", result.get("function.return_class"));
-    Assert.assertEquals(
-        marshaller.getMediaType().toString(), result.get("function.return_media_type"));
+
+    assertThat(result.get("function.class"), is(equalTo(functionClassName)));
+
+    assertThat(result.get("function.payload_class"), is(equalTo("[B")));
+    assertThat(
+        result.get("function.payload_media_type"),
+        is(equalTo(unmarshaller.getHandledMediaType().toString())));
+
+    assertThat(result.get("function.return_class"), is(equalTo("java.lang.String")));
+    assertThat(
+        result.get("function.return_media_type"),
+        is(equalTo(marshaller.getMediaType().toString())));
 
     Path classpathDirectory = temporaryBundleFolder.getRoot().toPath().resolve("classpath");
 
-    Assert.assertTrue(classpathDirectory.toFile().isDirectory());
+    assertThat(classpathDirectory.toFile(), is(anExistingDirectory()));
 
     Set<Path> actualFilesInClasspathDirectory =
         Files.walk(classpathDirectory, Integer.MAX_VALUE)
@@ -159,6 +162,6 @@ public class FunctionBundlerTest {
     // both are copied to the classpath directory with different names:
     expectedFilesInClasspathDirectory.add(Paths.get("_dependency-1.0.0.jar"));
 
-    Assert.assertEquals(expectedFilesInClasspathDirectory, actualFilesInClasspathDirectory);
+    assertThat(actualFilesInClasspathDirectory, is(equalTo(expectedFilesInClasspathDirectory)));
   }
 }

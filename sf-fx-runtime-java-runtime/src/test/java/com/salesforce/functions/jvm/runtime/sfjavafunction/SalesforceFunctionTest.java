@@ -6,6 +6,8 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -49,19 +51,19 @@ public class SalesforceFunctionTest {
 
   @Test
   public void testGetName() {
-    Assert.assertEquals(functionClassName, function.getName());
+    assertThat(function.getName(), is(equalTo(functionClassName)));
     verify(mockedInvocationWrapper, never()).invoke(any(), any(), any(), any());
   }
 
   @Test
   public void testGetUnmarshaller() {
-    Assert.assertSame(unmarshaller, function.getUnmarshaller());
+    assertThat(function.getUnmarshaller(), is(unmarshaller));
     verify(mockedInvocationWrapper, never()).invoke(any(), any(), any(), any());
   }
 
   @Test
   public void testGetMarshaller() {
-    Assert.assertSame(marshaller, function.getMarshaller());
+    assertThat(function.getMarshaller(), is(marshaller));
     verify(mockedInvocationWrapper, never()).invoke(any(), any(), any(), any());
   }
 
@@ -71,7 +73,7 @@ public class SalesforceFunctionTest {
         .thenReturn(FUNCTION_RESULT_OBJECT);
 
     SalesforceFunctionResult result = function.apply(CLOUD_EVENT);
-    Assert.assertArrayEquals(FUNCTION_RESULT_BYTES, result.getData());
+    assertThat(result.getData(), is(equalTo(FUNCTION_RESULT_BYTES)));
 
     verify(mockedInvocationWrapper)
         .invoke(

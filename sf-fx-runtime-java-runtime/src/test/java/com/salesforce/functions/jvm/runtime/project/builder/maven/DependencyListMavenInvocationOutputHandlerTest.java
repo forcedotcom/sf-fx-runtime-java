@@ -6,13 +6,15 @@
  */
 package com.salesforce.functions.jvm.runtime.project.builder.maven;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import com.salesforce.functions.jvm.runtime.test.Util;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class DependencyListMavenInvocationOutputHandlerTest {
@@ -34,7 +36,7 @@ public class DependencyListMavenInvocationOutputHandlerTest {
       outputHandler.consumeLine(line);
     }
 
-    Assert.assertEquals(expectedPaths, outputHandler.getResult());
+    assertThat(outputHandler.getResult(), is(equalTo(expectedPaths)));
   }
 
   @Test
@@ -53,6 +55,6 @@ public class DependencyListMavenInvocationOutputHandlerTest {
       outputHandler.consumeLine(line);
     }
 
-    Assert.assertEquals(expectedPaths, outputHandler.getResult());
+    assertThat(outputHandler.getResult(), is(equalTo(expectedPaths)));
   }
 }
