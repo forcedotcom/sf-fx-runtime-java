@@ -7,8 +7,7 @@
 package com.salesforce.functions.jvm.runtime.json;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.*;
 
 import io.leangen.geantyref.AnnotationFormatException;
 import io.leangen.geantyref.TypeFactory;
@@ -29,7 +28,7 @@ public class UtilTest {
 
     assertThat(
         annotationList,
-        hasItems(
+        contains(
             equalTo(createAnnotation(Foo.class, "publicField")),
             equalTo(createAnnotation(Bar.class, "privateField")),
             equalTo(createAnnotation(Foo.class, "publicMethod")),
