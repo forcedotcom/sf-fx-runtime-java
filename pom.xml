@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.salesforce.functions</groupId>
     <artifactId>sf-fx-runtime-java</artifactId>
-    <version>0.1.4-ea-SNAPSHOT</version>
+    <version>0.1.5-ea-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>sf-fx-runtime-java</name>
