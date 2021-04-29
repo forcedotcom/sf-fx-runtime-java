@@ -10,22 +10,19 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPatch;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
@@ -35,12 +32,14 @@ public final class RestApi {
   private final URI salesforceBaseUrl;
   private final String apiVersion;
   private final String accessToken;
+  private final String clientVersion;
   private final Gson gson = new Gson();
 
   public RestApi(URI salesforceBaseUrl, String apiVersion, String accessToken) {
     this.salesforceBaseUrl = salesforceBaseUrl;
     this.apiVersion = apiVersion;
     this.accessToken = accessToken;
+    this.clientVersion = readVersionStringFromProperties().orElse("?.?.?-unknown");
   }
 
   public URI getSalesforceBaseUrl() {
@@ -70,6 +69,9 @@ public final class RestApi {
         createBaseHttpRequest(apiRequest.getHttpMethod(), uri, apiRequest.getBody());
 
     request.addHeader("Authorization", "Bearer " + accessToken);
+    request.addHeader(
+        "Sforce-Call-Options", "client=sf-fx-runtime-java-sdk-impl-v0:" + clientVersion);
+
     HttpResponse response = client.execute(request);
 
     Map<String, String> headers = new HashMap<>();
@@ -126,5 +128,16 @@ public final class RestApi {
                 new StringEntity(gson.toJson(body), ContentType.APPLICATION_JSON)));
 
     return httpEntityEnclosingRequest;
+  }
+
+  private Optional<String> readVersionStringFromProperties() {
+    final Properties properties = new Properties();
+    try (final InputStream stream =
+        getClass().getClassLoader().getResourceAsStream("sf-fx-runtime-java-sdk-impl.properties")) {
+      properties.load(stream);
+      return Optional.ofNullable(properties.getProperty("version"));
+    } catch (IOException e) {
+      return Optional.empty();
+    }
   }
 }
