@@ -6,8 +6,19 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction.exception;
 
+import java.util.List;
+
 public class FunctionThrewExceptionException extends SalesforceFunctionException {
-  public FunctionThrewExceptionException(Throwable cause) {
+  private final List<StackTraceElement> functionStackTrace;
+
+  public FunctionThrewExceptionException(
+      Throwable cause, List<StackTraceElement> functionStackTrace) {
+
     super(cause);
+    this.functionStackTrace = functionStackTrace;
+  }
+
+  public List<StackTraceElement> getFunctionStackTrace() {
+    return functionStackTrace;
   }
 }

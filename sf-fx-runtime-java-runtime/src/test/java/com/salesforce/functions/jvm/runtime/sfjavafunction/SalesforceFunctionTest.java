@@ -7,15 +7,11 @@
 package com.salesforce.functions.jvm.runtime.sfjavafunction;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
 
+import com.google.gson.Gson;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceCloudEventExtensionParser;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
@@ -117,7 +113,8 @@ public class SalesforceFunctionTest {
   public void testApplyWithExceptionFromInvocationHandler() {
     when(mockedInvocationWrapper.invoke(any(), any(), any(), any()))
         .thenThrow(
-            new FunctionThrewExceptionException(new RuntimeException("Exception from function")));
+            new FunctionThrewExceptionException(
+                new RuntimeException("Exception from function"), null));
 
     try {
       function.apply(CLOUD_EVENT);
@@ -162,7 +159,7 @@ public class SalesforceFunctionTest {
 
   private static final String FUNCTION_RESULT_OBJECT = "Function Result!";
   private static final byte[] FUNCTION_RESULT_BYTES =
-      FUNCTION_RESULT_OBJECT.getBytes(StandardCharsets.UTF_8);
+      new Gson().toJson(FUNCTION_RESULT_OBJECT).getBytes(StandardCharsets.UTF_8);
 
   private static final CloudEvent CLOUD_EVENT_WITHOUT_EXTENSIONS =
       new CloudEventBuilder()

@@ -7,13 +7,16 @@
 package com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling;
 
 import com.google.common.net.MediaType;
+import com.google.gson.Gson;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionResultMarshallingException;
 import java.nio.charset.StandardCharsets;
 
 public class StringFunctionResultMarshaller implements FunctionResultMarshaller {
+  private Gson gson = new Gson();
+
   @Override
   public MediaType getMediaType() {
-    return MediaType.PLAIN_TEXT_UTF_8;
+    return MediaType.JSON_UTF_8;
   }
 
   @Override
@@ -30,6 +33,6 @@ public class StringFunctionResultMarshaller implements FunctionResultMarshaller 
     }
 
     String string = (String) object;
-    return string.getBytes(StandardCharsets.UTF_8);
+    return gson.toJson(string).getBytes(StandardCharsets.UTF_8);
   }
 }

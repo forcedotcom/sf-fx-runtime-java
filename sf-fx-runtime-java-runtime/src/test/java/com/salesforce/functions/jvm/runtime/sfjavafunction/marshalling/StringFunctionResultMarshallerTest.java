@@ -23,8 +23,20 @@ public class StringFunctionResultMarshallerTest {
     String data = "Hello 👋🏻!";
     SalesforceFunctionResult result = marshaller.marshall(data);
 
-    assertThat(result.getMediaType(), is(MediaType.PLAIN_TEXT_UTF_8));
-    assertThat(result.getData(), is(equalTo(data.getBytes(StandardCharsets.UTF_8))));
+    assertThat(result.getMediaType(), is(MediaType.JSON_UTF_8));
+    assertThat(result.getData(), is(equalTo("\"Hello 👋🏻!\"".getBytes(StandardCharsets.UTF_8))));
+  }
+
+  @Test
+  public void testSuccessWithRequiredJsonEscaping() {
+    FunctionResultMarshaller marshaller = new StringFunctionResultMarshaller();
+    String data = "Hello, \"this is quoted!\"!";
+    SalesforceFunctionResult result = marshaller.marshall(data);
+
+    assertThat(result.getMediaType(), is(MediaType.JSON_UTF_8));
+    assertThat(
+        result.getData(),
+        is(equalTo("\"Hello, \\\"this is quoted!\\\"!\"".getBytes(StandardCharsets.UTF_8))));
   }
 
   @Test(expected = FunctionResultMarshallingException.class)
