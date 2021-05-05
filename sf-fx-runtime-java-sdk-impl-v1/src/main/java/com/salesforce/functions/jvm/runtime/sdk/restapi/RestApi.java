@@ -70,7 +70,7 @@ public final class RestApi {
 
     request.addHeader("Authorization", "Bearer " + accessToken);
     request.addHeader(
-        "Sforce-Call-Options", "client=sf-fx-runtime-java-sdk-impl-v0:" + clientVersion);
+        "Sforce-Call-Options", "client=sf-fx-runtime-java-sdk-impl-v1:" + clientVersion);
 
     HttpResponse response = client.execute(request);
 
