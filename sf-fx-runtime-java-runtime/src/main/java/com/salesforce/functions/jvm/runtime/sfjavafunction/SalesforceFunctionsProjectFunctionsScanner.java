@@ -13,13 +13,8 @@ import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayFunctionResultMarshaller;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayPayloadUnmarshaller;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.FunctionResultMarshaller;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PayloadUnmarshaller;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PojoAsJsonFunctionResultMarshaller;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PojoFromJsonPayloadUnmarshaller;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.StringFunctionResultMarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.*;
+import com.salesforce.functions.jvm.runtime.util.StackTraceUtils;
 import io.cloudevents.CloudEvent;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -35,13 +30,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -292,9 +281,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
 
         // Determine FunctionResultMarshaller for this user function
         FunctionResultMarshaller marshaller = null;
-        if (returnTypeString.equals("byte[]")) {
-          marshaller = new ByteArrayFunctionResultMarshaller();
-        } else if (returnTypeString.equals("java.lang.String")) {
+        if (returnTypeString.equals("java.lang.String")) {
           marshaller = new StringFunctionResultMarshaller();
         } else {
           try {
@@ -370,7 +357,11 @@ public class SalesforceFunctionsProjectFunctionsScanner
                       } catch (IllegalAccessException e) {
                         throw new SalesforceFunctionException("");
                       } catch (InvocationTargetException e) {
-                        throw new FunctionThrewExceptionException(e.getCause());
+
+                        throw new FunctionThrewExceptionException(
+                            e.getCause(),
+                            StackTraceUtils.rebase(
+                                e.getCause().getStackTrace(), functionClass.getName()));
                       }
                     }));
 
