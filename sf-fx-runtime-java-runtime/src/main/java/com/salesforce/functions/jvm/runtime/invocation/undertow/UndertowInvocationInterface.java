@@ -27,6 +27,7 @@ import io.undertow.util.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -151,7 +152,7 @@ public class UndertowInvocationInterface
               new JsonPrimitive("Function returned non-JSON data which is unsupported!"),
               new ExtraInfo()
                   .withCloudEventData(cloudEvent)
-                  .withFunctionExecutionTime(elapsedNanoTime));
+                  .withFunctionExecutionTime(Duration.ofNanos(elapsedNanoTime)));
           return;
         }
 
@@ -162,7 +163,7 @@ public class UndertowInvocationInterface
             gson.fromJson(new String(result.getData(), StandardCharsets.UTF_8), JsonElement.class),
             new ExtraInfo()
                 .withCloudEventData(cloudEvent)
-                .withFunctionExecutionTime(elapsedNanoTime));
+                .withFunctionExecutionTime(Duration.ofNanos(elapsedNanoTime)));
 
       } catch (MissingCloudEventDataException e) {
         makeResponse(

@@ -97,12 +97,8 @@ public class ExtraInfo {
         Collections.unmodifiableList(e.getFunctionStackTrace()));
   }
 
-  public ExtraInfo withFunctionExecutionTime(long nanos) {
+  public ExtraInfo withFunctionExecutionTime(Duration duration) {
     return new ExtraInfo(
-        this.requestId,
-        this.source,
-        Duration.ofNanos(nanos),
-        this.isFunctionError,
-        this.stacktrace);
+        this.requestId, this.source, duration, this.isFunctionError, this.stacktrace);
   }
 }
