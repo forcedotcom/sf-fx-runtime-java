@@ -8,6 +8,11 @@ package com.salesforce.functions.jvm.runtime.invocation.undertow;
 
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
+import com.google.common.net.MediaType;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSyntaxException;
 import com.salesforce.functions.jvm.runtime.InvocationInterface;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunction;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunctionResult;
@@ -18,12 +23,11 @@ import io.cloudevents.rw.CloudEventRWException;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HeaderValues;
-import io.undertow.util.Headers;
-import io.undertow.util.Methods;
-import io.undertow.util.StatusCodes;
-import java.io.IOException;
+import io.undertow.util.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +40,7 @@ public class UndertowInvocationInterface
         CloudEvent, SalesforceFunctionResult, SalesforceFunctionException> {
   private final int port;
   private final String host;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(UndertowInvocationInterface.class);
 
   public UndertowInvocationInterface(int port, String host) {
@@ -59,6 +64,8 @@ public class UndertowInvocationInterface
   }
 
   private static class ProjectFunctionHandler implements HttpHandler {
+    private final Gson gson = new Gson();
+
     private final ProjectFunction<CloudEvent, SalesforceFunctionResult, SalesforceFunctionException>
         projectFunction;
 
@@ -79,12 +86,20 @@ public class UndertowInvocationInterface
 
       // Step 1: Validate basic HTTP request data
       if (!exchange.getRequestMethod().equals(Methods.POST)) {
-        makePlainTextErrorResponse(exchange, StatusCodes.METHOD_NOT_ALLOWED, "");
+        makeResponse(
+            exchange,
+            StatusCodes.METHOD_NOT_ALLOWED,
+            new JsonPrimitive("HTTP 405: Method Not Allowed"),
+            new ExtraInfo());
         return;
       }
 
       if (!exchange.getRequestPath().equals("/")) {
-        makePlainTextErrorResponse(exchange, StatusCodes.NOT_FOUND, "Not Found");
+        makeResponse(
+            exchange,
+            StatusCodes.METHOD_NOT_ALLOWED,
+            new JsonPrimitive("HTTP 404: Not Found"),
+            new ExtraInfo());
         return;
       }
 
@@ -92,9 +107,7 @@ public class UndertowInvocationInterface
       // per spec.
       HeaderValues healthCheckHeaders = exchange.getRequestHeaders().get("x-health-check");
       if (healthCheckHeaders != null && healthCheckHeaders.contains("true")) {
-        exchange.setStatusCode(StatusCodes.OK);
-        exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, "application/json");
-        exchange.getResponseSender().send("\"OK\"", StandardCharsets.UTF_8);
+        makeResponse(exchange, StatusCodes.OK, new JsonPrimitive("OK"), new ExtraInfo());
         return;
       }
 
@@ -115,37 +128,92 @@ public class UndertowInvocationInterface
       try {
         cloudEvent = HttpMessageFactory.createReaderFromMultimap(headers, body).toEvent();
       } catch (IllegalStateException | CloudEventRWException e) {
-        final String message = "Could not parse CloudEvent: " + e.getMessage();
-        makePlainTextErrorResponse(exchange, StatusCodes.BAD_REQUEST, message);
+        makeResponse(
+            exchange,
+            StatusCodes.BAD_REQUEST,
+            new JsonPrimitive("Could not parse CloudEvent: " + e.getMessage()),
+            new ExtraInfo().withInternalExceptionData(e));
         return;
       }
 
       // Step 3: Apply function with the CloudEvent, translating exceptions to semantic HTTP error
       // responses.
       try {
+        long startNanoTime = System.nanoTime();
         SalesforceFunctionResult result = projectFunction.apply(cloudEvent);
+        long elapsedNanoTime = System.nanoTime() - startNanoTime;
 
-        exchange.setStatusCode(StatusCodes.OK);
-        exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, result.getMediaType().toString());
-        exchange.getOutputStream().write(result.getData());
+        // Currently, the HTTP interface only supports JSON results. Since the runtime supports
+        // other content types as well, we need to make sure to only return JSON.
+        if (!result.getMediaType().equals(MediaType.JSON_UTF_8)) {
+          makeResponse(
+              exchange,
+              StatusCodes.SERVICE_UNAVAILABLE,
+              new JsonPrimitive("Function returned non-JSON data which is unsupported!"),
+              new ExtraInfo()
+                  .withCloudEventData(cloudEvent)
+                  .withFunctionExecutionTime(Duration.ofNanos(elapsedNanoTime)));
+          return;
+        }
+
+        makeResponse(
+            exchange,
+            StatusCodes.OK,
+            // We validated earlier that the data is indeed an UTF-8 encoded JSON string
+            gson.fromJson(new String(result.getData(), StandardCharsets.UTF_8), JsonElement.class),
+            new ExtraInfo()
+                .withCloudEventData(cloudEvent)
+                .withFunctionExecutionTime(Duration.ofNanos(elapsedNanoTime)));
+
       } catch (MissingCloudEventDataException e) {
-        String message = "CloudEvent does not contain any data to pass to the function!";
-        makePlainTextErrorResponse(exchange, StatusCodes.BAD_REQUEST, message);
+        makeResponse(
+            exchange,
+            StatusCodes.BAD_REQUEST,
+            new JsonPrimitive("CloudEvent does not contain any data to pass to the function!"),
+            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
+
       } catch (IncompatibleCloudEventDataContentTypeException e) {
-        String message = "CloudEvent data must be of type application/json!";
-        makePlainTextErrorResponse(exchange, StatusCodes.BAD_REQUEST, message);
+        makeResponse(
+            exchange,
+            StatusCodes.BAD_REQUEST,
+            new JsonPrimitive("CloudEvent data must be of type application/json!"),
+            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
+
       } catch (IncompatibleCloudEventTypeException e) {
-        String message = "CloudEvent must be of type 'com.salesforce.function.invoke.sync'!";
-        makePlainTextErrorResponse(exchange, StatusCodes.BAD_REQUEST, message);
+        makeResponse(
+            exchange,
+            StatusCodes.BAD_REQUEST,
+            new JsonPrimitive("CloudEvent must be of type 'com.salesforce.function.invoke.sync'!"),
+            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
+
       } catch (MalformedOrMissingSalesforceContextExtensionException e) {
-        String message = "CloudEvent is missing required 'sfcontext' extension!";
-        makePlainTextErrorResponse(exchange, StatusCodes.BAD_REQUEST, message);
+        makeResponse(
+            exchange,
+            StatusCodes.BAD_REQUEST,
+            new JsonPrimitive("CloudEvent is missing required 'sfcontext' extension!"),
+            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
+
       } catch (MalformedOrMissingSalesforceFunctionContextExtensionException e) {
-        String message = "CloudEvent is missing required 'sffncontext' extension!";
-        makePlainTextErrorResponse(exchange, StatusCodes.BAD_REQUEST, message);
-      } catch (SdkInitializationException e) {
-        String message = "Could not initialize SDK for function!";
-        makePlainTextErrorResponse(exchange, StatusCodes.INTERNAL_SERVER_ERROR, message);
+        makeResponse(
+            exchange,
+            StatusCodes.BAD_REQUEST,
+            new JsonPrimitive("CloudEvent is missing required 'sffncontext' extension!"),
+            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
+
+      } catch (PayloadUnmarshallingException e) {
+        makeResponse(
+            exchange,
+            StatusCodes.BAD_REQUEST,
+            new JsonPrimitive("Could not unmarshall payload: " + e.getCause().getMessage()),
+            new ExtraInfo().withCloudEventData(cloudEvent).withFunctionExceptionData(e));
+
+      } catch (FunctionResultMarshallingException e) {
+        makeResponse(
+            exchange,
+            StatusCodes.BAD_REQUEST,
+            new JsonPrimitive("Could not marshall function result: " + e.getCause().getMessage()),
+            new ExtraInfo().withCloudEventData(cloudEvent).withFunctionExceptionData(e));
+
       } catch (FunctionThrewExceptionException e) {
         String message =
             "Function threw exception: "
@@ -155,27 +223,46 @@ public class UndertowInvocationInterface
                 + ")\n"
                 + Throwables.getStackTraceAsString(e.getCause());
 
-        makePlainTextErrorResponse(exchange, StatusCodes.INTERNAL_SERVER_ERROR, message);
-      } catch (PayloadUnmarshallingException e) {
-        LOGGER.warn("Could not unmarshall function payload!", e);
-        String message = "Could not unmarshall payload: " + e.getCause().getMessage();
-        makePlainTextErrorResponse(exchange, StatusCodes.BAD_REQUEST, message);
-      } catch (FunctionResultMarshallingException e) {
-        LOGGER.warn("Could not marshall function result!", e);
-        String message = "Could not marshall function result: " + e.getCause().getMessage();
-        makePlainTextErrorResponse(exchange, StatusCodes.BAD_REQUEST, message);
+        makeResponse(
+            exchange,
+            StatusCodes.INTERNAL_SERVER_ERROR,
+            new JsonPrimitive(message),
+            new ExtraInfo().withCloudEventData(cloudEvent).withFunctionExceptionData(e));
+
+      } catch (SdkInitializationException e) {
+        makeResponse(
+            exchange,
+            StatusCodes.SERVICE_UNAVAILABLE,
+            new JsonPrimitive("Could not initialize SDK for function!"),
+            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
+
       } catch (SalesforceFunctionException e) {
-        e.printStackTrace();
-        String message = "Unknown error while executing function: " + e.getMessage();
-        makePlainTextErrorResponse(exchange, StatusCodes.INTERNAL_SERVER_ERROR, message);
+        makeResponse(
+            exchange,
+            StatusCodes.SERVICE_UNAVAILABLE,
+            new JsonPrimitive(
+                "Unknown error while executing function: " + e.getCause().getMessage()),
+            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
       }
     }
 
-    private void makePlainTextErrorResponse(HttpServerExchange exchange, int status, String message)
-        throws IOException {
+    private void makeResponse(
+        HttpServerExchange exchange, int status, JsonElement data, ExtraInfo extraInfo) {
       exchange.setStatusCode(status);
-      exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, "text/plain; charset=utf-8");
-      exchange.getResponseSender().send(message + "\n", StandardCharsets.UTF_8);
+      exchange.getResponseHeaders().add(Headers.CONTENT_TYPE, "application/json");
+
+      try {
+        exchange
+            .getResponseHeaders()
+            .add(
+                HttpString.tryFromString("x-extra-info"),
+                URLEncoder.encode(gson.toJson(extraInfo), "UTF-8"));
+
+      } catch (UnsupportedEncodingException | JsonSyntaxException e) {
+        LOGGER.warn("Could not write x-extra-info header!", e);
+      }
+
+      exchange.getResponseSender().send(gson.toJson(data), StandardCharsets.UTF_8);
     }
   }
 }
