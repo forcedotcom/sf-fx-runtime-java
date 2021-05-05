@@ -304,24 +304,6 @@ public class SalesforceFunctionsProjectFunctionsScanner
           continue;
         }
 
-        Method mdcClearMethod = null;
-        Method mdcPutMethod = null;
-        try {
-          // We look for slf4j in the topmost class loader to make sure if a class in the tree wants
-          // to log, it can, even when the user project does not declare a dependency on slf4j.
-          Class<?> mdcClass = sdkClassLoader.loadClass("org.slf4j.MDC");
-          mdcClearMethod = mdcClass.getMethod("clear");
-          mdcPutMethod = mdcClass.getMethod("put", String.class, String.class);
-        } catch (ClassNotFoundException e) {
-          // It's fine to not have slf4j on the classpath since that indicates that no logging is
-          // taking place in customers or SDK code anyway.
-          LOGGER.debug(
-              "Could not find org.slf4j.MDC in classpath, invocation context data will not be available in logger.");
-        } catch (NoSuchMethodException e) {
-          LOGGER.warn(
-              "Could not find required method on org.slf4j.MDC. Invocation context data will not be available in logger.");
-        }
-
         SalesforceFunction salesforceFunction =
             new SalesforceFunction(
                 unmarshaller,
