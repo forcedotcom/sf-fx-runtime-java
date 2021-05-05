@@ -124,7 +124,7 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>${project.parent.groupId}</groupId>
-                  <artifactId>sf-fx-runtime-java-sdk-impl-v0</artifactId>
+                  <artifactId>sf-fx-runtime-java-sdk-impl-v1</artifactId>
                   <version>${project.parent.version}</version>
                   <classifier>jar-with-dependencies</classifier>
                   <type>jar</type>

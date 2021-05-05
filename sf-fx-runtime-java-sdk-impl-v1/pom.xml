@@ -9,7 +9,7 @@
     <version>0.1.5-ea-SNAPSHOT</version>
   </parent>
 
-  <artifactId>sf-fx-runtime-java-sdk-impl-v0</artifactId>
+  <artifactId>sf-fx-runtime-java-sdk-impl-v1</artifactId>
 
   <dependencies>
     <dependency>
