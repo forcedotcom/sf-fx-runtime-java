@@ -64,7 +64,9 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <phase>package</phase>
+            <!-- We need to package this during compile since other modules depend on the jar-with-dependencies
+            classifier as this module is included as a JAR file instead of class files. -->
+            <phase>compile</phase>
             <goals>
               <goal>single</goal>
             </goals>
