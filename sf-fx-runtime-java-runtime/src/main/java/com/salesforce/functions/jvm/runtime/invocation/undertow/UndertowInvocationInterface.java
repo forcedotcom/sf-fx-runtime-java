@@ -97,7 +97,7 @@ public class UndertowInvocationInterface
       if (!exchange.getRequestPath().equals("/")) {
         makeResponse(
             exchange,
-            StatusCodes.METHOD_NOT_ALLOWED,
+            StatusCodes.NOT_FOUND,
             new JsonPrimitive("HTTP 404: Not Found"),
             new ExtraInfo());
         return;
