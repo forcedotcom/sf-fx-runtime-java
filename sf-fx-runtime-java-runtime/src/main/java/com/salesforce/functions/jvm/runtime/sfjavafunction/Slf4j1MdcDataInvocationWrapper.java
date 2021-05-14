@@ -64,7 +64,7 @@ public class Slf4j1MdcDataInvocationWrapper implements InvocationWrapper {
       try {
         mdcClearMethod.invoke(null);
       } catch (IllegalAccessException | InvocationTargetException e) {
-        e.printStackTrace();
+        LOGGER.warn("Unexpected exception while clearing MDC data for function invocation.", e);
       }
     }
 
@@ -72,7 +72,9 @@ public class Slf4j1MdcDataInvocationWrapper implements InvocationWrapper {
       try {
         mdcPutMethod.invoke(null, "function-invocation-id", cloudEvent.getId());
       } catch (IllegalAccessException | InvocationTargetException e) {
-        e.printStackTrace();
+        LOGGER.warn(
+            "Unexpected exception while setting 'function-invocation-id' MDC data for function invocation.",
+            e);
       }
     }
 
