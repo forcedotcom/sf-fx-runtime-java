@@ -55,18 +55,16 @@ public class CompositeGraphRestApiRequest<T> implements RestApiRequest<Map<Strin
 
       // RestApiRequest#createUri returns an absolute URL. For a composite request, we need to strip
       // off the base URL from the returned value.
-      String url;
+      final URI subrequestUrl;
       try {
-        url =
-            entry
-                .getValue()
-                .createUri(baseUri, apiVersion)
-                .toString()
-                .substring(baseUri.toString().length());
+        URI fullSubrequestUri = entry.getValue().createUri(baseUri, apiVersion);
 
-        if (!url.startsWith("/")) {
-          url = "/" + url;
-        }
+        subrequestUrl =
+            new URIBuilder()
+                .setPath(fullSubrequestUri.getPath())
+                .setCustomQuery(fullSubrequestUri.getQuery())
+                .setFragment(fullSubrequestUri.getFragment())
+                .build();
 
       } catch (URISyntaxException e) {
         throw new RuntimeException("Unexpected URISyntaxException!", e);
@@ -74,7 +72,7 @@ public class CompositeGraphRestApiRequest<T> implements RestApiRequest<Map<Strin
 
       JsonObject subrequestJson = new JsonObject();
       subrequestJson.addProperty("method", method);
-      subrequestJson.addProperty("url", url);
+      subrequestJson.addProperty("url", subrequestUrl.toString());
       subrequestJson.addProperty("referenceId", entry.getKey());
 
       entry.getValue().getBody().ifPresent(jsonElement -> subrequestJson.add("body", jsonElement));
