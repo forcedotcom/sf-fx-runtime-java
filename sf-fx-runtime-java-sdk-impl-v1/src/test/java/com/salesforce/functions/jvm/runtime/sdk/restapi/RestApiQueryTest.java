@@ -7,9 +7,11 @@
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.map;
+import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.Tuple;
@@ -38,12 +40,13 @@ public class RestApiQueryTest {
         new QueryRecordRestApiRequest("SELECT RANDOM_1__c, RANDOM_2__c FROM Random__c");
     QueryRecordResult result = restApi.execute(queryRequest);
 
-    assertThat("the result is not done", result.isDone(), is(false));
-    assertThat("the total size is 10000", result.getTotalSize(), is(10000L));
+    assertThat(result.isDone(), is(false));
+    assertThat(result.getTotalSize(), is(10000L));
+    assertThat(result.getRecords(), hasSize(2000));
+
     assertThat(
-        "the next records path is present",
         result.getNextRecordsPath(),
-        equalTo(Optional.of("/services/data/v51.0/query/01gB000003OCxSPIA1-2000")));
+        is(optionalWithValue(equalTo("/services/data/v51.0/query/01gB000003OCxSPIA1-2000"))));
   }
 
   @Test
@@ -56,7 +59,7 @@ public class RestApiQueryTest {
         new QueryNextRecordsRestApiRequest(result.getNextRecordsPath().get());
     QueryRecordResult result2 = restApi.execute(queryMoreRequest);
 
-    assertThat("2000 records are present", result2.getRecords().size(), equalTo(2000));
+    assertThat(result2.getRecords(), hasSize(2000));
   }
 
   @Test
@@ -67,18 +70,17 @@ public class RestApiQueryTest {
     try {
       restApi.execute(queryRequest);
     } catch (RestApiErrorsException e) {
-      assertThat("Exactly one error is returned", e.getApiErrors().size(), is(1));
+      assertThat(e.getApiErrors(), hasSize(1));
 
       RestApiError apiError = e.getApiErrors().get(0);
 
       assertThat(
-          "The error has the correct message",
           apiError.getMessage(),
-          equalTo(
-              "\nSELECT Bacon__c FROM Account LIMIT 2\n       ^\nERROR at Row:1:Column:8\nNo such column 'Bacon__c' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names."));
+          is(
+              equalTo(
+                  "\nSELECT Bacon__c FROM Account LIMIT 2\n       ^\nERROR at Row:1:Column:8\nNo such column 'Bacon__c' on entity 'Account'. If you are attempting to use a custom field, be sure to append the '__c' after the custom field name. Please reference your WSDL or the describe call for the appropriate names.")));
 
-      assertThat(
-          "The error has the correct code", apiError.getErrorCode(), equalTo("INVALID_FIELD"));
+      assertThat(apiError.getErrorCode(), is(equalTo("INVALID_FIELD")));
       return;
     }
 
@@ -93,17 +95,13 @@ public class RestApiQueryTest {
     try {
       restApi.execute(queryRequest);
     } catch (RestApiErrorsException e) {
-      assertThat("Exactly one error is returned", e.getApiErrors().size(), is(1));
+      assertThat(e.getApiErrors(), hasSize(1));
 
       RestApiError apiError = e.getApiErrors().get(0);
 
-      assertThat(
-          "The error has the correct message",
-          apiError.getMessage(),
-          equalTo("unexpected token: SELEKT"));
+      assertThat(apiError.getMessage(), is(equalTo("unexpected token: SELEKT")));
 
-      assertThat(
-          "The error has the correct code", apiError.getErrorCode(), equalTo("MALFORMED_QUERY"));
+      assertThat(apiError.getErrorCode(), is(equalTo("MALFORMED_QUERY")));
       return;
     }
 
@@ -116,9 +114,9 @@ public class RestApiQueryTest {
         new QueryRecordRestApiRequest("SELECT Name FROM Account");
     QueryRecordResult result = restApi.execute(queryRequest);
 
-    assertThat("total size is correct", result.getTotalSize(), is(5L));
-    assertThat("is done is true", result.isDone(), is(true));
-    assertThat("next record path is empty", result.getNextRecordsPath(), equalTo(Optional.empty()));
+    assertThat(result.getTotalSize(), is(5L));
+    assertThat(result.isDone(), is(true));
+    assertThat(result.getNextRecordsPath(), equalTo(Optional.empty()));
 
     List<Record> expectedRecords = new ArrayList<>();
     expectedRecords.add(
@@ -156,6 +154,6 @@ public class RestApiQueryTest {
                 new Tuple("url", "/services/data/v51.0/sobjects/Account/001B000001LnobCIAR")),
             map(new Tuple("Name", "Sample Account for Entitlements"))));
 
-    assertThat("records match", result.getRecords(), equalTo(expectedRecords));
+    assertThat(result.getRecords(), is(equalTo(expectedRecords)));
   }
 }

@@ -42,17 +42,19 @@ public class DataApiImplTest {
     List<Record> records = result.getRecords();
     assertThat(
         records.get(0).getStringField("Name"),
-        optionalWithValue(equalTo("An awesome test account")));
+        is(optionalWithValue(equalTo("An awesome test account"))));
 
-    assertThat(records.get(1).getStringField("Name"), optionalWithValue(equalTo("Global Media")));
+    assertThat(
+        records.get(1).getStringField("Name"), is(optionalWithValue(equalTo("Global Media"))));
 
-    assertThat(records.get(2).getStringField("Name"), optionalWithValue(equalTo("Acme")));
+    assertThat(records.get(2).getStringField("Name"), is(optionalWithValue(equalTo("Acme"))));
 
-    assertThat(records.get(3).getStringField("Name"), optionalWithValue(equalTo("salesforce.com")));
+    assertThat(
+        records.get(3).getStringField("Name"), is(optionalWithValue(equalTo("salesforce.com"))));
 
     assertThat(
         records.get(4).getStringField("Name"),
-        optionalWithValue(equalTo("Sample Account for Entitlements")));
+        is(optionalWithValue(equalTo("Sample Account for Entitlements"))));
   }
 
   @Test
@@ -88,8 +90,8 @@ public class DataApiImplTest {
               "One or more API errors occurred:\n\nCode: MALFORMED_QUERY\nMessage: unexpected token: SELEKT\nFields: \n"));
 
       assertThat(e.getDataApiErrors(), hasSize(1));
-      assertThat(e.getDataApiErrors().get(0).getErrorCode(), equalTo("MALFORMED_QUERY"));
-      assertThat(e.getDataApiErrors().get(0).getMessage(), equalTo("unexpected token: SELEKT"));
+      assertThat(e.getDataApiErrors().get(0).getErrorCode(), is(equalTo("MALFORMED_QUERY")));
+      assertThat(e.getDataApiErrors().get(0).getMessage(), is(equalTo("unexpected token: SELEKT")));
       assertThat(e.getDataApiErrors().get(0).getFields(), is(empty()));
       return;
     }
@@ -107,7 +109,7 @@ public class DataApiImplTest {
                 .withField("Rating__c", "Excellent")
                 .build());
 
-    assertThat(result.getId(), equalTo("a00B000000FSkcvIAD"));
+    assertThat(result.getId(), is(equalTo("a00B000000FSkcvIAD")));
   }
 
   @Test
@@ -120,7 +122,7 @@ public class DataApiImplTest {
                 .withField("ReleaseDate__c", "1980-05-21")
                 .build());
 
-    assertThat(result.getId(), equalTo("a00B000000FSjVUIA1"));
+    assertThat(result.getId(), is(equalTo("a00B000000FSjVUIA1")));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -133,7 +135,7 @@ public class DataApiImplTest {
   public void testDelete() throws DataApiException {
     RecordModificationResult result = dataApi.delete("Account", "001B000001Lp1FxIAJ");
 
-    assertThat(result.getId(), equalTo("001B000001Lp1FxIAJ"));
+    assertThat(result.getId(), is(equalTo("001B000001Lp1FxIAJ")));
   }
 
   @Test

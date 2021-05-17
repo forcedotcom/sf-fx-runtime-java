@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import com.google.gson.JsonPrimitive;
 import java.util.HashMap;
@@ -25,8 +26,8 @@ public class RecordTest {
     values.put("bar", new JsonPrimitive("baz"));
 
     Record record = new Record(attributes, values);
-    assertThat("attributes are unmodified", record.getAttributes(), equalTo(attributes));
-    assertThat("values are unmodified", record.getValues(), equalTo(values));
+    assertThat(record.getAttributes(), is(equalTo(attributes)));
+    assertThat(record.getValues(), is(equalTo(values)));
   }
 
   @Test

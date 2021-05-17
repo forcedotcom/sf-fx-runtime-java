@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonElement;
@@ -38,8 +39,9 @@ public class RestApiUpdateTest {
 
     UpdateRecordRestApiRequest request =
         new UpdateRecordRestApiRequest("a00B000000FSjVUIA1", "Movie__c", values);
+
     ModifyRecordResult result = restApi.execute(request);
-    assertThat("id equals expected value", result.getId(), equalTo("a00B000000FSjVUIA1"));
+    assertThat(result.getId(), is(equalTo("a00B000000FSjVUIA1")));
   }
 
   @Test
@@ -56,13 +58,10 @@ public class RestApiUpdateTest {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(
-          "The error has the correct message",
-          error.getMessage(),
-          equalTo("Record ID: id value of incorrect type: a00B000000FSjVUIB1"));
+          error.getMessage(), equalTo("Record ID: id value of incorrect type: a00B000000FSjVUIB1"));
 
-      assertThat("The error has the correct code", error.getErrorCode(), equalTo("MALFORMED_ID"));
-
-      assertThat("The error has the correct fields", error.getFields(), contains("Id"));
+      assertThat(error.getErrorCode(), is(equalTo("MALFORMED_ID")));
+      assertThat(error.getFields(), contains("Id"));
 
       return;
     }
@@ -84,13 +83,10 @@ public class RestApiUpdateTest {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(
-          "The error has the correct message",
-          error.getMessage(),
-          equalTo("No such column 'Color__c' on sobject of type Movie__c"));
+          error.getMessage(), equalTo("No such column 'Color__c' on sobject of type Movie__c"));
 
-      assertThat("The error has the correct code", error.getErrorCode(), equalTo("INVALID_FIELD"));
-
-      assertThat("The error has the correct fields", error.getFields(), empty());
+      assertThat(error.getErrorCode(), is(equalTo("INVALID_FIELD")));
+      assertThat(error.getFields(), is(empty()));
 
       return;
     }
