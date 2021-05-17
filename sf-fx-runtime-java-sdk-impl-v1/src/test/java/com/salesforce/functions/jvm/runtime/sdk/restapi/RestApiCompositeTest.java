@@ -69,7 +69,6 @@ public class RestApiCompositeTest {
       restApi.execute(request);
     } catch (RestApiErrorsException e) {
       assertThat(
-          "the error from the inner create request is in the error from the composite request",
           e.getApiErrors(),
           contains(
               equalTo(

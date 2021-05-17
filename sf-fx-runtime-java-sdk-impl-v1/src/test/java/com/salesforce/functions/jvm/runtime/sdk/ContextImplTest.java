@@ -66,7 +66,7 @@ public class ContextImplTest {
   public void testContextValues() {
     Context context = new ContextImpl(cloudEvent, contextExtension, functionContextExtension);
 
-    assertThat(context.getId(), equalTo(cloudEvent.getId()));
+    assertThat(context.getId(), is(equalTo(cloudEvent.getId())));
     assertThat(context.getOrg(), is(optionalWithValue()));
   }
 
@@ -74,10 +74,12 @@ public class ContextImplTest {
   public void testOrgValues() {
     Org org = new OrgImpl(contextExtension, functionContextExtension);
 
-    assertThat(org.getId(), equalTo(contextExtension.getUserContext().getOrgId()));
-    assertThat(org.getBaseUrl(), equalTo(contextExtension.getUserContext().getSalesforceBaseUrl()));
-    assertThat(org.getDomainUrl(), equalTo(contextExtension.getUserContext().getOrgDomainUrl()));
-    assertThat(org.getApiVersion(), equalTo(contextExtension.getApiVersion()));
+    assertThat(org.getId(), is(equalTo(contextExtension.getUserContext().getOrgId())));
+    assertThat(
+        org.getBaseUrl(), is(equalTo(contextExtension.getUserContext().getSalesforceBaseUrl())));
+    assertThat(
+        org.getDomainUrl(), is(equalTo(contextExtension.getUserContext().getOrgDomainUrl())));
+    assertThat(org.getApiVersion(), is(equalTo(contextExtension.getApiVersion())));
     assertThat(org.getUser(), is(notNullValue()));
     assertThat(org.getDataApi(), is(notNullValue()));
   }
@@ -86,8 +88,8 @@ public class ContextImplTest {
   public void testUserValues() {
     User user = new UserImpl(contextExtension);
 
-    assertThat(user.getId(), equalTo(contextExtension.getUserContext().getUserId()));
-    assertThat(user.getUsername(), equalTo(contextExtension.getUserContext().getUsername()));
+    assertThat(user.getId(), is(equalTo(contextExtension.getUserContext().getUserId())));
+    assertThat(user.getUsername(), is(equalTo(contextExtension.getUserContext().getUsername())));
     assertThat(user.getOnBehalfOfUserId(), is(emptyOptional()));
   }
 }

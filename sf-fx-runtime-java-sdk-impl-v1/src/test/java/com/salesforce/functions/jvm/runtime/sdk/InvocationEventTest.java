@@ -10,6 +10,7 @@ import static com.spotify.hamcrest.optional.OptionalMatchers.emptyOptional;
 import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.v1.CloudEventBuilder;
@@ -30,13 +31,13 @@ public class InvocationEventTest {
 
     InvocationEventImpl<String> event = new InvocationEventImpl<>(cloudEvent, "Payload");
 
-    assertThat(event.getData(), equalTo("Payload"));
-    assertThat(event.getId(), equalTo(cloudEvent.getId()));
-    assertThat(event.getSource(), equalTo(cloudEvent.getSource()));
-    assertThat(event.getType(), equalTo(cloudEvent.getType()));
-    assertThat(event.getDataContentType(), emptyOptional());
-    assertThat(event.getTime(), emptyOptional());
-    assertThat(event.getDataSchema(), emptyOptional());
+    assertThat(event.getData(), is(equalTo("Payload")));
+    assertThat(event.getId(), is(equalTo(cloudEvent.getId())));
+    assertThat(event.getSource(), is(equalTo(cloudEvent.getSource())));
+    assertThat(event.getType(), is(equalTo(cloudEvent.getType())));
+    assertThat(event.getDataContentType(), is(emptyOptional()));
+    assertThat(event.getTime(), is(emptyOptional()));
+    assertThat(event.getDataSchema(), is(emptyOptional()));
   }
 
   @Test
@@ -53,13 +54,14 @@ public class InvocationEventTest {
 
     InvocationEventImpl<String> event = new InvocationEventImpl<>(cloudEvent, "Payload");
 
-    assertThat(event.getData(), equalTo("Payload"));
-    assertThat(event.getId(), equalTo(cloudEvent.getId()));
-    assertThat(event.getSource(), equalTo(cloudEvent.getSource()));
-    assertThat(event.getType(), equalTo(cloudEvent.getType()));
+    assertThat(event.getData(), is(equalTo("Payload")));
+    assertThat(event.getId(), is(equalTo(cloudEvent.getId())));
+    assertThat(event.getSource(), is(equalTo(cloudEvent.getSource())));
+    assertThat(event.getType(), is(equalTo(cloudEvent.getType())));
     assertThat(
-        event.getDataContentType(), optionalWithValue(equalTo(cloudEvent.getDataContentType())));
-    assertThat(event.getTime(), optionalWithValue(equalTo(cloudEvent.getTime())));
-    assertThat(event.getDataSchema(), optionalWithValue(equalTo(cloudEvent.getDataSchema())));
+        event.getDataContentType(),
+        is(optionalWithValue(equalTo(cloudEvent.getDataContentType()))));
+    assertThat(event.getTime(), is(optionalWithValue(equalTo(cloudEvent.getTime()))));
+    assertThat(event.getDataSchema(), is(optionalWithValue(equalTo(cloudEvent.getDataSchema()))));
   }
 }
