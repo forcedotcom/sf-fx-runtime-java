@@ -7,7 +7,7 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonElement;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.CompositeRestApiRequest;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.CompositeGraphRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.CreateRecordRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.DeleteRecordRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
@@ -124,8 +124,8 @@ public class DataApiImpl implements DataApi {
 
     UnitOfWorkImpl impl = (UnitOfWorkImpl) unitOfWork;
 
-    CompositeRestApiRequest<ModifyRecordResult> request =
-        new CompositeRestApiRequest<>(
+    CompositeGraphRestApiRequest<ModifyRecordResult> request =
+        new CompositeGraphRestApiRequest<>(
             restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), impl.getSubrequests());
 
     Map<String, ModifyRecordResult> result = executeRequest(request);
