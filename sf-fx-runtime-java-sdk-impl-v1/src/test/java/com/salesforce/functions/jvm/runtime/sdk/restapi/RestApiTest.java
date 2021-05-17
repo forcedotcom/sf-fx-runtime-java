@@ -9,6 +9,7 @@ package com.salesforce.functions.jvm.runtime.sdk.restapi;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import java.io.IOException;
@@ -34,10 +35,7 @@ public class RestApiTest {
     try {
       restApi.execute(queryRequest);
     } catch (RestApiException e) {
-      assertThat(
-          "the exception message is matching the error",
-          e.getMessage(),
-          startsWith("Could not parse API response as JSON!"));
+      assertThat(e.getMessage(), startsWith("Could not parse API response as JSON!"));
 
       return;
     }
@@ -47,16 +45,15 @@ public class RestApiTest {
 
   @Test
   public void testApiVersionGetter() {
-    assertThat(
-        "getApiVersion returns the correct API version", restApi.getApiVersion(), equalTo("51.0"));
+    assertThat(restApi.getApiVersion(), is(equalTo("51.0")));
   }
 
   @Test
   public void testAccessTokenGetter() {
     assertThat(
-        "getAccessToken returns the correct access token",
         restApi.getAccessToken(),
-        equalTo(
-            "00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS"));
+        is(
+            equalTo(
+                "00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS")));
   }
 }

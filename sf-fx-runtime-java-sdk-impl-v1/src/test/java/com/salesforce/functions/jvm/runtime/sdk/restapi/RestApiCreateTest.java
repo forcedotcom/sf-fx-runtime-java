@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonElement;
@@ -39,7 +40,7 @@ public class RestApiCreateTest {
 
     CreateRecordRestApiRequest request = new CreateRecordRestApiRequest("Movie__c", values);
     ModifyRecordResult result = restApi.execute(request);
-    assertThat("id equals expected value", result.getId(), equalTo("a00B000000FSkcvIAD"));
+    assertThat(result.getId(), is(equalTo("a00B000000FSkcvIAD")));
   }
 
   @Test
@@ -56,16 +57,12 @@ public class RestApiCreateTest {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(
-          "The error has the correct message",
           error.getMessage(),
-          equalTo("Rating: bad value for restricted picklist field: Terrible"));
+          is(equalTo("Rating: bad value for restricted picklist field: Terrible")));
 
-      assertThat(
-          "The error has the correct code",
-          error.getErrorCode(),
-          equalTo("INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST"));
+      assertThat(error.getErrorCode(), is(equalTo("INVALID_OR_NULL_FOR_RESTRICTED_PICKLIST")));
 
-      assertThat("The error has the correct fields", error.getFields(), contains("Rating__c"));
+      assertThat(error.getFields(), contains("Rating__c"));
 
       return;
     }
@@ -85,14 +82,11 @@ public class RestApiCreateTest {
     } catch (RestApiErrorsException e) {
       RestApiError error = e.getApiErrors().get(0);
 
-      assertThat(
-          "The error has the correct message",
-          error.getMessage(),
-          equalTo("The requested resource does not exist"));
+      assertThat(error.getMessage(), equalTo("The requested resource does not exist"));
 
-      assertThat("The error has the correct code", error.getErrorCode(), equalTo("NOT_FOUND"));
+      assertThat(error.getErrorCode(), is(equalTo("NOT_FOUND")));
 
-      assertThat("The error has the correct fields", error.getFields(), empty());
+      assertThat(error.getFields(), is(empty()));
 
       return;
     }
@@ -113,13 +107,12 @@ public class RestApiCreateTest {
       RestApiError error = e.getApiErrors().get(0);
 
       assertThat(
-          "The error has the correct message",
           error.getMessage(),
           equalTo("No such column 'FavoritePet__c' on sobject of type Account"));
 
-      assertThat("The error has the correct code", error.getErrorCode(), equalTo("INVALID_FIELD"));
+      assertThat(error.getErrorCode(), is(equalTo("INVALID_FIELD")));
 
-      assertThat("The error has the correct fields", error.getFields(), empty());
+      assertThat(error.getFields(), is(empty()));
 
       return;
     }
@@ -139,17 +132,11 @@ public class RestApiCreateTest {
     } catch (RestApiErrorsException e) {
       RestApiError error = e.getApiErrors().get(0);
 
-      assertThat(
-          "The error has the correct message",
-          error.getMessage(),
-          equalTo("Required fields are missing: [Website__c]"));
+      assertThat(error.getMessage(), equalTo("Required fields are missing: [Website__c]"));
 
-      assertThat(
-          "The error has the correct code",
-          error.getErrorCode(),
-          equalTo("REQUIRED_FIELD_MISSING"));
+      assertThat(error.getErrorCode(), equalTo("REQUIRED_FIELD_MISSING"));
 
-      assertThat("The error has the correct fields", error.getFields(), contains("Website__c"));
+      assertThat(error.getFields(), contains("Website__c"));
 
       return;
     }

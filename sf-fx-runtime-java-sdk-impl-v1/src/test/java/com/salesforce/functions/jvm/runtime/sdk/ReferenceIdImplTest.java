@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class ReferenceIdImplTest {
   @Test
   public void testToApiString() {
     ReferenceIdImpl referenceId = new ReferenceIdImpl("foo");
-    assertThat(referenceId.toApiString(), equalTo("@{foo.id}"));
+    assertThat(referenceId.toApiString(), is(equalTo("@{foo.id}")));
   }
 
   @Test
