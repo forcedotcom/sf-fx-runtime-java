@@ -10,6 +10,7 @@ import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.map
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.Tuple;
@@ -40,6 +41,8 @@ public class RestApiQueryTest {
 
     assertThat("the result is not done", result.isDone(), is(false));
     assertThat("the total size is 10000", result.getTotalSize(), is(10000L));
+    assertThat(result.getRecords(), hasSize(2000));
+
     assertThat(
         "the next records path is present",
         result.getNextRecordsPath(),
