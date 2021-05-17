@@ -6,7 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -15,7 +14,6 @@ import static org.hamcrest.Matchers.hasEntry;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.Tuple;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
@@ -44,42 +42,14 @@ public class RestApiCompositeTest {
     values.put("Rating__c", new JsonPrimitive("Excellent"));
     subrequests.put("insert-anh", new CreateRecordRestApiRequest("Movie__c", values));
 
-    CompositeRestApiRequest<ModifyRecordResult> request =
-        new CompositeRestApiRequest<>(
+    CompositeGraphRestApiRequest<ModifyRecordResult> request =
+        new CompositeGraphRestApiRequest<>(
             restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
     Map<String, ModifyRecordResult> result = restApi.execute(request);
 
     assertThat(
-        "",
         result,
-        hasEntry(equalTo("insert-anh"), equalTo(new ModifyRecordResult("a00B000000FSkgxIAD"))));
-  }
-
-  @Test
-  public void compositeSingleQuery() throws RestApiErrorsException, IOException, RestApiException {
-    Map<String, RestApiRequest<QueryRecordResult>> subrequests = new HashMap<>();
-    subrequests.put("query", new QueryRecordRestApiRequest("SELECT Name FROM Franchise__c"));
-
-    CompositeRestApiRequest<QueryRecordResult> request =
-        new CompositeRestApiRequest<>(
-            restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
-
-    Map<String, QueryRecordResult> result = restApi.execute(request);
-
-    Record expectedRecord =
-        new Record(
-            map(
-                new Tuple("type", "Franchise__c"),
-                new Tuple("url", "/services/data/v51.0/sobjects/Franchise__c/a03B0000007BhQVIA0")),
-            map(new Tuple("Name", "Star Wars")));
-
-    assertThat(
-        "The result contains the correct data",
-        result,
-        hasEntry(
-            equalTo("query"),
-            equalTo(
-                new QueryRecordResult(1, true, Collections.singletonList(expectedRecord), null))));
+        hasEntry(equalTo("insert-anh"), equalTo(new ModifyRecordResult("a01B0000009gSoxIAE"))));
   }
 
   @Test
@@ -91,8 +61,8 @@ public class RestApiCompositeTest {
     values.put("Rating__c", new JsonPrimitive("Amazing"));
     subrequests.put("insert-anh", new CreateRecordRestApiRequest("Movie__c", values));
 
-    CompositeRestApiRequest<ModifyRecordResult> request =
-        new CompositeRestApiRequest<>(
+    CompositeGraphRestApiRequest<ModifyRecordResult> request =
+        new CompositeGraphRestApiRequest<>(
             restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
 
     try {
@@ -120,17 +90,16 @@ public class RestApiCompositeTest {
     Map<String, JsonElement> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
     subrequests.put(
-        "referenceId0", new UpdateRecordRestApiRequest("a00B000000FSjVUIA1", "Movie__c", values));
+        "referenceId0", new UpdateRecordRestApiRequest("a01B0000009gSrFIAU", "Movie__c", values));
 
-    CompositeRestApiRequest<ModifyRecordResult> request =
-        new CompositeRestApiRequest<>(
+    CompositeGraphRestApiRequest<ModifyRecordResult> request =
+        new CompositeGraphRestApiRequest<>(
             restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
     Map<String, ModifyRecordResult> result = restApi.execute(request);
 
     assertThat(
-        "",
         result,
-        hasEntry(equalTo("referenceId0"), equalTo(new ModifyRecordResult("a00B000000FSjVUIA1"))));
+        hasEntry(equalTo("referenceId0"), equalTo(new ModifyRecordResult("a01B0000009gSrFIAU"))));
   }
 
   @Test
@@ -157,28 +126,24 @@ public class RestApiCompositeTest {
     valuesEp3.put("Franchise__c", new JsonPrimitive("@{referenceId0.id}"));
     subrequests.put("referenceId3", new CreateRecordRestApiRequest("Movie__c", valuesEp3));
 
-    CompositeRestApiRequest<ModifyRecordResult> request =
-        new CompositeRestApiRequest<>(
+    CompositeGraphRestApiRequest<ModifyRecordResult> request =
+        new CompositeGraphRestApiRequest<>(
             restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
     Map<String, ModifyRecordResult> result = restApi.execute(request);
 
     assertThat(
-        "the franchise was created",
         result,
         hasEntry(equalTo("referenceId0"), equalTo(new ModifyRecordResult("a03B0000007BhQQIA0"))));
 
     assertThat(
-        "the first movie was created",
         result,
         hasEntry(equalTo("referenceId1"), equalTo(new ModifyRecordResult("a00B000000FSkioIAD"))));
 
     assertThat(
-        "the second movie was created",
         result,
         hasEntry(equalTo("referenceId2"), equalTo(new ModifyRecordResult("a00B000000FSkipIAD"))));
 
     assertThat(
-        "the third movie was created",
         result,
         hasEntry(equalTo("referenceId3"), equalTo(new ModifyRecordResult("a00B000000FSkiqIAD"))));
   }
@@ -187,15 +152,15 @@ public class RestApiCompositeTest {
   public void compositeDeleteTest() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
     subrequests.put(
-        "referenceId0", new DeleteRecordRestApiRequest("Movie__c", "a00B000000FeYyKIAV"));
+        "referenceId0", new DeleteRecordRestApiRequest("Movie__c", "a01B0000009gSr9IAE"));
 
-    CompositeRestApiRequest<ModifyRecordResult> request =
-        new CompositeRestApiRequest<>(
+    CompositeGraphRestApiRequest<ModifyRecordResult> request =
+        new CompositeGraphRestApiRequest<>(
             restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
     Map<String, ModifyRecordResult> result = restApi.execute(request);
 
     assertThat(
         result,
-        hasEntry(equalTo("referenceId0"), equalTo(new ModifyRecordResult("a00B000000FeYyKIAV"))));
+        hasEntry(equalTo("referenceId0"), equalTo(new ModifyRecordResult("a01B0000009gSr9IAE"))));
   }
 }

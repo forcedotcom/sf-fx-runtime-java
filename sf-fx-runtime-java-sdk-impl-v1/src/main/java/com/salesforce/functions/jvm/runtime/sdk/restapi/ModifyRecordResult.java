@@ -16,6 +16,11 @@ public final class ModifyRecordResult {
     this.id = id;
   }
 
+  @Override
+  public String toString() {
+    return "ModifyRecordResult{" + "id='" + id + '\'' + '}';
+  }
+
   @Nonnull
   public String getId() {
     return id;

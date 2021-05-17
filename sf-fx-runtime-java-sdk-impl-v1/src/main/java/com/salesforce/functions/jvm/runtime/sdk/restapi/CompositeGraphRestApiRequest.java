@@ -21,13 +21,13 @@ import java.util.Map;
 import java.util.Optional;
 import org.apache.http.client.utils.URIBuilder;
 
-public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>> {
+public class CompositeGraphRestApiRequest<T> implements RestApiRequest<Map<String, T>> {
   private final Gson gson = new Gson();
   private final URI baseUri;
   private final String apiVersion;
   private final Map<String, RestApiRequest<T>> subrequests;
 
-  public CompositeRestApiRequest(
+  public CompositeGraphRestApiRequest(
       URI baseUri, String apiVersion, Map<String, RestApiRequest<T>> subrequests) {
     this.baseUri = baseUri;
     this.apiVersion = apiVersion;
@@ -42,7 +42,7 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
   @Override
   public URI createUri(URI baseUri, String apiVersion) throws URISyntaxException {
     return new URIBuilder(baseUri)
-        .setPathSegments("services", "data", "v" + apiVersion, "composite")
+        .setPathSegments("services", "data", "v" + apiVersion, "composite", "graph")
         .build();
   }
 
@@ -55,7 +55,7 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
 
       // RestApiRequest#createUri returns an absolute URL. For a composite request, we need to strip
       // off the base URL from the returned value.
-      final String url;
+      String url;
       try {
         url =
             entry
@@ -63,6 +63,11 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
                 .createUri(baseUri, apiVersion)
                 .toString()
                 .substring(baseUri.toString().length());
+
+        if (!url.startsWith("/")) {
+          url = "/" + url;
+        }
+
       } catch (URISyntaxException e) {
         throw new RuntimeException("Unexpected URISyntaxException!", e);
       }
@@ -77,9 +82,16 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
       subrequestJsonArray.add(subrequestJson);
     }
 
+    JsonObject graph0Body = new JsonObject();
+    graph0Body.add("allOrNone", new JsonPrimitive(true));
+    graph0Body.add("graphId", new JsonPrimitive("graph0"));
+    graph0Body.add("compositeRequest", subrequestJsonArray);
+
+    JsonArray graphsArray = new JsonArray();
+    graphsArray.add(graph0Body);
+
     JsonObject body = new JsonObject();
-    body.add("allOrNone", new JsonPrimitive(true));
-    body.add("compositeRequest", subrequestJsonArray);
+    body.add("graphs", graphsArray);
 
     return Optional.of(body);
   }
@@ -90,8 +102,20 @@ public class CompositeRestApiRequest<T> implements RestApiRequest<Map<String, T>
     Map<String, T> result = new HashMap<>();
 
     if (statusCode == 200) {
+      JsonArray graphsArray = body.getAsJsonObject().get("graphs").getAsJsonArray();
+      if (graphsArray.size() != 1) {
+        throw new IllegalStateException(
+            "Composite REST API unexpectedly returned more or less than one graph!");
+      }
+
+      JsonObject graphObject = graphsArray.get(0).getAsJsonObject();
+
       JsonArray compositeResponses =
-          body.getAsJsonObject().get("compositeResponse").getAsJsonArray();
+          graphObject
+              .get("graphResponse")
+              .getAsJsonObject()
+              .get("compositeResponse")
+              .getAsJsonArray();
 
       List<RestApiError> errors = new ArrayList<>();
 
