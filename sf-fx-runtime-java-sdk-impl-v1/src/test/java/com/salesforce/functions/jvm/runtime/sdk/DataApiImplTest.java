@@ -180,7 +180,7 @@ public class DataApiImplTest {
         unitOfWorkBuilder.registerUpdate(
             dataApi
                 .newRecordBuilder("Movie__c")
-                .withField("Id", "a00B000000FSjVUIA1")
+                .withField("Id", "a01B0000009gSrFIAU")
                 .withField("ReleaseDate__c", "1980-05-21")
                 .build());
 
@@ -196,14 +196,14 @@ public class DataApiImplTest {
     UnitOfWorkBuilder unitOfWorkBuilder = dataApi.newUnitOfWorkBuilder();
 
     ReferenceId deleteRecordReference =
-        unitOfWorkBuilder.registerDelete("Movie__c", "a00B000000FeYyKIAV");
+        unitOfWorkBuilder.registerDelete("Movie__c", "a01B0000009gSr9IAE");
 
     Map<ReferenceId, RecordModificationResult> result =
         dataApi.commitUnitOfWork(unitOfWorkBuilder.build());
 
     assertThat(result, is(aMapWithSize(1)));
     assertThat(result, hasKey(deleteRecordReference));
-    assertThat(result.get(deleteRecordReference).getId(), is(equalTo("a00B000000FeYyKIAV")));
+    assertThat(result.get(deleteRecordReference).getId(), is(equalTo("a01B0000009gSr9IAE")));
   }
 
   @Test
