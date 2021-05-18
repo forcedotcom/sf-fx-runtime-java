@@ -81,7 +81,6 @@ public class CompositeGraphRestApiRequest<T> implements RestApiRequest<Map<Strin
     }
 
     JsonObject graph0Body = new JsonObject();
-    graph0Body.add("allOrNone", new JsonPrimitive(true));
     graph0Body.add("graphId", new JsonPrimitive("graph0"));
     graph0Body.add("compositeRequest", subrequestJsonArray);
 
