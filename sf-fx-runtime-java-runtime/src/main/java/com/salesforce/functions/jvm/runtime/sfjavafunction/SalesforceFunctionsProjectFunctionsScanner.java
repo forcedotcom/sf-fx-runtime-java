@@ -255,52 +255,30 @@ public class SalesforceFunctionsProjectFunctionsScanner
         final String returnTypeString = typeSignature.getTypeArguments().get(1).toString();
 
         // Determine PayloadUnmarshaller for this user function
-        PayloadUnmarshaller unmarshaller = null;
-        if (payloadTypeArgument.equals("byte[]")) {
-          unmarshaller = new ByteArrayPayloadUnmarshaller();
-        } else {
-          try {
-            Class<?> clazz = projectClassLoader.loadClass(payloadTypeArgument);
-            unmarshaller = new PojoFromJsonPayloadUnmarshaller(clazz);
-          } catch (ClassNotFoundException e) {
-            // Intentional ignore
-          } catch (AmbiguousJsonLibraryException e) {
-            LOGGER.warn(
-                "Potential function {} declares an payload type with multiple JSON framework annotations. Function will be ignored!",
-                functionClass.getName());
-          }
-        }
-
-        if (unmarshaller == null) {
+        final PayloadUnmarshaller unmarshaller;
+        try {
+          unmarshaller =
+              PayloadUnmarshallers.forTypeString(payloadTypeArgument, projectClassLoader);
+        } catch (Throwable e) {
           LOGGER.warn(
-              "Potential function {} declares an unsupported payload type: {}. Function will be ignored!",
+              "Function {} declares an unsupported payload type '{}': {}",
               functionClass.getName(),
-              payloadTypeArgument);
+              payloadTypeArgument,
+              e.getMessage());
           continue;
         }
 
         // Determine FunctionResultMarshaller for this user function
-        FunctionResultMarshaller marshaller = null;
-        if (returnTypeString.equals("java.lang.String")) {
-          marshaller = new StringFunctionResultMarshaller();
-        } else {
-          try {
-            Class<?> clazz = projectClassLoader.loadClass(returnTypeString);
-            marshaller = new PojoAsJsonFunctionResultMarshaller(clazz);
-          } catch (ClassNotFoundException e) {
-            // Intentional ignore
-          } catch (AmbiguousJsonLibraryException e) {
-            LOGGER.warn(
-                "Potential function {} declares a return type with multiple JSON framework annotations. Function will be ignored!",
-                functionClass.getName());
-          }
-        }
-
-        if (marshaller == null) {
+        final FunctionResultMarshaller marshaller;
+        try {
+          marshaller =
+              FunctionResultMarshallers.forTypeString(returnTypeString, projectClassLoader);
+        } catch (ClassNotFoundException | AmbiguousJsonLibraryException e) {
           LOGGER.warn(
-              "Potential function {} declares an unsupported return type: {}! Function will be ignored!",
+              "Function {} declares an unsupported return type '{}': {}!",
               functionClass.getName(),
-              returnTypeString);
+              returnTypeString,
+              e.getMessage());
           continue;
         }
 
