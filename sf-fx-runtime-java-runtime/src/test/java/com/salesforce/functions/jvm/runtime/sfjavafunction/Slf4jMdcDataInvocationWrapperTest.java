@@ -26,10 +26,10 @@ public class Slf4jMdcDataInvocationWrapperTest {
 
   @Test
   public void testForWhenSlf4jIsAvailable() {
-    InvocationWrapper mockedInvocationWrapper = mock(InvocationWrapper.class);
+    SalesforceFunctionsInvocable mockedInvocationWrapper = mock(SalesforceFunctionsInvocable.class);
 
-    Slf4j1MdcDataInvocationWrapper wrapper =
-        new Slf4j1MdcDataInvocationWrapper(getClass().getClassLoader(), mockedInvocationWrapper);
+    Slf4j1MdcDataInvocableWrapper wrapper =
+        new Slf4j1MdcDataInvocableWrapper(getClass().getClassLoader(), mockedInvocationWrapper);
 
     String cloudEventId = UUID.randomUUID().toString();
 
@@ -54,12 +54,12 @@ public class Slf4jMdcDataInvocationWrapperTest {
 
   @Test
   public void testWhenSlf4jIsUnavailable() {
-    InvocationWrapper mockedInvocationWrapper = mock(InvocationWrapper.class);
+    SalesforceFunctionsInvocable mockedInvocationWrapper = mock(SalesforceFunctionsInvocable.class);
 
     ClassLoader bootstrapClassLoader = ClassLoader.getSystemClassLoader().getParent();
 
-    Slf4j1MdcDataInvocationWrapper wrapper =
-        new Slf4j1MdcDataInvocationWrapper(bootstrapClassLoader, mockedInvocationWrapper);
+    Slf4j1MdcDataInvocableWrapper wrapper =
+        new Slf4j1MdcDataInvocableWrapper(bootstrapClassLoader, mockedInvocationWrapper);
 
     String cloudEventId = UUID.randomUUID().toString();
 

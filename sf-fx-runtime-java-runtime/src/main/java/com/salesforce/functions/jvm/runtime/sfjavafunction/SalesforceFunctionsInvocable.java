@@ -11,7 +11,7 @@ import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContext
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
 import io.cloudevents.CloudEvent;
 
-public interface InvocationWrapper {
+public interface SalesforceFunctionsInvocable {
   Object invoke(
       Object payload,
       CloudEvent cloudEvent,

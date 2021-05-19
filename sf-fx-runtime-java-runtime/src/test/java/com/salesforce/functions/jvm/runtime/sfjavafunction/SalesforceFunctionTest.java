@@ -33,7 +33,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class SalesforceFunctionTest {
-  private final InvocationWrapper mockedInvocationWrapper = mock(InvocationWrapper.class);
+  private final SalesforceFunctionsInvocable mockedInvocationWrapper =
+      mock(SalesforceFunctionsInvocable.class);
   private final PayloadUnmarshaller unmarshaller = new ByteArrayPayloadUnmarshaller();
   private final FunctionResultMarshaller marshaller = new StringFunctionResultMarshaller();
   private final String functionClassName = "com.example.Function";

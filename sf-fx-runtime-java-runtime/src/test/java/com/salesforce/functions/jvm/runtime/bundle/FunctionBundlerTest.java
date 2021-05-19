@@ -13,8 +13,8 @@ import static org.hamcrest.io.FileMatchers.anExistingDirectory;
 import static org.mockito.Mockito.mock;
 
 import com.salesforce.functions.jvm.runtime.project.Project;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.InvocationWrapper;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunction;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunctionsInvocable;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayPayloadUnmarshaller;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.FunctionResultMarshaller;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PayloadUnmarshaller;
@@ -34,7 +34,8 @@ import org.tomlj.Toml;
 import org.tomlj.TomlParseResult;
 
 public class FunctionBundlerTest {
-  private final InvocationWrapper mockedInvocationWrapper = mock(InvocationWrapper.class);
+  private final SalesforceFunctionsInvocable mockedInvocationWrapper =
+      mock(SalesforceFunctionsInvocable.class);
   private final PayloadUnmarshaller unmarshaller = new ByteArrayPayloadUnmarshaller();
   private final FunctionResultMarshaller marshaller = new StringFunctionResultMarshaller();
   private final String functionClassName = "com.example.Function";

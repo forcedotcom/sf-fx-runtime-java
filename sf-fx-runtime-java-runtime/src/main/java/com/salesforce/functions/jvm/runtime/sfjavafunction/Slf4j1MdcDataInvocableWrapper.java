@@ -15,16 +15,15 @@ import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Slf4j1MdcDataInvocationWrapper implements InvocationWrapper {
+public class Slf4j1MdcDataInvocableWrapper implements SalesforceFunctionsInvocable {
   private final Method mdcClearMethod;
   private final Method mdcPutMethod;
-  private final InvocationWrapper innerInvocationWrapper;
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(Slf4j1MdcDataInvocationWrapper.class);
+  private final SalesforceFunctionsInvocable invocable;
+  private static final Logger LOGGER = LoggerFactory.getLogger(Slf4j1MdcDataInvocableWrapper.class);
 
-  public Slf4j1MdcDataInvocationWrapper(
-      ClassLoader classLoader, InvocationWrapper innerInvocationWrapper) {
-    this.innerInvocationWrapper = innerInvocationWrapper;
+  public Slf4j1MdcDataInvocableWrapper(
+      ClassLoader classLoader, SalesforceFunctionsInvocable invocable) {
+    this.invocable = invocable;
 
     Method mdcClearMethod;
     Method mdcPutMethod;
@@ -78,6 +77,6 @@ public class Slf4j1MdcDataInvocationWrapper implements InvocationWrapper {
       }
     }
 
-    return innerInvocationWrapper.invoke(payload, cloudEvent, salesforceContext, functionContext);
+    return invocable.invoke(payload, cloudEvent, salesforceContext, functionContext);
   }
 }

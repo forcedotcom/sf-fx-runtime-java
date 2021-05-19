@@ -6,8 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction;
 
-import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
-import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
@@ -16,19 +14,12 @@ import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.FunctionR
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.FunctionResultMarshallers;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PayloadUnmarshaller;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PayloadUnmarshallers;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.sdk.SdkDetector;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.sdk.SdkFunction;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.sdk.SdkLogic;
 import com.salesforce.functions.jvm.runtime.util.JarFileUtils;
 import io.cloudevents.CloudEvent;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ClassInfo;
-import io.github.classgraph.ClassRefTypeSignature;
-import io.github.classgraph.ScanResult;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.*;
 import org.slf4j.Logger;
@@ -54,7 +45,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
   public List<SalesforceFunction> scan(Project project) {
     Objects.requireNonNull(project);
 
-    // We inject a slf4j compatible logger implementation into the project classloader in the next
+    // We inject a slf4j compatible logger binding into the project classloader in the next
     // step. To do so, we need to get the implementation JAR out of the invoker JAR:
     Path loggerJarPath;
     try {
@@ -68,7 +59,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
 
       loggerJarPath = optionalLoggerJarPath.get();
     } catch (IOException e) {
-      LOGGER.error("Could not copy logger JAR file to disk!", e);
+      LOGGER.error("Could not copy logger binding JAR file to disk!", e);
       return Collections.emptyList();
     }
 
@@ -79,7 +70,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
     final ClassLoader projectClassLoader = project.createClassLoader(loggerJarPath);
 
     // Class loader that exposes a subset of classes from the general runtime class loader. This is
-    // necessary to share some classes between the SDK class loader (see below) and the runtime.
+    // necessary to share some classes between the SDK (see below) and the runtime.
     //
     // The SDK needs to be initialized with a CloudEvent and the required Salesforce extensions. To
     // be able to pass those objects to the SDK constructor/initializer, both the runtime and the
@@ -94,213 +85,59 @@ public class SalesforceFunctionsProjectFunctionsScanner
             "io.cloudevents.",
             "com.salesforce.functions.jvm.runtime.cloudevent.");
 
-    // Class loader that can load SDK implementation classes. It will fall back to the
-    // AllowListClassLoader above to load CloudEvent related classes. The class loader above that
-    // one is the project class loader that contains the SDK interface required by the SDK
-    // implementation. It's important that the SDK implementation does not contain the CloudEvent
-    // classes nor the SDK interface. This can be achieved by using the "provided" scope in Maven
-    // for the SDK implementation project.
-    final ClassLoader sdkClassLoader;
-
-    // In the future when we might have multiple incompatible SDK interfaces, we can implement
-    // different strategies for each SDK version initialization and function detection. This is not
-    // a concern right now and therefore unimplemented. The SDK does include a properties files that
-    // can be used to reliably detect the SDK version:
-    //
-    // final Properties properties = new Properties();
-    // try (final InputStream stream =
-    // projectClassLoader.getResourceAsStream("sf-fx-sdk-java.properties")) {
-    //   properties.load(stream);
-    // }
-    //
-    // properties.getProperty("version");
-
+    final SdkLogic sdkLogic;
     try {
-      Optional<Path> optionalSdkImplementationJarPath =
-          JarFileUtils.copyJarFileFromClassPath(getClass().getClassLoader(), "sdk-impl-v0.jar");
-      if (!optionalSdkImplementationJarPath.isPresent()) {
-        LOGGER.error("Could not find logger implementation JAR!");
+      sdkLogic = SdkDetector.detect(allowListClassLoader).orElse(null);
+      if (sdkLogic == null) {
+        LOGGER.error("Could not detect SDK in functions project!");
         return Collections.emptyList();
       }
-
-      sdkClassLoader =
-          new URLClassLoader(
-              new URL[] {optionalSdkImplementationJarPath.get().toUri().toURL()},
-              allowListClassLoader);
-
-    } catch (MalformedURLException e) {
-      LOGGER.error("Unexpected exception while preparing SDK implementation classloader!", e);
-      return Collections.emptyList();
     } catch (IOException e) {
-      LOGGER.error("Could copy SDK implementation JAR to disk!", e);
+      LOGGER.error("Unexpected IOException while detecting SDK version in functions project!", e);
       return Collections.emptyList();
     }
 
-    final Constructor<?> eventClassConstructor;
-    final Constructor<?> contextClassConstructor;
-    try {
-      Class<?> eventClass =
-          sdkClassLoader.loadClass("com.salesforce.functions.jvm.runtime.sdk.InvocationEventImpl");
-      eventClassConstructor = eventClass.getConstructor(CloudEvent.class, Object.class);
+    List<SdkFunction> scannedFunctions = sdkLogic.scan();
+    List<SalesforceFunction> foundFunctions = new ArrayList<>();
 
-      Class<?> contextClass =
-          sdkClassLoader.loadClass("com.salesforce.functions.jvm.runtime.sdk.ContextImpl");
-      contextClassConstructor =
-          contextClass.getConstructor(
-              CloudEvent.class,
-              SalesforceContextCloudEventExtension.class,
-              SalesforceFunctionContextCloudEventExtension.class);
-    } catch (ClassNotFoundException | NoSuchMethodException e) {
-      LOGGER.error("Could not find SDK implementation class or constructor!", e);
-      return Collections.emptyList();
-    }
-
-    // Load interface classes from the project class loader
-    final String functionApiFunctionInterfaceName =
-        "com.salesforce.functions.jvm.sdk.SalesforceFunction";
-    final String functionApiInvocationEventInterfaceName =
-        "com.salesforce.functions.jvm.sdk.InvocationEvent";
-    final String functionApiContextInterfaceName = "com.salesforce.functions.jvm.sdk.Context";
-
-    final List<String> functionApiClassNames = new ArrayList<>();
-    functionApiClassNames.add(functionApiFunctionInterfaceName);
-    functionApiClassNames.add(functionApiInvocationEventInterfaceName);
-    functionApiClassNames.add(functionApiContextInterfaceName);
-
-    final Map<String, Class<?>> functionApiClasses = new HashMap<>();
-    for (String functionApiClassName : functionApiClassNames) {
+    for (SdkFunction scannedFunction : scannedFunctions) {
+      // Determine PayloadUnmarshaller for this user function
+      final PayloadUnmarshaller unmarshaller;
       try {
-        Class<?> clazz = projectClassLoader.loadClass(functionApiClassName);
-        functionApiClasses.put(functionApiClassName, clazz);
-      } catch (ClassNotFoundException e) {
-        LOGGER.error(
-            "Could not load function API class {}. Please ensure your project depends on the Java Functions API.",
-            functionApiClassName,
-            e);
-        return Collections.emptyList();
+        unmarshaller =
+            PayloadUnmarshallers.forTypeString(
+                scannedFunction.getInputType().toString(), projectClassLoader);
+      } catch (Throwable e) {
+        LOGGER.warn(
+            "Function {} declares an unsupported payload type '{}': {}",
+            scannedFunction.getClassName(),
+            scannedFunction.getInputType().toString(),
+            e.getMessage());
+        continue;
       }
-    }
 
-    // Scan the project class loader for function implementations
-    final ScanResult classpathScanResult =
-        new ClassGraph()
-            .overrideClassLoaders(projectClassLoader)
-            .enableClassInfo()
-            .enableMethodInfo()
-            .scan();
-
-    final List<SalesforceFunction> foundFunctions = new ArrayList<>();
-
-    for (ClassInfo classInfo :
-        classpathScanResult.getClassesImplementing(functionApiFunctionInterfaceName)) {
-      for (ClassRefTypeSignature typeSignature :
-          classInfo.getTypeSignature().getSuperinterfaceSignatures()) {
-        if (!typeSignature.getFullyQualifiedClassName().equals(functionApiFunctionInterfaceName)) {
-          continue;
-        }
-
-        // Load function implementation class
-        final Class<?> functionClass;
-        try {
-          functionClass = projectClassLoader.loadClass(classInfo.getName());
-        } catch (ClassNotFoundException e) {
-          LOGGER.warn(
-              "Could not find potential function's class ({}) in classpath.",
-              classInfo.getName(),
-              e);
-          continue;
-        }
-
-        // Find apply method of function implementation class
-        final Method functionApplyMethod;
-        try {
-          functionApplyMethod =
-              functionClass.getMethod(
-                  "apply",
-                  functionApiClasses.get(functionApiInvocationEventInterfaceName),
-                  functionApiClasses.get(functionApiContextInterfaceName));
-
-          functionApplyMethod.setAccessible(true);
-        } catch (NoSuchMethodException e) {
-          LOGGER.warn(
-              "Could not find apply(InvocationEvent<?>, Context) method in function class {}.",
-              classInfo.getName(),
-              e);
-          continue;
-        }
-
-        // Create function instance
-        final Object functionInstance;
-        try {
-          functionInstance = functionClass.getConstructor().newInstance();
-        } catch (InstantiationException e) {
-          LOGGER.warn("Could not instantiate function class {}.", classInfo.getName(), e);
-          continue;
-        } catch (IllegalAccessException e) {
-          LOGGER.warn(
-              "Could not instantiate function class {}. Is the constructor public?",
-              classInfo.getName(),
-              e);
-          continue;
-        } catch (InvocationTargetException e) {
-          LOGGER.warn(
-              "Exception while instantiating function class {}.",
-              classInfo.getName(),
-              e.getCause());
-          continue;
-        } catch (NoSuchMethodException e) {
-          LOGGER.warn(
-              "Could not find default constructor for function class {}.", classInfo.getName(), e);
-          continue;
-        }
-
-        final String payloadTypeArgument = typeSignature.getTypeArguments().get(0).toString();
-        final String returnTypeString = typeSignature.getTypeArguments().get(1).toString();
-
-        // Determine PayloadUnmarshaller for this user function
-        final PayloadUnmarshaller unmarshaller;
-        try {
-          unmarshaller =
-              PayloadUnmarshallers.forTypeString(payloadTypeArgument, projectClassLoader);
-        } catch (Throwable e) {
-          LOGGER.warn(
-              "Function {} declares an unsupported payload type '{}': {}",
-              functionClass.getName(),
-              payloadTypeArgument,
-              e.getMessage());
-          continue;
-        }
-
-        // Determine FunctionResultMarshaller for this user function
-        final FunctionResultMarshaller marshaller;
-        try {
-          marshaller =
-              FunctionResultMarshallers.forTypeString(returnTypeString, projectClassLoader);
-        } catch (ClassNotFoundException | AmbiguousJsonLibraryException e) {
-          LOGGER.warn(
-              "Function {} declares an unsupported return type '{}': {}!",
-              functionClass.getName(),
-              returnTypeString,
-              e.getMessage());
-          continue;
-        }
-
-        SalesforceFunction salesforceFunction =
-            new SalesforceFunction(
-                unmarshaller,
-                marshaller,
-                functionClass.getName(),
-                new Slf4j1MdcDataInvocationWrapper(
-                    sdkClassLoader,
-                    new SdkV1InvocationWrapper(
-                        eventClassConstructor,
-                        contextClassConstructor,
-                        functionClass,
-                        functionInstance,
-                        functionApplyMethod)));
-
-        foundFunctions.add(salesforceFunction);
+      // Determine FunctionResultMarshaller for this user function
+      final FunctionResultMarshaller marshaller;
+      try {
+        marshaller =
+            FunctionResultMarshallers.forTypeString(
+                scannedFunction.getReturnType().toString(), projectClassLoader);
+      } catch (ClassNotFoundException | AmbiguousJsonLibraryException e) {
+        LOGGER.warn(
+            "Function {} declares an unsupported return type '{}': {}!",
+            scannedFunction.getClassName(),
+            scannedFunction.getReturnType(),
+            e.getMessage());
+        continue;
       }
+
+      foundFunctions.add(
+          new SalesforceFunction(
+              unmarshaller,
+              marshaller,
+              scannedFunction.getClassName(),
+              new Slf4j1MdcDataInvocableWrapper(
+                  allowListClassLoader, scannedFunction.getInvocationWrapper())));
     }
 
     return foundFunctions;
