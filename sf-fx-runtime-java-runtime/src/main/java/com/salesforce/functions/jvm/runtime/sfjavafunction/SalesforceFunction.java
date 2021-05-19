@@ -42,6 +42,7 @@ public class SalesforceFunction
       FunctionResultMarshaller marshaller,
       String functionClassName,
       InvocationWrapper invocationWrapper) {
+
     this.unmarshaller = unmarshaller;
     this.marshaller = marshaller;
     this.functionClassName = functionClassName;

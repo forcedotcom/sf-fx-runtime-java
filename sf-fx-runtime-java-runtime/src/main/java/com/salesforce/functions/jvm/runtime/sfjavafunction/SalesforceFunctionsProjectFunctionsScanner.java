@@ -11,10 +11,11 @@ import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContext
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.*;
-import com.salesforce.functions.jvm.runtime.util.StackTraceUtils;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.FunctionResultMarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.FunctionResultMarshallers;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PayloadUnmarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PayloadUnmarshallers;
 import io.cloudevents.CloudEvent;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ClassInfo;
@@ -289,41 +290,12 @@ public class SalesforceFunctionsProjectFunctionsScanner
                 functionClass.getName(),
                 new Slf4j1MdcDataInvocationWrapper(
                     sdkClassLoader,
-                    (payload, cloudEvent, salesforceContext, functionContext) -> {
-                      Object event;
-                      try {
-                        event = eventClassConstructor.newInstance(cloudEvent, payload);
-                      } catch (InstantiationException
-                          | IllegalAccessException
-                          | InvocationTargetException e) {
-                        throw new SalesforceFunctionException(
-                            "Could not instantiate event class!", e);
-                      }
-
-                      Object context;
-                      try {
-                        context =
-                            contextClassConstructor.newInstance(
-                                cloudEvent, salesforceContext, functionContext);
-                      } catch (InstantiationException
-                          | IllegalAccessException
-                          | InvocationTargetException e) {
-                        throw new SalesforceFunctionException(
-                            "Could not instantiate context class!", e);
-                      }
-
-                      try {
-                        return functionApplyMethod.invoke(functionInstance, event, context);
-                      } catch (IllegalAccessException e) {
-                        throw new SalesforceFunctionException("");
-                      } catch (InvocationTargetException e) {
-
-                        throw new FunctionThrewExceptionException(
-                            e.getCause(),
-                            StackTraceUtils.rebase(
-                                e.getCause().getStackTrace(), functionClass.getName()));
-                      }
-                    }));
+                    new SdkV1InvocationWrapper(
+                        eventClassConstructor,
+                        contextClassConstructor,
+                        functionClass,
+                        functionInstance,
+                        functionApplyMethod)));
 
         foundFunctions.add(salesforceFunction);
       }
