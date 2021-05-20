@@ -32,6 +32,10 @@ public class ExtraInfo {
   private final Duration executionTime;
 
   @Expose
+  @SerializedName("statusCode")
+  private final int statusCode;
+
+  @Expose
   @SerializedName("isFunctionError")
   private final boolean isFunctionError;
 
@@ -44,6 +48,7 @@ public class ExtraInfo {
     this.requestId = "n/a";
     this.source = "n/a";
     this.executionTime = Duration.ZERO;
+    this.statusCode = 200;
     this.isFunctionError = false;
     this.stacktrace = new ArrayList<>();
   }
@@ -52,11 +57,13 @@ public class ExtraInfo {
       String requestId,
       String source,
       Duration executionTime,
+      int statusCode,
       boolean isFunctionError,
       List<StackTraceElement> stacktrace) {
     this.requestId = requestId;
     this.source = source;
     this.executionTime = executionTime;
+    this.statusCode = statusCode;
     this.isFunctionError = isFunctionError;
     this.stacktrace = stacktrace;
   }
@@ -66,6 +73,7 @@ public class ExtraInfo {
         cloudEvent.getId(),
         cloudEvent.getSource().toString(),
         this.executionTime,
+        this.statusCode,
         this.isFunctionError,
         this.stacktrace);
   }
@@ -75,6 +83,7 @@ public class ExtraInfo {
         this.requestId,
         this.source,
         this.executionTime,
+        this.statusCode,
         false,
         Collections.unmodifiableList(Arrays.asList(e.getStackTrace())));
   }
@@ -84,6 +93,7 @@ public class ExtraInfo {
         this.requestId,
         this.source,
         this.executionTime,
+        this.statusCode,
         true,
         Collections.unmodifiableList(Arrays.asList(e.getStackTrace())));
   }
@@ -93,12 +103,28 @@ public class ExtraInfo {
         this.requestId,
         this.source,
         this.executionTime,
+        this.statusCode,
         true,
         Collections.unmodifiableList(e.getFunctionStackTrace()));
   }
 
   public ExtraInfo withFunctionExecutionTime(Duration duration) {
     return new ExtraInfo(
-        this.requestId, this.source, duration, this.isFunctionError, this.stacktrace);
+        this.requestId,
+        this.source,
+        duration,
+        this.statusCode,
+        this.isFunctionError,
+        this.stacktrace);
+  }
+
+  public ExtraInfo withStatusCode(int statusCode) {
+    return new ExtraInfo(
+        this.requestId,
+        this.source,
+        this.executionTime,
+        statusCode,
+        this.isFunctionError,
+        this.stacktrace);
   }
 }
