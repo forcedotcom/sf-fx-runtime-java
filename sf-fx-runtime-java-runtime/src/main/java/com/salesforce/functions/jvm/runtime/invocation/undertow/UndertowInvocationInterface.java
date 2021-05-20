@@ -256,7 +256,7 @@ public class UndertowInvocationInterface
             .getResponseHeaders()
             .add(
                 HttpString.tryFromString("x-extra-info"),
-                URLEncoder.encode(gson.toJson(extraInfo), "UTF-8"));
+                URLEncoder.encode(gson.toJson(extraInfo.withStatusCode(status)), "UTF-8"));
 
       } catch (UnsupportedEncodingException | JsonSyntaxException e) {
         LOGGER.warn("Could not write x-extra-info header!", e);
