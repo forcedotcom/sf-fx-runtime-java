@@ -14,4 +14,6 @@ public final class SalesforceFunctionsJvmRuntime {
     int exitCode = new CommandLine(new MainCommand()).execute(args);
     System.exit(exitCode);
   }
+
+  private SalesforceFunctionsJvmRuntime() {}
 }
