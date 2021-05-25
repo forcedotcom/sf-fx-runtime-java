@@ -21,7 +21,7 @@ public class MainCommand implements Callable<Integer> {
   @Spec CommandSpec spec;
 
   @Override
-  public Integer call() throws Exception {
+  public Integer call() {
     spec.commandLine().usage(System.err);
     return 1;
   }
