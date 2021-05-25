@@ -18,6 +18,8 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Type;
 import org.junit.Test;
 
@@ -85,6 +87,7 @@ public class GsonJsonLibraryTest {
   }
 
   public static class TestClassWithGsonAnnotations {
+    @BogusAnnotation
     @SerializedName("bookingId")
     private final String __internal_name;
 
@@ -108,4 +111,7 @@ public class GsonJsonLibraryTest {
       throw new JsonSyntaxException("This JsonSerializer will always fail!");
     }
   }
+
+  @Retention(RetentionPolicy.RUNTIME)
+  public @interface BogusAnnotation {}
 }
