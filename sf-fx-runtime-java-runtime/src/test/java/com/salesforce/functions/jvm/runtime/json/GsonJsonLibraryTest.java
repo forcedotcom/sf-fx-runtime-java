@@ -10,8 +10,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
+import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
+import java.lang.reflect.Type;
 import org.junit.Test;
 
 public class GsonJsonLibraryTest {
@@ -47,6 +54,12 @@ public class GsonJsonLibraryTest {
     assertThat(jsonLibrary.serialize(testClass), is(equalTo("{\"foo\":\"baar\"}")));
   }
 
+  @Test(expected = JsonSerializationException.class)
+  public void testFailingSerialization() throws Exception {
+    JsonLibrary jsonLibrary = new GsonJsonLibrary();
+    jsonLibrary.serialize(new TestClassThatFailsSerialization());
+  }
+
   @Test
   public void testMustBeUsedForNegative() {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
@@ -60,9 +73,7 @@ public class GsonJsonLibraryTest {
   }
 
   public static class TestClass {
-    private String foo;
-
-    public TestClass() {}
+    private final String foo;
 
     public TestClass(String foo) {
       this.foo = foo;
@@ -83,6 +94,18 @@ public class GsonJsonLibraryTest {
 
     public String getBookingId() {
       return __internal_name;
+    }
+  }
+
+  public static class TestClassThatFailsSerialization {
+    @JsonAdapter(FailingJsonSerializer.class)
+    public String field = "value";
+  }
+
+  public static class FailingJsonSerializer implements JsonSerializer<String> {
+    @Override
+    public JsonElement serialize(String src, Type typeOfSrc, JsonSerializationContext context) {
+      throw new JsonSyntaxException("This JsonSerializer will always fail!");
     }
   }
 }

@@ -10,7 +10,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.JsonAdapter;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
+import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
+import java.lang.reflect.Type;
 import org.junit.Test;
 
 public class GsonReflectionJsonLibraryTest {
@@ -24,7 +31,7 @@ public class GsonReflectionJsonLibraryTest {
   }
 
   @Test(expected = JsonDeserializationException.class)
-  public void testExceptionWrapping() throws Exception {
+  public void testDeserializationExceptionWrapping() throws Exception {
     JsonLibrary jsonLibrary = new GsonReflectionJsonLibrary(getClass().getClassLoader());
     jsonLibrary.deserializeAt("{\"foo: \"bar\"}", Test.class);
   }
@@ -46,10 +53,14 @@ public class GsonReflectionJsonLibraryTest {
     assertThat(jsonLibrary.serialize(testClass), is(equalTo("{\"foo\":\"baar\"}")));
   }
 
-  public static class TestClass {
-    private String foo;
+  @Test(expected = JsonSerializationException.class)
+  public void testSerializationExceptionWrapping() throws Exception {
+    JsonLibrary jsonLibrary = new GsonReflectionJsonLibrary(getClass().getClassLoader());
+    jsonLibrary.serialize(new TestClassThatFailsSerialization());
+  }
 
-    public TestClass() {}
+  public static class TestClass {
+    private final String foo;
 
     public TestClass(String foo) {
       this.foo = foo;
@@ -57,6 +68,18 @@ public class GsonReflectionJsonLibraryTest {
 
     public String getFoo() {
       return foo;
+    }
+  }
+
+  public static class TestClassThatFailsSerialization {
+    @JsonAdapter(FailingJsonSerializer.class)
+    public String field = "value";
+  }
+
+  public static class FailingJsonSerializer implements JsonSerializer<String> {
+    @Override
+    public JsonElement serialize(String src, Type typeOfSrc, JsonSerializationContext context) {
+      throw new JsonSyntaxException("This JsonSerializer will always fail!");
     }
   }
 }
