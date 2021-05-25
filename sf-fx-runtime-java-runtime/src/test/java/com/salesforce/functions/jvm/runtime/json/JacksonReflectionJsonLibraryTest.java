@@ -10,7 +10,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
+import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
 import org.junit.Test;
 
 public class JacksonReflectionJsonLibraryTest {
@@ -40,9 +45,15 @@ public class JacksonReflectionJsonLibraryTest {
   }
 
   @Test(expected = JsonDeserializationException.class)
-  public void testExceptionWrapping() throws Exception {
+  public void testDeserializationExceptionWrapping() throws Exception {
     JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
     jsonLibrary.deserializeAt("{\"foo: \"bar\"}", Test.class);
+  }
+
+  @Test(expected = JsonSerializationException.class)
+  public void testSerializationExceptionWrapping() throws Exception {
+    JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
+    jsonLibrary.serialize(new TestClassThatFailsSerialization());
   }
 
   public static class TestClass {
@@ -56,6 +67,19 @@ public class JacksonReflectionJsonLibraryTest {
 
     public String getFoo() {
       return foo;
+    }
+  }
+
+  public static class TestClassThatFailsSerialization {
+    @JsonSerialize(using = FailingJsonSerializer.class)
+    public String field = "value";
+  }
+
+  public static class FailingJsonSerializer extends JsonSerializer<String> {
+    @Override
+    public void serialize(
+        String s, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) {
+      throw new RuntimeException("This JsonSerializer will always fail!");
     }
   }
 }
