@@ -7,7 +7,6 @@
 package com.salesforce.functions.jvm.runtime.commands;
 
 import static com.salesforce.functions.jvm.runtime.commands.ExitCodes.*;
-import static picocli.AutoComplete.EXIT_CODE_SUCCESS;
 
 import com.salesforce.functions.jvm.runtime.bundle.FunctionBundler;
 import com.salesforce.functions.jvm.runtime.project.Project;
@@ -52,6 +51,6 @@ class BundleCommandImpl extends AbstractDetectorCommandImpl {
 
     FunctionBundler.bundle(project, functions.get(0), bundlePath);
 
-    return EXIT_CODE_SUCCESS;
+    return SUCCESS;
   }
 }
