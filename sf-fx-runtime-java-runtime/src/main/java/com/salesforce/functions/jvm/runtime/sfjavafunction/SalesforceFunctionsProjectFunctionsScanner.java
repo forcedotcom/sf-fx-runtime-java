@@ -14,6 +14,7 @@ import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.*;
+import com.salesforce.functions.jvm.runtime.util.ClassLoaderUtils;
 import com.salesforce.functions.jvm.runtime.util.StackTraceUtils;
 import io.cloudevents.CloudEvent;
 import io.github.classgraph.ClassGraph;
@@ -21,14 +22,12 @@ import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassRefTypeSignature;
 import io.github.classgraph.ScanResult;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import org.slf4j.Logger;
@@ -58,7 +57,9 @@ public class SalesforceFunctionsProjectFunctionsScanner
     // step. To do so, we need to get the implementation JAR out of the invoker JAR:
     Path loggerJarPath;
     try {
-      Optional<Path> optionalLoggerJarPath = copyJarFileFromClassPath("sf-fx-java-logger.jar");
+      Optional<Path> optionalLoggerJarPath =
+          ClassLoaderUtils.copyFileFromClassLoader(
+              getClass().getClassLoader(), "sf-fx-java-logger.jar");
       if (!optionalLoggerJarPath.isPresent()) {
         LOGGER.error("Could not find logger implementation JAR!");
         return Collections.emptyList();
@@ -114,7 +115,9 @@ public class SalesforceFunctionsProjectFunctionsScanner
     // properties.getProperty("version");
 
     try {
-      Optional<Path> optionalSdkImplementationJarPath = copyJarFileFromClassPath("sdk-impl-v0.jar");
+      Optional<Path> optionalSdkImplementationJarPath =
+          ClassLoaderUtils.copyFileFromClassLoader(getClass().getClassLoader(), "sdk-impl-v0.jar");
+
       if (!optionalSdkImplementationJarPath.isPresent()) {
         LOGGER.error("Could not find logger implementation JAR!");
         return Collections.emptyList();
@@ -352,29 +355,5 @@ public class SalesforceFunctionsProjectFunctionsScanner
     }
 
     return foundFunctions;
-  }
-
-  /**
-   * Copies a JAR file from the current class loader to disk.
-   *
-   * <p>This exists since URLClassLoader does not work well with "jar:" URLs. As a workaround, we
-   * copy the JAR file from the JAR file to a temporary location and load the classes from there.
-   *
-   * @param name The name of the JAR file to copy.
-   * @return An Optional containing the path to the temporary file or an undefined Optional if the
-   *     file could not be found in the current class loader.
-   * @throws IOException If an IO related error occured.
-   */
-  private Optional<Path> copyJarFileFromClassPath(String name) throws IOException {
-    InputStream inputStream = getClass().getClassLoader().getResourceAsStream(name);
-
-    if (inputStream == null) {
-      return Optional.empty();
-    }
-
-    Path jarFilePath = Files.createTempFile(name, ".tmp.jar");
-    Files.copy(inputStream, jarFilePath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-
-    return Optional.of(jarFilePath);
   }
 }
