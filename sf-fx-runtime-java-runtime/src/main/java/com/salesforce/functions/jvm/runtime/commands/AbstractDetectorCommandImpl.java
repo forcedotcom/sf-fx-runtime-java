@@ -6,24 +6,32 @@
  */
 package com.salesforce.functions.jvm.runtime.commands;
 
+import static com.salesforce.functions.jvm.runtime.commands.ExitCodes.NO_PROJECT_FOUND;
+
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
-import com.salesforce.functions.jvm.runtime.project.ProjectBuilderException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunction;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunctionsProjectFunctionsScanner;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Detector {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Detector.class);
+public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
+  protected final Path projectPath;
+  protected final List<ProjectBuilder> projectBuilders;
 
-  public static DetectionResult detect(Path projectPath, List<ProjectBuilder> projectBuilders)
-      throws ProjectBuilderException {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDetectorCommandImpl.class);
 
+  protected AbstractDetectorCommandImpl(Path projectPath, List<ProjectBuilder> projectBuilders) {
+    this.projectPath = projectPath;
+    this.projectBuilders = projectBuilders;
+  }
+
+  @Override
+  public final Integer call() throws Exception {
     LOGGER.info("Detecting project type at path {}...", projectPath);
     long projectDetectStart = System.currentTimeMillis();
 
@@ -38,7 +46,7 @@ public class Detector {
 
     if (!optionalProject.isPresent()) {
       LOGGER.info("Could not find project at path {}!", projectPath);
-      return new DetectionResult(null, Collections.emptyList());
+      return NO_PROJECT_FOUND;
     }
 
     Project project = optionalProject.get();
@@ -57,8 +65,9 @@ public class Detector {
     long scanDuration = System.currentTimeMillis() - scanStart;
     LOGGER.info("Found {} function(s) after {}ms.", functions.size(), scanDuration);
 
-    return new DetectionResult(project, functions);
+    return handle(project, functions);
   }
 
-  private Detector() {}
+  protected abstract Integer handle(Project project, List<SalesforceFunction> functions)
+      throws Exception;
 }

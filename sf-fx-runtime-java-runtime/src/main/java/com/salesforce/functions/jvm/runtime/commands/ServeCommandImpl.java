@@ -7,6 +7,7 @@
 package com.salesforce.functions.jvm.runtime.commands;
 
 import com.salesforce.functions.jvm.runtime.InvocationInterface;
+import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunction;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunction;
@@ -15,13 +16,10 @@ import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceF
 import io.cloudevents.CloudEvent;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ServeCommandImpl implements Callable<Integer> {
-  private final Path projectPath;
-  private final List<ProjectBuilder> projectBuilders;
+class ServeCommandImpl extends AbstractDetectorCommandImpl {
   private final InvocationInterface<
           CloudEvent, SalesforceFunctionResult, SalesforceFunctionException>
       invocationInterface;
@@ -34,16 +32,11 @@ class ServeCommandImpl implements Callable<Integer> {
       InvocationInterface<CloudEvent, SalesforceFunctionResult, SalesforceFunctionException>
           invocationInterface) {
 
-    this.projectPath = projectPath;
-    this.projectBuilders = projectBuilders;
+    super(projectPath, projectBuilders);
     this.invocationInterface = invocationInterface;
   }
 
-  @Override
-  public Integer call() throws Exception {
-    DetectionResult result = Detector.detect(projectPath, projectBuilders);
-    List<SalesforceFunction> functions = result.getFunctions();
-
+  protected Integer handle(Project project, List<SalesforceFunction> functions) throws Exception {
     functions.forEach(function -> LOGGER.info("Found function: {}", function.getName()));
 
     ProjectFunction<CloudEvent, SalesforceFunctionResult, SalesforceFunctionException> function =

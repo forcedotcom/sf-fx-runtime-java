@@ -39,9 +39,16 @@ public class BundleCommandImplTest extends StdOutAndStdErrCapturingTest {
 
   @Test
   public void testFailureBundleDirectoryNotADirectory() throws Exception {
+    List<Path> paths = new ArrayList<>();
+    paths.add(sdkJarPath);
+    paths.add(Paths.get("src", "test", "resources", "sdk-1.0-string-reverse-function"));
+
+    Project mockedProject = mock(Project.class);
+    when(mockedProject.getClasspathPaths()).thenReturn(paths);
+
     ProjectBuilder mockedProjectBuilder = mock(ProjectBuilder.class);
     when(mockedProjectBuilder.build(projectDirectoryFolder.getRoot().toPath()))
-        .thenReturn(Optional.empty());
+        .thenReturn(Optional.of(mockedProject));
 
     Path bundleDirectoryFilePath = bundleDirectoryFolder.newFile().toPath();
 
@@ -49,28 +56,33 @@ public class BundleCommandImplTest extends StdOutAndStdErrCapturingTest {
         new BundleCommandImpl(
             projectDirectoryFolder.getRoot().toPath(),
             bundleDirectoryFilePath,
-            Collections.emptyList());
+            Collections.singletonList(mockedProjectBuilder));
 
     assertThat(bundleCommandImpl.call(), is(ExitCodes.BUNDLE_DIRECTORY_NOT_A_DIRECTORY));
     assertThat(
         systemOutContent.toString(),
         containsString("Bundle path " + bundleDirectoryFilePath + " must be an empty directory!"));
     assertThat(systemErrContent.toString(), is(emptyString()));
-
-    verify(mockedProjectBuilder, never()).build(any());
   }
 
   @Test
   public void testFailureBundleDirectoryNotEmpty() throws Exception {
+    List<Path> paths = new ArrayList<>();
+    paths.add(sdkJarPath);
+    paths.add(Paths.get("src", "test", "resources", "sdk-1.0-string-reverse-function"));
+
+    Project mockedProject = mock(Project.class);
+    when(mockedProject.getClasspathPaths()).thenReturn(paths);
+
     ProjectBuilder mockedProjectBuilder = mock(ProjectBuilder.class);
     when(mockedProjectBuilder.build(projectDirectoryFolder.getRoot().toPath()))
-        .thenReturn(Optional.empty());
+        .thenReturn(Optional.of(mockedProject));
 
     BundleCommandImpl bundleCommandImpl =
         new BundleCommandImpl(
             projectDirectoryFolder.getRoot().toPath(),
             bundleDirectoryFolder.getRoot().toPath(),
-            Collections.emptyList());
+            Collections.singletonList(mockedProjectBuilder));
 
     Files.write(
         bundleDirectoryFolder.getRoot().toPath().resolve("file.txt"),
@@ -82,8 +94,6 @@ public class BundleCommandImplTest extends StdOutAndStdErrCapturingTest {
         containsString(
             "Bundle path " + bundleDirectoryFolder.getRoot().toPath() + " must be empty!"));
     assertThat(systemErrContent.toString(), is(emptyString()));
-
-    verify(mockedProjectBuilder, never()).build(any());
   }
 
   @Test
