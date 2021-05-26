@@ -17,7 +17,7 @@ public class MainCommandTest extends StdOutAndStdErrCapturingTest {
   @Test
   public void testExitCode() {
     int exitCode = new CommandLine(new MainCommand()).execute();
-    assertThat(exitCode, is(1));
+    assertThat(exitCode, is(ExitCodes.MISSING_OR_INVALID_ARGUMENTS));
   }
 
   @Test

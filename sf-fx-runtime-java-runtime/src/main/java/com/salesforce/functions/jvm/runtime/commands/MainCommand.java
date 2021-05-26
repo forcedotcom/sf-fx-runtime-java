@@ -23,6 +23,6 @@ public class MainCommand implements Callable<Integer> {
   @Override
   public Integer call() {
     spec.commandLine().usage(System.err);
-    return 1;
+    return ExitCodes.MISSING_OR_INVALID_ARGUMENTS;
   }
 }
