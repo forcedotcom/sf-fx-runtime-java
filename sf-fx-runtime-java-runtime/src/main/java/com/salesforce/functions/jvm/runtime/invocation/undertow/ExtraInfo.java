@@ -127,4 +127,28 @@ public class ExtraInfo {
         this.isFunctionError,
         this.stacktrace);
   }
+
+  public String getRequestId() {
+    return requestId;
+  }
+
+  public String getSource() {
+    return source;
+  }
+
+  public Duration getExecutionTime() {
+    return executionTime;
+  }
+
+  public int getStatusCode() {
+    return statusCode;
+  }
+
+  public boolean isFunctionError() {
+    return isFunctionError;
+  }
+
+  public List<StackTraceElement> getStacktrace() {
+    return Collections.unmodifiableList(stacktrace);
+  }
 }
