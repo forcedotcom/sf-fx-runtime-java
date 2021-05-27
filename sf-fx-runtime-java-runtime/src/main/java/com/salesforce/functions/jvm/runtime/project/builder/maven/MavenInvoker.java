@@ -6,6 +6,7 @@
  */
 package com.salesforce.functions.jvm.runtime.project.builder.maven;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -13,8 +14,18 @@ import java.util.Properties;
 import org.apache.maven.shared.invoker.*;
 
 final class MavenInvoker {
+  private final Invoker invoker;
 
-  static <A> A invoke(
+  public MavenInvoker() {
+    this.invoker = new DefaultInvoker();
+  }
+
+  @VisibleForTesting
+  protected MavenInvoker(Invoker invoker) {
+    this.invoker = invoker;
+  }
+
+  public <A> A invoke(
       Path projectPath,
       String goal,
       Properties invocationRequestProperties,
@@ -26,7 +37,6 @@ final class MavenInvoker {
     invocationRequest.setProperties(invocationRequestProperties);
     invocationRequest.setBatchMode(true);
 
-    Invoker invoker = new DefaultInvoker();
     invoker.setOutputHandler(outputHandler);
 
     if (hasMavenWrapper(projectPath)) {
@@ -46,6 +56,4 @@ final class MavenInvoker {
   private static boolean hasMavenWrapper(Path projectPath) {
     return Files.exists(projectPath.resolve("mvnw"));
   }
-
-  private MavenInvoker() {}
 }
