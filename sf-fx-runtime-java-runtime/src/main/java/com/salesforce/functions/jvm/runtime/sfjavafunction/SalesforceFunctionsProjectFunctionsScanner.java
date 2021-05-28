@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -136,25 +137,6 @@ public class SalesforceFunctionsProjectFunctionsScanner
       return Collections.emptyList();
     }
 
-    final Constructor<?> eventClassConstructor;
-    final Constructor<?> contextClassConstructor;
-    try {
-      Class<?> eventClass =
-          sdkClassLoader.loadClass("com.salesforce.functions.jvm.runtime.sdk.InvocationEventImpl");
-      eventClassConstructor = eventClass.getConstructor(CloudEvent.class, Object.class);
-
-      Class<?> contextClass =
-          sdkClassLoader.loadClass("com.salesforce.functions.jvm.runtime.sdk.ContextImpl");
-      contextClassConstructor =
-          contextClass.getConstructor(
-              CloudEvent.class,
-              SalesforceContextCloudEventExtension.class,
-              SalesforceFunctionContextCloudEventExtension.class);
-    } catch (ClassNotFoundException | NoSuchMethodException e) {
-      LOGGER.error("Could not find SDK implementation class or constructor!", e);
-      return Collections.emptyList();
-    }
-
     // Load interface classes from the project class loader
     final String functionApiFunctionInterfaceName =
         "com.salesforce.functions.jvm.sdk.SalesforceFunction";
@@ -221,11 +203,37 @@ public class SalesforceFunctionsProjectFunctionsScanner
                   functionApiClasses.get(functionApiContextInterfaceName));
 
           functionApplyMethod.setAccessible(true);
+        } catch (NoClassDefFoundError e) {
+          // Note: this is not a ClassNotFoundException. The previous loadClass call will load the
+          // function class just fine even if it depends on classes that cannot be loaded (i.e. the
+          // class for a method return type). If that happens, the JVM will make a note that it
+          // could not load the class and will fail here with a NoClassDefFoundError when we really
+          // need that dependency.
+          //
+          // Note: this is different from the payload type which is a generic type that is erased
+          // to Object during compilation and will therefore not fail when we try to load the
+          // apply method.
+          LOGGER.warn(
+              "Could not find required class definition while inspecting function class {}.",
+              classInfo.getName(),
+              e);
+          continue;
         } catch (NoSuchMethodException e) {
+          // This is very unlikely to happen. Even if the user would remove apply() from the
+          // compiled byte-code, getMethod() would still find the (abstract) apply() from the
+          // interface. This would then fail later on when we check for abstractness.
           LOGGER.warn(
               "Could not find apply(InvocationEvent<?>, Context) method in function class {}.",
               classInfo.getName(),
               e);
+          continue;
+        }
+
+        // Ensure the apply() method is not abstract
+        if (Modifier.isAbstract(functionApplyMethod.getModifiers())) {
+          LOGGER.warn(
+              "Could not find implementation of apply(InvocationEvent<?>, Context) method in function class {}.",
+              classInfo.getName());
           continue;
         }
 
@@ -266,7 +274,11 @@ public class SalesforceFunctionsProjectFunctionsScanner
             Class<?> clazz = projectClassLoader.loadClass(payloadTypeArgument);
             unmarshaller = new PojoFromJsonPayloadUnmarshaller(clazz);
           } catch (ClassNotFoundException e) {
-            // Intentional ignore
+            LOGGER.warn(
+                "Potential function {} declares a payload type ({}) that cannot be found. Function will be ignored!",
+                functionClass.getName(),
+                payloadTypeArgument,
+                e);
           } catch (AmbiguousJsonLibraryException e) {
             LOGGER.warn(
                 "Potential function {} declares an payload type with multiple JSON framework annotations. Function will be ignored!",
@@ -291,7 +303,12 @@ public class SalesforceFunctionsProjectFunctionsScanner
             Class<?> clazz = projectClassLoader.loadClass(returnTypeString);
             marshaller = new PojoAsJsonFunctionResultMarshaller(clazz);
           } catch (ClassNotFoundException e) {
-            // Intentional ignore
+            // This is very unlikely to happen with the current implementation. We get the apply
+            // method from the loaded function class earlier in the code which would fail with a
+            // NoClassDefFoundError if the class could not be loaded. We therefore do not handle
+            // this case here. Should the exception ever occur, the FunctionResultMarshaller will
+            // not be set and function scanning will fail later on with a human readable error
+            // message.
           } catch (AmbiguousJsonLibraryException e) {
             LOGGER.warn(
                 "Potential function {} declares a return type with multiple JSON framework annotations. Function will be ignored!",
@@ -305,6 +322,26 @@ public class SalesforceFunctionsProjectFunctionsScanner
               functionClass.getName(),
               returnTypeString);
           continue;
+        }
+
+        final Constructor<?> eventClassConstructor;
+        final Constructor<?> contextClassConstructor;
+        try {
+          Class<?> eventClass =
+              sdkClassLoader.loadClass(
+                  "com.salesforce.functions.jvm.runtime.sdk.InvocationEventImpl");
+          eventClassConstructor = eventClass.getConstructor(CloudEvent.class, Object.class);
+
+          Class<?> contextClass =
+              sdkClassLoader.loadClass("com.salesforce.functions.jvm.runtime.sdk.ContextImpl");
+          contextClassConstructor =
+              contextClass.getConstructor(
+                  CloudEvent.class,
+                  SalesforceContextCloudEventExtension.class,
+                  SalesforceFunctionContextCloudEventExtension.class);
+        } catch (ClassNotFoundException | NoSuchMethodException e) {
+          LOGGER.error("Could not find SDK implementation class or constructor!", e);
+          return Collections.emptyList();
         }
 
         SalesforceFunction salesforceFunction =
