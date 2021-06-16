@@ -41,14 +41,10 @@ jobs:
       - checkout
       - run: ./mvnw clean package -Dmaven.test.skip=true
       - run: ./integration-test/sf-fx-runtime-java-integration-test-java8-string-reverse/test.sh
-
-  integration-test-java-11:
-    executor:
-      name: "openjdk-11"
-    steps:
-      - checkout
-      - run: ./mvnw clean package -Dmaven.test.skip=true
-      - run: ./integration-test/sf-fx-runtime-java-integration-test-java8-string-reverse/test.sh
+      - run: ./integration-test/sf-fx-runtime-java-integration-test-java8-pojo/test.sh
+      - run: ./integration-test/sf-fx-runtime-java-integration-test-java8-pojo-gson/test.sh
+      - run: ./integration-test/sf-fx-runtime-java-integration-test-java8-pojo-jackson/test.sh
+      - run: ./integration-test/sf-fx-runtime-java-integration-test-java8-exception/test.sh
 
 workflows:
   ci:
