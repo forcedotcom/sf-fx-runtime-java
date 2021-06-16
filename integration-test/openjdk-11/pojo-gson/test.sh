@@ -11,7 +11,7 @@ pushd "${test_dir}"
 ./mvnw compile
 popd
 
-"${test_dir}"/../../sf-fx-runtime-java serve -p "${port}" "${test_dir}" >"${runtime_output_logfile}" &
+"${test_dir}"/../../../sf-fx-runtime-java serve -p "${port}" "${test_dir}" >"${runtime_output_logfile}" &
 runtime_pid=$!
 
 # The curl version used by CircleCI does not correctly support curl's --retry-connrefused
@@ -20,7 +20,7 @@ runtime_pid=$!
 sleep 5
 
 curl "http://localhost:${port}" \
-	-d '{"name": "Jonas", age: 0}' \
+	-d '{"name": "Johanna", age: 5}' \
 	-H "Content-Type: application/json" \
 	-H "ce-specversion: 1.0" \
 	-H "ce-id: 1b4188b6710148d8ec2bdb7f" \
@@ -34,5 +34,5 @@ curl "http://localhost:${port}" \
 
 kill "${runtime_pid}"
 
-grep -xq '{"result":"Hello Jonas, you are 0 years old."}' "${function_invocation_response_file}"
-grep -q "Found function: com.salesforce.PojoFunction" "${runtime_output_logfile}"
+grep -xq '{"result":"Hello Johanna, you are 5 years old."}' "${function_invocation_response_file}"
+grep -q "Found function: com.salesforce.PojoGsonFunction" "${runtime_output_logfile}"

@@ -11,7 +11,7 @@ pushd "${test_dir}"
 ./mvnw compile
 popd
 
-"${test_dir}"/../../sf-fx-runtime-java serve -p "${port}" "${test_dir}" >"${runtime_output_logfile}" &
+"${test_dir}"/../../../sf-fx-runtime-java serve -p "${port}" "${test_dir}" >"${runtime_output_logfile}" &
 runtime_pid=$!
 
 # The curl version used by CircleCI does not correctly support curl's --retry-connrefused
@@ -34,5 +34,5 @@ curl "http://localhost:${port}" \
 
 kill "${runtime_pid}"
 
-grep -xq '"!dlroW olleH"' "${function_invocation_response_file}"
-grep -q "Found function: com.salesforce.StringReverseFunction" "${runtime_output_logfile}"
+grep -q 'java.lang.IllegalStateException: This function never succeeds!' "${function_invocation_response_file}"
+grep -q "Found function: com.salesforce.NeverSucceedingFunction" "${runtime_output_logfile}"
