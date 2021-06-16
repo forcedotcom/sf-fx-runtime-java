@@ -15,4 +15,4 @@ if ! compgen -G "${project_directory}/sf-fx-runtime-java-runtime/target/sf-fx-ru
 	exit 100
 fi
 
-java -jar "${project_directory}"/sf-fx-runtime-java-runtime/target/sf-fx-runtime-*-jar-with-dependencies.jar "${@}"
+exec java -jar "${project_directory}"/sf-fx-runtime-java-runtime/target/sf-fx-runtime-*-jar-with-dependencies.jar "${@}"
