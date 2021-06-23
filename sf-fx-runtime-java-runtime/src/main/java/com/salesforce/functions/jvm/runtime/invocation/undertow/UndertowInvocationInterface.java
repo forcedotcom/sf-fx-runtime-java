@@ -72,6 +72,11 @@ public class UndertowInvocationInterface
     return this.undertow != null;
   }
 
+  @Override
+  public void block() throws Exception {
+    undertow.getWorker().awaitTermination();
+  }
+
   private static class ProjectFunctionHandler implements HttpHandler {
     private final Gson gson = new Gson();
 

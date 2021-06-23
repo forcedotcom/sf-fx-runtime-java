@@ -33,6 +33,13 @@ public interface InvocationInterface<T, R, E extends Throwable> {
   void stop() throws Exception;
 
   /**
+   * Blocks until the InvocationInterface wants to stop itself.
+   *
+   * @throws Exception When the implementation cannot recover from an error and needs to terminate.
+   */
+  void block() throws Exception;
+
+  /**
    * Returns if the InvocationInterface is started.
    *
    * @return If the InvocationInterface is started.

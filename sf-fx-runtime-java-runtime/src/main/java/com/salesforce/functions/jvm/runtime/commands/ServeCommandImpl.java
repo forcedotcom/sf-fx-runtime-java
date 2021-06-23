@@ -43,6 +43,8 @@ class ServeCommandImpl extends AbstractDetectorCommandImpl {
         functions.get(0);
 
     invocationInterface.start(function);
+    invocationInterface.block();
+
     return ExitCodes.SUCCESS;
   }
 }
