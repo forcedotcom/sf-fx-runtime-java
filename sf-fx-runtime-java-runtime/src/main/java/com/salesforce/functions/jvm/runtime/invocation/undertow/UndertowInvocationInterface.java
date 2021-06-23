@@ -64,7 +64,10 @@ public class UndertowInvocationInterface
 
   @Override
   public void stop() throws Exception {
-    undertow.stop();
+    if (undertow != null) {
+      undertow.stop();
+      undertow = null;
+    }
   }
 
   @Override

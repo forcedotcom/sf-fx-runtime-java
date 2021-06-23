@@ -60,10 +60,12 @@ public class UndertowInvocationInterfaceTest {
   }
 
   @Test
-  public void testIsStarted() {
+  public void testIsStarted() throws Exception {
     assertThat(invocationInterface.isStarted(), is(equalTo(false)));
     invocationInterface.start(helloWorldFunction);
     assertThat(invocationInterface.isStarted(), is(equalTo(true)));
+    invocationInterface.stop();
+    assertThat(invocationInterface.isStarted(), is(equalTo(false)));
   }
 
   @Test
