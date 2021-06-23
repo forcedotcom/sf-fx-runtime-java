@@ -40,6 +40,7 @@ public class UndertowInvocationInterface
         CloudEvent, SalesforceFunctionResult, SalesforceFunctionException> {
   private final int port;
   private final String host;
+  private Undertow undertow = null;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(UndertowInvocationInterface.class);
 
@@ -51,15 +52,31 @@ public class UndertowInvocationInterface
   @Override
   public void start(
       ProjectFunction<CloudEvent, SalesforceFunctionResult, SalesforceFunctionException>
-          projectFunction)
-      throws Exception {
-    Undertow undertow =
+          projectFunction) {
+    this.undertow =
         Undertow.builder()
             .addHttpListener(port, host)
             .setHandler(new ProjectFunctionHandler(projectFunction))
             .build();
 
     undertow.start();
+  }
+
+  @Override
+  public void stop() throws Exception {
+    if (undertow != null) {
+      undertow.stop();
+      undertow = null;
+    }
+  }
+
+  @Override
+  public boolean isStarted() {
+    return this.undertow != null;
+  }
+
+  @Override
+  public void block() throws Exception {
     undertow.getWorker().awaitTermination();
   }
 
@@ -165,39 +182,18 @@ public class UndertowInvocationInterface
                 .withCloudEventData(cloudEvent)
                 .withFunctionExecutionTime(Duration.ofNanos(elapsedNanoTime)));
 
-      } catch (MissingCloudEventDataException e) {
-        makeResponse(
-            exchange,
-            StatusCodes.BAD_REQUEST,
-            new JsonPrimitive("CloudEvent does not contain any data to pass to the function!"),
-            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
-
-      } catch (IncompatibleCloudEventDataContentTypeException e) {
-        makeResponse(
-            exchange,
-            StatusCodes.BAD_REQUEST,
-            new JsonPrimitive("CloudEvent data must be of type application/json!"),
-            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
-
-      } catch (IncompatibleCloudEventTypeException e) {
-        makeResponse(
-            exchange,
-            StatusCodes.BAD_REQUEST,
-            new JsonPrimitive("CloudEvent must be of type 'com.salesforce.function.invoke.sync'!"),
-            new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
-
       } catch (MalformedOrMissingSalesforceContextExtensionException e) {
         makeResponse(
             exchange,
             StatusCodes.BAD_REQUEST,
-            new JsonPrimitive("CloudEvent is missing required 'sfcontext' extension!"),
+            new JsonPrimitive("CloudEvent is missing required sfcontext extension!"),
             new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
 
       } catch (MalformedOrMissingSalesforceFunctionContextExtensionException e) {
         makeResponse(
             exchange,
             StatusCodes.BAD_REQUEST,
-            new JsonPrimitive("CloudEvent is missing required 'sffncontext' extension!"),
+            new JsonPrimitive("CloudEvent is missing required sffncontext extension!"),
             new ExtraInfo().withCloudEventData(cloudEvent).withInternalExceptionData(e));
 
       } catch (PayloadUnmarshallingException e) {
@@ -263,6 +259,7 @@ public class UndertowInvocationInterface
       }
 
       exchange.getResponseSender().send(gson.toJson(data), StandardCharsets.UTF_8);
+      exchange.getResponseSender().close();
     }
   }
 }
