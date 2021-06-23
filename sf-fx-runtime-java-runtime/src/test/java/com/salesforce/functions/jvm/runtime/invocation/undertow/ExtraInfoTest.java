@@ -151,6 +151,6 @@ public class ExtraInfoTest {
         new Gson().toJson(extraInfo),
         is(
             equalTo(
-                "{\"requestId\":\"requestId\",\"source\":\"source\",\"execTimeMs\":60000,\"statusCode\":200,\"isFunctionError\":true,\"stacktrace\":[\"com.example.Test.testMethod(Test.java:1337)\"]}")));
+                "{\"requestId\":\"requestId\",\"source\":\"source\",\"execTimeMs\":60000,\"statusCode\":200,\"isFunctionError\":true,\"stack\":[\"com.example.Test.testMethod(Test.java:1337)\"]}")));
   }
 }
