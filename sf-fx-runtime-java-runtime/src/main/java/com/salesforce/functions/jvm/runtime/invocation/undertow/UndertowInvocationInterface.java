@@ -150,16 +150,6 @@ public class UndertowInvocationInterface
         return;
       }
 
-      if (cloudEvent.getDataContentType() == null
-          || !MediaType.parse(cloudEvent.getDataContentType()).is(MediaType.JSON_UTF_8)) {
-        makeResponse(
-            exchange,
-            StatusCodes.BAD_REQUEST,
-            new JsonPrimitive("CloudEvent data must be of type application/json!"),
-            new ExtraInfo().withCloudEventData(cloudEvent));
-        return;
-      }
-
       // Step 3: Apply function with the CloudEvent, translating exceptions to semantic HTTP error
       // responses.
       try {

@@ -168,19 +168,6 @@ public class UndertowInvocationInterfaceTest {
   }
 
   @Test
-  public void testUnsupportedContentTypeInvocation() throws Exception {
-    invocationInterface.start(helloWorldFunction);
-
-    Response response = client.newCall(makeRequest("Hello!", "text/plain")).execute();
-
-    assertThat(response.code(), is(equalTo(StatusCodes.BAD_REQUEST)));
-    assertThat(response.header("content-type"), is(equalTo("application/json")));
-    assertThat(
-        response.body().string(),
-        is(equalTo("\"CloudEvent data must be of type application/json!\"")));
-  }
-
-  @Test
   public void testMissingSalesforceContextExtensionInvocation() throws Exception {
     invocationInterface.start(
         makeThrowingFunctionMock(new MalformedOrMissingSalesforceContextExtensionException()));
