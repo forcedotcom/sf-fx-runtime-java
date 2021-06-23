@@ -40,7 +40,7 @@ public class ExtraInfo {
   private final boolean isFunctionError;
 
   @Expose
-  @SerializedName("stacktrace")
+  @SerializedName("stack")
   @JsonAdapter(StackTraceElementListJsonSerializer.class)
   private final List<StackTraceElement> stacktrace;
 
