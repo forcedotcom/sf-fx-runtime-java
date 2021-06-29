@@ -48,7 +48,10 @@ public class OrgImpl implements Org {
   @Override
   @Nonnull
   public String getApiVersion() {
-    return salesforceContext.getApiVersion();
+    // An API version is also available in the context via #getApiVersion(). That value differs
+    // between orgs and can change seemingly randomly. To avoid surprises at runtime, we
+    // intentionally don't use that value and instead fix the version.
+    return "51.0";
   }
 
   @Override
