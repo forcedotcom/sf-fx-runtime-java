@@ -269,6 +269,8 @@ public class SalesforceFunctionsProjectFunctionsScanner
         PayloadUnmarshaller unmarshaller = null;
         if (payloadTypeArgument.equals("byte[]")) {
           unmarshaller = new ByteArrayPayloadUnmarshaller();
+        } else if (payloadTypeArgument.equals("java.util.List<java.lang.String>")) {
+          unmarshaller = new ListPayloadUnmarshaller();
         } else {
           try {
             Class<?> clazz = projectClassLoader.loadClass(payloadTypeArgument);
