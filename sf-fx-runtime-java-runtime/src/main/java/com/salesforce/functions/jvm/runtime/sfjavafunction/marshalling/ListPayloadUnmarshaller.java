@@ -31,7 +31,6 @@ public class ListPayloadUnmarshaller implements PayloadUnmarshaller {
     if (data == null) {
       throw new PayloadUnmarshallingException("No data given");
     }
-
     return new Gson().fromJson(new String(data.toBytes(), StandardCharsets.UTF_8), List.class);
   }
 }

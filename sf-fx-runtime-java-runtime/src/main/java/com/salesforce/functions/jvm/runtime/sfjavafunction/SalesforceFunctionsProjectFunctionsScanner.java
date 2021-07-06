@@ -300,6 +300,8 @@ public class SalesforceFunctionsProjectFunctionsScanner
         FunctionResultMarshaller marshaller = null;
         if (returnTypeString.equals("java.lang.String")) {
           marshaller = new StringFunctionResultMarshaller();
+        } else if (returnTypeString.equals("java.util.List<java.lang.String>")) {
+          marshaller = new ListFunctionResultMarshaller();
         } else {
           try {
             Class<?> clazz = projectClassLoader.loadClass(returnTypeString);
