@@ -12,6 +12,7 @@ import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationExce
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public final class JacksonReflectionJsonLibrary implements JsonLibrary {
   private final Method readTreeMethod;
@@ -23,6 +24,9 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
   private final Package annotationsPackage;
 
   private final Object objectMapper;
+  private final Method readValueListMethod;
+  private final Method constructCollectionTypeMethod;
+  private final Object typeFactory;
 
   public JacksonReflectionJsonLibrary(ClassLoader classLoader)
       throws JsonLibraryNotPresentException {
@@ -32,14 +36,23 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
       Class<?> objectReaderClass =
           classLoader.loadClass("com.fasterxml.jackson.databind.ObjectReader");
       Class<?> jsonNodeClass = classLoader.loadClass("com.fasterxml.jackson.databind.JsonNode");
+      Class<?> typeFactoryClass =
+          classLoader.loadClass("com.fasterxml.jackson.databind.type.TypeFactory");
+      Class<?> jacksonJavaTypeClass =
+          classLoader.loadClass("com.fasterxml.jackson.databind.JavaType");
 
       readTreeMethod = objectMapperClass.getMethod("readTree", String.class);
       atMethod = jsonNodeClass.getMethod("at", String.class);
       readerForMethod = objectMapperClass.getMethod("readerFor", Class.class);
+      readValueListMethod =
+          objectMapperClass.getMethod("readValue", String.class, jacksonJavaTypeClass);
       readValueMethod = objectReaderClass.getMethod("readValue", jsonNodeClass);
       writeValueAsStringMethod = objectMapperClass.getMethod("writeValueAsString", Object.class);
-
       objectMapper = objectMapperClass.getConstructor().newInstance();
+
+      typeFactory = objectMapperClass.getMethod("getTypeFactory", null).invoke(objectMapper);
+      constructCollectionTypeMethod =
+          typeFactoryClass.getMethod("constructCollectionType", Class.class, Class.class);
 
       // Configure the ObjectMapper to not fail on empty beans
       Class<?> serializationFeatureClass =
@@ -62,6 +75,30 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
       throw new JsonLibraryNotPresentException(
           "Could not find expected Jackson classes/methods, Jackson support will not be enabled.",
           e);
+    }
+  }
+
+  @Override
+  public <A> List<A> deserializeListAt(String json, Class<A> clazz, String... path)
+      throws JsonDeserializationException {
+    try {
+      Object jsonNode = readTreeMethod.invoke(objectMapper, json);
+
+      if (path.length > 0) {
+        jsonNode = atMethod.invoke(jsonNode, "/" + String.join("/", path));
+      }
+      return (List<A>)
+          readValueListMethod.invoke(
+              objectMapper,
+              json,
+              constructCollectionTypeMethod.invoke(
+                  typeFactory,
+                  List.class,
+                  clazz)); // mapper.getTypeFactory().constructCollectionType(List.class, clazz)
+    } catch (IllegalAccessException e) {
+      throw new JsonDeserializationException(e);
+    } catch (InvocationTargetException e) {
+      throw new JsonDeserializationException(e.getCause());
     }
   }
 

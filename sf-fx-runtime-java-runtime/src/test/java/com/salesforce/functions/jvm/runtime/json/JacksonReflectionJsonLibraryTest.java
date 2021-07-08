@@ -7,8 +7,7 @@
 package com.salesforce.functions.jvm.runtime.json;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -16,6 +15,7 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
+import java.util.List;
 import org.junit.Test;
 
 public class JacksonReflectionJsonLibraryTest {
@@ -34,6 +34,32 @@ public class JacksonReflectionJsonLibraryTest {
     Object testClass =
         jsonLibrary.deserializeAt("{\"inner\": {\"foo\": \"bar\"}}", TestClass.class, "inner");
     assertThat(((TestClass) testClass).getFoo(), is(equalTo("bar")));
+  }
+
+  @Test
+  public void testPojoListDeserialization() throws Exception {
+    JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
+
+    List<TestClass> testClassList =
+        jsonLibrary.deserializeListAt(
+            "[{\"foo\": \"one\"},{\"foo\": \"two\"},{\"foo\": \"three\"}]", TestClass.class);
+
+    assertThat(
+        testClassList,
+        hasItems(
+            hasProperty("foo", equalTo("one")),
+            hasProperty("foo", equalTo("two")),
+            hasProperty("foo", equalTo("three"))));
+  }
+
+  @Test
+  public void testStringListDeserialization() throws Exception {
+    JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
+
+    List<String> testClass =
+        jsonLibrary.deserializeListAt("[\"foo\", \"foo\", \"foo\"]", String.class);
+
+    assertThat(testClass, hasItems(equalTo("foo"), equalTo("foo"), equalTo("foo")));
   }
 
   @Test

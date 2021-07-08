@@ -9,6 +9,7 @@ package com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.PayloadUnmarshallingException;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.v1.CloudEventBuilder;
@@ -18,10 +19,33 @@ import java.util.List;
 import org.junit.Test;
 
 public class ListPayloadUnmarshallerTest {
+  @Test
+  public void testInteger() throws AmbiguousJsonLibraryException {
+    PayloadUnmarshaller unmarshaller = new ListPayloadUnmarshaller(Integer.class);
+
+    byte[] data = "[1, 2, 3]".getBytes(StandardCharsets.UTF_8);
+
+    List<Integer> result = (List<Integer>) unmarshaller.unmarshall(createCloudEventWithData(data));
+
+    assertThat(result, is(instanceOf(List.class)));
+    assertThat(result.get(0), is(instanceOf(Integer.class)));
+  }
 
   @Test
-  public void testString() {
-    PayloadUnmarshaller unmarshaller = new ListPayloadUnmarshaller();
+  public void testDouble() throws AmbiguousJsonLibraryException {
+    PayloadUnmarshaller unmarshaller = new ListPayloadUnmarshaller(Double.class);
+
+    byte[] data = "[1.2, 1.3]".getBytes(StandardCharsets.UTF_8);
+
+    List<Double> result = (List<Double>) unmarshaller.unmarshall(createCloudEventWithData(data));
+
+    assertThat(result, is(instanceOf(List.class)));
+    assertThat(result.get(0), is(instanceOf(Double.class)));
+  }
+
+  @Test
+  public void testString() throws AmbiguousJsonLibraryException {
+    PayloadUnmarshaller unmarshaller = new ListPayloadUnmarshaller(String.class);
 
     byte[] data = "['foo', 'bar']".getBytes(StandardCharsets.UTF_8);
 
@@ -32,8 +56,8 @@ public class ListPayloadUnmarshallerTest {
   }
 
   @Test(expected = PayloadUnmarshallingException.class)
-  public void testWithoutData() {
-    PayloadUnmarshaller unmarshaller = new ListPayloadUnmarshaller();
+  public void testWithoutData() throws AmbiguousJsonLibraryException {
+    PayloadUnmarshaller unmarshaller = new ListPayloadUnmarshaller(String.class);
 
     CloudEvent cloudEvent =
         new CloudEventBuilder()

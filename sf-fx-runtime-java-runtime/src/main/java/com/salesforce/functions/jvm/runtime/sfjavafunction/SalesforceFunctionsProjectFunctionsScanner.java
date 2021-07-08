@@ -31,6 +31,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -264,13 +266,23 @@ public class SalesforceFunctionsProjectFunctionsScanner
 
         final String payloadTypeArgument = typeSignature.getTypeArguments().get(0).toString();
         final String returnTypeString = typeSignature.getTypeArguments().get(1).toString();
-
+        Pattern listPattern = Pattern.compile("java\\.util\\.List<(.*)>");
+        Matcher listMatcher = listPattern.matcher(payloadTypeArgument);
         // Determine PayloadUnmarshaller for this user function
         PayloadUnmarshaller unmarshaller = null;
         if (payloadTypeArgument.equals("byte[]")) {
           unmarshaller = new ByteArrayPayloadUnmarshaller();
-        } else if (payloadTypeArgument.equals("java.util.List<java.lang.String>")) {
-          unmarshaller = new ListPayloadUnmarshaller();
+        } else if (listMatcher.matches()) {
+          String listClassName = listMatcher.group(1);
+          Class<?> clazz = null;
+
+          try {
+            clazz = projectClassLoader.loadClass(listClassName);
+            unmarshaller = new ListPayloadUnmarshaller(clazz);
+          } catch (ClassNotFoundException | AmbiguousJsonLibraryException e) {
+            e.printStackTrace();
+            System.exit(1234);
+          }
         } else {
           try {
             Class<?> clazz = projectClassLoader.loadClass(payloadTypeArgument);
@@ -300,7 +312,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
         FunctionResultMarshaller marshaller = null;
         if (returnTypeString.equals("java.lang.String")) {
           marshaller = new StringFunctionResultMarshaller();
-        } else if (returnTypeString.equals("java.util.List<java.lang.String>")) {
+        } else if (listMatcher.matches()) {
           marshaller = new ListFunctionResultMarshaller();
         } else {
           try {

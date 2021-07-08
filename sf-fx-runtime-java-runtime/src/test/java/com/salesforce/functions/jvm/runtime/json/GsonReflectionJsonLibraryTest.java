@@ -7,8 +7,7 @@
 package com.salesforce.functions.jvm.runtime.json;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
@@ -18,6 +17,7 @@ import com.google.gson.annotations.JsonAdapter;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
 import java.lang.reflect.Type;
+import java.util.List;
 import org.junit.Test;
 
 public class GsonReflectionJsonLibraryTest {
@@ -43,6 +43,32 @@ public class GsonReflectionJsonLibraryTest {
         jsonLibrary.deserializeAt("{\"inner\": {\"foo\": \"bar\"}}", TestClass.class, "inner");
 
     assertThat(((TestClass) testClass).getFoo(), is(equalTo("bar")));
+  }
+
+  @Test
+  public void testPojoListDeserialization() throws Exception {
+    JsonLibrary jsonLibrary = new GsonReflectionJsonLibrary(getClass().getClassLoader());
+
+    List<TestClass> testClassList =
+        jsonLibrary.deserializeListAt(
+            "[{\"foo\": \"one\"},{\"foo\": \"two\"},{\"foo\": \"three\"}]", TestClass.class);
+
+    assertThat(
+        testClassList,
+        hasItems(
+            hasProperty("foo", equalTo("one")),
+            hasProperty("foo", equalTo("two")),
+            hasProperty("foo", equalTo("three"))));
+  }
+
+  @Test
+  public void testStringListDeserialization() throws Exception {
+    JsonLibrary jsonLibrary = new GsonReflectionJsonLibrary(getClass().getClassLoader());
+
+    List<String> testClass =
+        jsonLibrary.deserializeListAt("[\"foo\", \"foo\", \"foo\"]", String.class);
+
+    assertThat(testClass, hasItems(equalTo("foo"), equalTo("foo"), equalTo("foo")));
   }
 
   @Test

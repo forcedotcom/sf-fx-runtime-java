@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.json;
 
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
+import java.util.List;
 
 /**
  * An abstracted interface to a JSON library.
@@ -32,6 +33,9 @@ public interface JsonLibrary {
    *     the exception's cause for the underlying library exception.
    */
   Object deserializeAt(String json, Class<?> clazz, String... path)
+      throws JsonDeserializationException;
+
+  <A> List<A> deserializeListAt(String json, Class<A> clazz, String... path)
       throws JsonDeserializationException;
 
   /**

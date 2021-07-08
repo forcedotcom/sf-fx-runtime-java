@@ -18,9 +18,33 @@ import java.util.List;
 import org.junit.Test;
 
 public class ListFunctionResultMarshallerTest {
+  @Test
+  public void testPojoSuccess() {
+    FunctionResultMarshaller marshaller = new ListFunctionResultMarshaller();
+
+    List<TestClass> data = new ArrayList<>();
+    data.add(new TestClass("blerg"));
+    SalesforceFunctionResult result = marshaller.marshall(data);
+
+    assertThat(result.getMediaType(), is(MediaType.JSON_UTF_8));
+    assertThat(
+        result.getData(), is(equalTo("[{\"foo\":\"blerg\"}]".getBytes(StandardCharsets.UTF_8))));
+  }
 
   @Test
-  public void testSuccess() {
+  public void testIntSuccess() {
+    FunctionResultMarshaller marshaller = new ListFunctionResultMarshaller();
+    List<Integer> data = new ArrayList<>();
+    data.add(1);
+    SalesforceFunctionResult result = marshaller.marshall(data);
+
+    assertThat(result.getMediaType(), is(MediaType.JSON_UTF_8));
+
+    assertThat(result.getData(), is(equalTo("[1]".getBytes(StandardCharsets.UTF_8))));
+  }
+
+  @Test
+  public void testStringSuccess() {
     FunctionResultMarshaller marshaller = new ListFunctionResultMarshaller();
     List<String> data = new ArrayList<>();
     data.add("Hello 👋🏻!");
@@ -35,5 +59,17 @@ public class ListFunctionResultMarshallerTest {
   public void testFailure() {
     FunctionResultMarshaller marshaller = new ListFunctionResultMarshaller();
     marshaller.marshall(23);
+  }
+
+  public static class TestClass {
+    private final String foo;
+
+    public TestClass(String foo) {
+      this.foo = foo;
+    }
+
+    public String getFoo() {
+      return foo;
+    }
   }
 }

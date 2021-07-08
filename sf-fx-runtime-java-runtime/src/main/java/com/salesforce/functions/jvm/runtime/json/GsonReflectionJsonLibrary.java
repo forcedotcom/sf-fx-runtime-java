@@ -12,6 +12,8 @@ import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationExce
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.List;
 
 public final class GsonReflectionJsonLibrary implements JsonLibrary {
   private final Method parseStringMethod;
@@ -23,6 +25,7 @@ public final class GsonReflectionJsonLibrary implements JsonLibrary {
   private final Package annotationsPackage;
 
   private final Object gson;
+  private final Method fromJsonWithType;
 
   public GsonReflectionJsonLibrary(ClassLoader classLoader) throws JsonLibraryNotPresentException {
     try {
@@ -35,6 +38,7 @@ public final class GsonReflectionJsonLibrary implements JsonLibrary {
       getAsJsonObjectMethod = jsonElementClass.getMethod("getAsJsonObject");
       getMethod = jsonObjectClass.getMethod("get", String.class);
       fromJsonMethod = gsonClass.getMethod("fromJson", jsonElementClass, Class.class);
+      fromJsonWithType = gsonClass.getMethod("fromJson", jsonElementClass, Type.class);
       toJsonMethod = gsonClass.getMethod("toJson", Object.class);
 
       gson = gsonClass.getConstructor().newInstance();
@@ -50,6 +54,29 @@ public final class GsonReflectionJsonLibrary implements JsonLibrary {
         | InvocationTargetException e) {
       throw new JsonLibraryNotPresentException(
           "Could not find expected GSON classes/methods, GSON support will not be enabled.", e);
+    }
+  }
+
+  @Override
+  public <A> List<A> deserializeListAt(String json, Class<A> clazz, String... path)
+      throws JsonDeserializationException {
+    try {
+      Object jsonElement = parseStringMethod.invoke(null, json);
+      if (path.length > 0) {
+        Object jsonObject = getAsJsonObjectMethod.invoke(jsonElement);
+        for (String pathItem : path) {
+          jsonObject = getAsJsonObjectMethod.invoke(getMethod.invoke(jsonObject, pathItem));
+        }
+
+        jsonElement = jsonObject;
+      }
+
+      return (List<A>) fromJsonWithType.invoke(gson, jsonElement, new ListParameterizedType(clazz));
+    } catch (IllegalAccessException e) {
+      throw new JsonDeserializationException(e);
+    } catch (InvocationTargetException e) {
+      System.out.println(e.getCause());
+      throw new JsonDeserializationException(e.getCause());
     }
   }
 

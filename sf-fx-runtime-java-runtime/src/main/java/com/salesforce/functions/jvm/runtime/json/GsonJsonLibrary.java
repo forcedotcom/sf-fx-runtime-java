@@ -11,9 +11,31 @@ import com.google.gson.annotations.SerializedName;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 public final class GsonJsonLibrary implements JsonLibrary {
   private final Gson gson = new Gson();
+
+  @Override
+  public <A> List<A> deserializeListAt(String json, Class<A> clazz, String... path)
+      throws JsonDeserializationException {
+    try {
+      JsonElement jsonElement = JsonParser.parseString(json);
+
+      if (path.length > 0) {
+        JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+        for (String pathItem : path) {
+          jsonObject = jsonObject.get(pathItem).getAsJsonObject();
+        }
+
+        jsonElement = jsonObject;
+      }
+
+      return gson.fromJson(jsonElement, new ListParameterizedType(clazz));
+    } catch (JsonSyntaxException e) {
+      throw new JsonDeserializationException(e);
+    }
+  }
 
   @Override
   public Object deserializeAt(String json, Class<?> clazz, String... path)
