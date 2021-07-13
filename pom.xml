@@ -33,7 +33,6 @@
         <module>sf-fx-runtime-java-sdk-impl-v1</module>
         <module>sf-fx-runtime-java-logger</module>
         <module>sf-fx-runtime-java-runtime</module>
-        <module>coverage</module>
     </modules>
 
     <properties>
@@ -343,6 +342,16 @@
                     </plugins>
                 </pluginManagement>
             </build>
+        </profile>
+
+        <profile>
+            <id>aggregate-coverage</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>coverage</module>
+            </modules>
         </profile>
     </profiles>
 </project>

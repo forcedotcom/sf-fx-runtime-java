@@ -60,7 +60,7 @@ Usage: sf-fx-runtime-java bundle <projectPath> <bundlePath>
 
 ### Generating Code Coverage Reports
 ```
-$ ./mvnw clean package
+$ ./mvnw clean package -Paggregate-coverage
 ```
 
 After building, an aggregated report across all project modules can be found at [coverage/target/site/jacoco-aggregate/index.html](coverage/target/site/jacoco-aggregate/index.html)
