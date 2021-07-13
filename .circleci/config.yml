@@ -31,6 +31,13 @@ jobs:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+
+  coverage-report:
+    executor:
+      name: "openjdk-11"
+    steps:
+      - checkout
+      - run: ./mvnw clean package -Paggregate-coverage
       - codecov/upload:
           file: "coverage/target/site/jacoco-aggregate/jacoco.xml"
 
@@ -52,6 +59,7 @@ jobs:
 workflows:
   ci:
     jobs:
+      - coverage-report
       - maven:
           matrix:
             parameters:
