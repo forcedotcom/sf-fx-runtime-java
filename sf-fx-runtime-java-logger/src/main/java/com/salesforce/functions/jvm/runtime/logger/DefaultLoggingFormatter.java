@@ -43,7 +43,7 @@ public class DefaultLoggingFormatter implements LoggingFormatter {
   }
 
   private static final String FORMAT_STRING =
-      "LocalDateTime=%s level=%s INVOCATION_ID=%s loggerName=%s message=\"%s\"\n";
+      "localDateTime=%s level=%s InvocationId=%s loggerName=%s message=\"%s\"\n";
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
