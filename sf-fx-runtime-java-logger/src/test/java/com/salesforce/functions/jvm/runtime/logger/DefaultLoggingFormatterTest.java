@@ -35,7 +35,7 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=00:00:00.000 level=DEBUG InvocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 loggerName=foo.bar.baz message=This is a message! ")));
+                "LocalDateTime=00:00:00.000 INVOCATION_ID=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 level=DEBUG loggerName=foo.bar.baz message=This is a message! ")));
   }
 
   @Test
@@ -50,7 +50,7 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=00:00:00.000 level=WARN InvocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 loggerName=c.s.f.jvm.runtime.logger.ClassName message=This is a message! ")));
+                "LocalDateTime=00:00:00.000 INVOCATION_ID=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 level=WARN loggerName=c.s.f.jvm.runtime.logger.ClassName message=This is a message! ")));
   }
 
   @Test
@@ -66,6 +66,6 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=00:00:00.000 level=TRACE InvocationId=null loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=This is a message! ")));
+                "LocalDateTime=00:00:00.000 INVOCATION_ID=null level=TRACE loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=This is a message! ")));
   }
 }
