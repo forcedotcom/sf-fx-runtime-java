@@ -113,6 +113,11 @@
             <version>3.11.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.heroku</groupId>
+            <artifactId>logfmt</artifactId>
+            <version>0.1</version>
+        </dependency>
     </dependencies>
 
     <build>
