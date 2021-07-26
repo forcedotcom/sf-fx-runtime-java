@@ -9,6 +9,7 @@ package com.salesforce.functions.jvm.runtime.logger;
 import com.heroku.logfmt.Logfmt;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import org.slf4j.MDC;
@@ -24,8 +25,7 @@ public class DefaultLoggingFormatter implements LoggingFormatter {
   @Override
   public String format(String loggerName, Level level, String message) {
     String invocationId = MDC.get("function-invocation-id");
-    String localDateTimeString = LocalDateTime.now(clock).format(DATE_TIME_FORMATTER);
-
+    String localDateTimeString = LocalDateTime.now(ZoneOffset.UTC).format(DATE_TIME_FORMATTER);
     String formatString =
         String.format(
             FORMAT_STRING,
@@ -39,11 +39,12 @@ public class DefaultLoggingFormatter implements LoggingFormatter {
     for (String value : parsedString.keySet()) {
       formattedString.append(value).append("=").append(parsedString.get(value)).append(" ");
     }
+    formattedString.append("\n");
     return formattedString.toString();
   }
 
   private static final String FORMAT_STRING =
-      "localDateTime=%s level=%s invocationId=%s loggerName=%s message=\"%s\"\n";
+      "UTC=%s level=%s invocationId=%s loggerName=%s message=\"%s\"\n";
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("HH:mm:ss.SSS");

@@ -10,9 +10,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.MDC;
@@ -21,6 +20,8 @@ import org.slf4j.event.Level;
 public class DefaultLoggingFormatterTest {
   private final LoggingFormatter formatter =
       new DefaultLoggingFormatter(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
   @Before
   public void clearAndSetMDC() {
@@ -30,16 +31,21 @@ public class DefaultLoggingFormatterTest {
 
   @Test
   public void test_1() {
+    String localDateTimeString = LocalDateTime.now(ZoneOffset.UTC).format(DATE_TIME_FORMATTER);
     String result = formatter.format("foo.bar.baz", Level.DEBUG, "This is a message!");
+
     assertThat(
         result,
         is(
             equalTo(
-                "localDateTime=00:00:00.000 level=DEBUG loggerName=foo.bar.baz message=This is a message! invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 ")));
+                String.format(
+                    "UTC=%s level=DEBUG loggerName=foo.bar.baz message=This is a message! invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 \n",
+                    localDateTimeString))));
   }
 
   @Test
   public void testShortenedLoggerName() {
+    String localDateTimeString = LocalDateTime.now(ZoneOffset.UTC).format(DATE_TIME_FORMATTER);
     String result =
         formatter.format(
             "com.salesforce.functions.jvm.runtime.logger.ClassName",
@@ -50,12 +56,15 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=00:00:00.000 level=WARN loggerName=c.s.f.jvm.runtime.logger.ClassName message=This is a message! invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 ")));
+                String.format(
+                    "UTC=%s level=WARN loggerName=c.s.f.jvm.runtime.logger.ClassName message=This is a message! invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 \n",
+                    localDateTimeString))));
   }
 
   @Test
   public void testEmptyMDC() {
     MDC.clear();
+    String localDateTimeString = LocalDateTime.now(ZoneOffset.UTC).format(DATE_TIME_FORMATTER);
     String result =
         formatter.format(
             "com.salesforce.functions.jvm.runtime.logger.EmptyMDC",
@@ -66,6 +75,8 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=00:00:00.000 level=TRACE loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=This is a message! invocationId=null ")));
+                String.format(
+                    "UTC=%s level=TRACE loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=This is a message! invocationId=null \n",
+                    localDateTimeString))));
   }
 }
