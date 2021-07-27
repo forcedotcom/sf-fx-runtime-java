@@ -31,7 +31,6 @@ public class DefaultLoggingFormatterTest {
 
   @Test
   public void test_1() {
-    String localDateTimeString = LocalDateTime.now(ZoneOffset.UTC).format(DATE_TIME_FORMATTER);
     String result = formatter.format("foo.bar.baz", Level.DEBUG, "This is a message!");
 
     assertThat(
@@ -39,13 +38,11 @@ public class DefaultLoggingFormatterTest {
         is(
             equalTo(
                 String.format(
-                    "UTC=%s level=DEBUG loggerName=foo.bar.baz message=This is a message! invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 \n",
-                    localDateTimeString))));
+                    "\"UTC\"=\"00:00:00.000\" \"level\"=\"DEBUG\" \"loggerName\"=\"foo.bar.baz\" \"message\"=\"This is a message!\" \"invocationId\"=\"e3a4ae2b-fefb-4277-89d0-7068e7e39b99\" \n"))));
   }
 
   @Test
   public void testShortenedLoggerName() {
-    String localDateTimeString = LocalDateTime.now(ZoneOffset.UTC).format(DATE_TIME_FORMATTER);
     String result =
         formatter.format(
             "com.salesforce.functions.jvm.runtime.logger.ClassName",
@@ -57,14 +54,12 @@ public class DefaultLoggingFormatterTest {
         is(
             equalTo(
                 String.format(
-                    "UTC=%s level=WARN loggerName=c.s.f.jvm.runtime.logger.ClassName message=This is a message! invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99 \n",
-                    localDateTimeString))));
+                    "\"UTC\"=\"00:00:00.000\" \"level\"=\"WARN\" \"loggerName\"=\"c.s.f.jvm.runtime.logger.ClassName\" \"message\"=\"This is a message!\" \"invocationId\"=\"e3a4ae2b-fefb-4277-89d0-7068e7e39b99\" \n"))));
   }
 
   @Test
   public void testEmptyMDC() {
     MDC.clear();
-    String localDateTimeString = LocalDateTime.now(ZoneOffset.UTC).format(DATE_TIME_FORMATTER);
     String result =
         formatter.format(
             "com.salesforce.functions.jvm.runtime.logger.EmptyMDC",
@@ -76,7 +71,18 @@ public class DefaultLoggingFormatterTest {
         is(
             equalTo(
                 String.format(
-                    "UTC=%s level=TRACE loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=This is a message! invocationId=null \n",
-                    localDateTimeString))));
+                    "\"UTC\"=\"00:00:00.000\" \"level\"=\"TRACE\" \"loggerName\"=\"c.s.f.jvm.runtime.logger.EmptyMDC\" \"message\"=\"This is a message!\" \"invocationId\"=\"null\" \n"))));
+  }
+
+  @Test
+  public void testQuotations() {
+    String result = formatter.format("blank", Level.INFO, "Checking Quotations \"test\"");
+
+    assertThat(
+        result,
+        is(
+            equalTo(
+                String.format(
+                    "\"UTC\"=\"00:00:00.000\" \"level\"=\"INFO\" \"loggerName\"=\"blank\" \"message\"=\"Checking Quotations \"test\"\" \"invocationId\"=\"e3a4ae2b-fefb-4277-89d0-7068e7e39b99\" \n"))));
   }
 }
