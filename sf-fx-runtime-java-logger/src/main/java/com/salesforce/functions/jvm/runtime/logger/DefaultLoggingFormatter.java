@@ -46,7 +46,7 @@ public class DefaultLoggingFormatter implements LoggingFormatter {
     StringBuilder formattedString = new StringBuilder();
     for (String field : stringFields.keySet()) {
       String currentFieldValue = String.format("\"%s\"=\"%s\" ", field, stringFields.get(field));
-      formattedString.append((currentFieldValue));
+      formattedString.append(currentFieldValue);
     }
     formattedString.append("\n");
     return formattedString.toString();
