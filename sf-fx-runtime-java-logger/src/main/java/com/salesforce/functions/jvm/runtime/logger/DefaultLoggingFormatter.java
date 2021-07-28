@@ -7,7 +7,7 @@
 package com.salesforce.functions.jvm.runtime.logger;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,12 +24,12 @@ public class DefaultLoggingFormatter implements LoggingFormatter {
   @Override
   public String format(String loggerName, Level level, String message) {
     String invocationId = MDC.get("function-invocation-id");
-    String localDateTimeString = LocalDateTime.now(clock).format(DATE_TIME_FORMATTER);
-    String zoneId = clock.getZone().toString();
+    String localDateTimeString =
+        ZonedDateTime.now(clock).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     Map<String, String> stringFields =
         new HashMap<String, String>() {
           {
-            put(zoneId, localDateTimeString);
+            put("localDateTime", localDateTimeString);
             put("level", level.toString());
             put("invocationId", invocationId);
             put("loggerName", Utils.shortenLoggerName(loggerName, 36));
@@ -51,7 +51,4 @@ public class DefaultLoggingFormatter implements LoggingFormatter {
     formattedString.append("\n");
     return formattedString.toString();
   }
-
-  private static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 }
