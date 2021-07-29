@@ -17,7 +17,7 @@ public final class JsonLibraryDetector {
    * Detects which JsonLibrary should be used with the given class. If no specific JsonLibrary is
    * strictly required for the given class, a fallback JsonLibrary will be used as a catch-all.
    *
-   * @see JsonLibrary#mustBeUsedFor(Class)
+   * @see JsonLibrary#mustBeUsedFor(java.lang.reflect.Type)
    * @param clazz The class to detect the JSON library for.
    * @return The JsonLibrary to use with the given class.
    * @throws AmbiguousJsonLibraryException If multiple JSON libraries announce they must be used for
