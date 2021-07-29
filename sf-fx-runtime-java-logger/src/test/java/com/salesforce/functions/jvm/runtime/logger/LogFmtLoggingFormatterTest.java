@@ -34,7 +34,7 @@ public class LogFmtLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=1970-01-01T00:00:00Z level=DEBUG loggerName=foo.bar.baz message=\"This is a message!\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
+                "dateTime=1970-01-01T00:00:00Z level=DEBUG loggerName=foo.bar.baz message=\"This is a message!\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
   }
 
   @Test
@@ -49,7 +49,7 @@ public class LogFmtLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=1970-01-01T00:00:00Z level=WARN loggerName=c.s.f.jvm.runtime.logger.ClassName message=\"This is a message!\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
+                "dateTime=1970-01-01T00:00:00Z level=WARN loggerName=c.s.f.jvm.runtime.logger.ClassName message=\"This is a message!\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
   }
 
   @Test
@@ -65,7 +65,7 @@ public class LogFmtLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=1970-01-01T00:00:00Z level=TRACE loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=\"This is a message!\" invocationId=\"null\"")));
+                "dateTime=1970-01-01T00:00:00Z level=TRACE loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=\"This is a message!\" invocationId=\"null\"")));
   }
 
   @Test
@@ -77,6 +77,6 @@ public class LogFmtLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=1970-01-01T00:00:00Z level=INFO loggerName=blank message=\"Checking escaping: \\\"test\\\" \\\\o/ foo=bar\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
+                "dateTime=1970-01-01T00:00:00Z level=INFO loggerName=blank message=\"Checking escaping: \\\"test\\\" \\\\o/ foo=bar\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
   }
 }

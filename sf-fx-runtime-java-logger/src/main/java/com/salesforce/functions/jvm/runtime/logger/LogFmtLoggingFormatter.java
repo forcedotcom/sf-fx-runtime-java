@@ -24,13 +24,13 @@ public class LogFmtLoggingFormatter implements LoggingFormatter {
   @Override
   public String format(String loggerName, Level level, String message) {
     String invocationId = MDC.get("function-invocation-id");
-    String localDateTimeString =
+    String dateTimeString =
         ZonedDateTime.now(clock).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 
     Map<String, String> stringFields =
         new HashMap<String, String>() {
           {
-            put("localDateTime", localDateTimeString);
+            put("dateTime", dateTimeString);
             put("level", level.toString());
             put("invocationId", invocationId);
             put("loggerName", Utils.shortenLoggerName(loggerName, 36));
