@@ -17,7 +17,7 @@ public final class GsonJsonLibrary implements JsonLibrary {
   private final Gson gson = new Gson();
 
   @Override
-  public <A> List<A> deserializeListAt(String json, Class<A> clazz, String... path)
+  public List<Object> deserializeListAt(String json, Class<?> clazz, String... path)
       throws JsonDeserializationException {
     try {
       JsonElement jsonElement = JsonParser.parseString(json);

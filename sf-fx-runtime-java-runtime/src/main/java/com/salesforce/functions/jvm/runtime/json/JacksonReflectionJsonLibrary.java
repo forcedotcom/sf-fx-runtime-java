@@ -79,7 +79,8 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
   }
 
   @Override
-  public <A> List<A> deserializeListAt(String json, Class<A> clazz, String... path)
+  @SuppressWarnings("unchecked")
+  public List<Object> deserializeListAt(String json, Class<?> clazz, String... path)
       throws JsonDeserializationException {
     try {
       Object jsonNode = readTreeMethod.invoke(objectMapper, json);
@@ -87,7 +88,7 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
       if (path.length > 0) {
         jsonNode = atMethod.invoke(jsonNode, "/" + String.join("/", path));
       }
-      return (List<A>)
+      return (List<Object>)
           readValueListMethod.invoke(
               objectMapper,
               json,

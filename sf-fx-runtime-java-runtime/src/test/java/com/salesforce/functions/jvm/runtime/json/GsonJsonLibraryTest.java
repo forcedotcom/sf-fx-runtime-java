@@ -52,7 +52,7 @@ public class GsonJsonLibraryTest {
   public void testPojoListDeserialization() throws JsonDeserializationException {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
 
-    List<TestClass> testClassList =
+    List<Object> testClassList =
         jsonLibrary.deserializeListAt(
             "[{\"foo\": \"one\"},{\"foo\": \"two\"},{\"foo\": \"three\"}]", TestClass.class);
 
@@ -68,7 +68,7 @@ public class GsonJsonLibraryTest {
   public void testStringListDeserialization() throws JsonDeserializationException {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
 
-    List<String> testClass =
+    List<Object> testClass =
         jsonLibrary.deserializeListAt("[\"foo\", \"foo\", \"foo\"]", String.class);
 
     assertThat(testClass, hasItems(equalTo("foo"), equalTo("foo"), equalTo("foo")));

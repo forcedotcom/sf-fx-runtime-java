@@ -35,7 +35,19 @@ public interface JsonLibrary {
   Object deserializeAt(String json, Class<?> clazz, String... path)
       throws JsonDeserializationException;
 
-  <A> List<A> deserializeListAt(String json, Class<A> clazz, String... path)
+  /**
+   * Deserializes the given JSON string to a List of Objects of the given class.
+   *
+   * @param json The JSON string to deserialize.
+   * @param clazz The class of the objects in the list the JSON string should be deserialized to.
+   * @param path The path where to find the array in the given JSON string. Useful when the target
+   *     JSON array is wrapped in one or more objects. Can be empty.
+   * @return The given JSON object as a Java list of objects of the given class. The exact outcome
+   *     of this method is library specific.
+   * @throws JsonDeserializationException When the deserialization failed for any reason. Look at
+   *     the exception's cause for the underlying library exception.
+   */
+  List<Object> deserializeListAt(String json, Class<?> clazz, String... path)
       throws JsonDeserializationException;
 
   /**

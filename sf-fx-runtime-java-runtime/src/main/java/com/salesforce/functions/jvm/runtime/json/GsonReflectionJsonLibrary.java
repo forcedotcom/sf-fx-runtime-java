@@ -58,7 +58,8 @@ public final class GsonReflectionJsonLibrary implements JsonLibrary {
   }
 
   @Override
-  public <A> List<A> deserializeListAt(String json, Class<A> clazz, String... path)
+  @SuppressWarnings("unchecked")
+  public List<Object> deserializeListAt(String json, Class<?> clazz, String... path)
       throws JsonDeserializationException {
     try {
       Object jsonElement = parseStringMethod.invoke(null, json);
@@ -71,7 +72,8 @@ public final class GsonReflectionJsonLibrary implements JsonLibrary {
         jsonElement = jsonObject;
       }
 
-      return (List<A>) fromJsonWithType.invoke(gson, jsonElement, new ListParameterizedType(clazz));
+      return (List<Object>)
+          fromJsonWithType.invoke(gson, jsonElement, new ListParameterizedType(clazz));
     } catch (IllegalAccessException e) {
       throw new JsonDeserializationException(e);
     } catch (InvocationTargetException e) {

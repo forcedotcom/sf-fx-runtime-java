@@ -40,7 +40,7 @@ public class JacksonReflectionJsonLibraryTest {
   public void testPojoListDeserialization() throws Exception {
     JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
 
-    List<TestClass> testClassList =
+    List<Object> testClassList =
         jsonLibrary.deserializeListAt(
             "[{\"foo\": \"one\"},{\"foo\": \"two\"},{\"foo\": \"three\"}]", TestClass.class);
 
@@ -56,7 +56,7 @@ public class JacksonReflectionJsonLibraryTest {
   public void testStringListDeserialization() throws Exception {
     JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
 
-    List<String> testClass =
+    List<Object> testClass =
         jsonLibrary.deserializeListAt("[\"foo\", \"foo\", \"foo\"]", String.class);
 
     assertThat(testClass, hasItems(equalTo("foo"), equalTo("foo"), equalTo("foo")));
