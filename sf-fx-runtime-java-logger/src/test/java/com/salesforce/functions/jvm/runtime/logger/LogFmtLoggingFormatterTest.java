@@ -27,7 +27,7 @@ public class LogFmtLoggingFormatterTest {
   }
 
   @Test
-  public void test_1() {
+  public void testBasic() {
     String result = formatter.format("foo.bar.baz", Level.DEBUG, "This is a message!");
 
     assertThat(
@@ -69,13 +69,13 @@ public class LogFmtLoggingFormatterTest {
   }
 
   @Test
-  public void testBackslashRemoval() {
-    String result = formatter.format("blank", Level.INFO, "Checking backslash \"test\"");
+  public void testEscaping() {
+    String result = formatter.format("blank", Level.INFO, "Checking escaping: \"test\" \\o/ foo=bar");
 
     assertThat(
         result,
         is(
             equalTo(
-                "localDateTime=1970-01-01T00:00:00Z level=INFO loggerName=blank message=\"Checking backslash \\\"test\\\"\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
+                "localDateTime=1970-01-01T00:00:00Z level=INFO loggerName=blank message=\"Checking escaping: \\\"test\\\" \\\\o/ foo\\=bar\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
   }
 }
