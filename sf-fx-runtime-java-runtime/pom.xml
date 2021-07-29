@@ -17,7 +17,6 @@
     <classgraph.version>4.8.110</classgraph.version>
     <maveninvoker.version>3.1.0</maveninvoker.version>
     <undertow.version>2.2.9.Final</undertow.version>
-    <guava.version>30.1.1-jre</guava.version>
     <picocli.version>4.6.1</picocli.version>
     <slf4j.version>1.7.31</slf4j.version>
     <logback.version>1.2.4</logback.version>
@@ -69,7 +68,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>

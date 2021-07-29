@@ -65,17 +65,18 @@ public class LogFmtLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "localDateTime=1970-01-01T00:00:00Z level=TRACE loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=\"This is a message!\" invocationId=null")));
+                "localDateTime=1970-01-01T00:00:00Z level=TRACE loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=\"This is a message!\" invocationId=\"null\"")));
   }
 
   @Test
   public void testEscaping() {
-    String result = formatter.format("blank", Level.INFO, "Checking escaping: \"test\" \\o/ foo=bar");
+    String result =
+        formatter.format("blank", Level.INFO, "Checking escaping: \"test\" \\o/ foo=bar");
 
     assertThat(
         result,
         is(
             equalTo(
-                "localDateTime=1970-01-01T00:00:00Z level=INFO loggerName=blank message=\"Checking escaping: \\\"test\\\" \\\\o/ foo\\=bar\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
+                "localDateTime=1970-01-01T00:00:00Z level=INFO loggerName=blank message=\"Checking escaping: \\\"test\\\" \\\\o/ foo=bar\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
   }
 }
