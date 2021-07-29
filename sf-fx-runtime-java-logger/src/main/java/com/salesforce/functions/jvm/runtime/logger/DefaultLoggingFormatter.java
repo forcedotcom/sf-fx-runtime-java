@@ -11,14 +11,25 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import org.apache.commons.text.translate.LookupTranslator;
 import org.slf4j.MDC;
 import org.slf4j.event.Level;
 
 public class DefaultLoggingFormatter implements LoggingFormatter {
   private final Clock clock;
+  private final LookupTranslator lookupTranslator;
 
   public DefaultLoggingFormatter(Clock clock) {
     this.clock = clock;
+
+    Map<CharSequence, CharSequence> mapping = new HashMap<>();
+    mapping.put("\"", "\\\"");
+    mapping.put("\\", "\\\\");
+    mapping.put("=", "\\=");
+
+    this.lookupTranslator = new LookupTranslator(mapping);
   }
 
   @Override
@@ -37,18 +48,26 @@ public class DefaultLoggingFormatter implements LoggingFormatter {
           }
         };
 
-    String formattedString = formatString(stringFields);
-
-    return formattedString;
+    return formatString(stringFields);
   }
 
   private String formatString(Map<String, String> stringFields) {
-    StringBuilder formattedString = new StringBuilder();
-    for (String field : stringFields.keySet()) {
-      String currentFieldValue = String.format("\"%s\"=\"%s\" ", field, stringFields.get(field));
-      formattedString.append(currentFieldValue);
+    return stringFields.entrySet().stream()
+        .map(
+            entry ->
+                String.format(
+                    "%s=%s",
+                    logFmtQuoteEscape(entry.getKey()), logFmtQuoteEscape(entry.getValue())))
+        .collect(Collectors.joining(" "));
+  }
+
+  private String logFmtQuoteEscape(String string) {
+    string = lookupTranslator.translate(Objects.toString(string, "null"));
+
+    if (string.contains(" ")) {
+      return "\"" + string + "\"";
     }
-    formattedString.append("\n");
-    return formattedString.toString();
+
+    return string;
   }
 }
