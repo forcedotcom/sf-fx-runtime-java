@@ -11,7 +11,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.MDC;
@@ -20,8 +19,6 @@ import org.slf4j.event.Level;
 public class DefaultLoggingFormatterTest {
   private final LoggingFormatter formatter =
       new DefaultLoggingFormatter(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
-  private static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("HH:mm:ss.SSS");
 
   @Before
   public void clearAndSetMDC() {
