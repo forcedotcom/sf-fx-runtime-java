@@ -10,17 +10,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
+import java.time.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.MDC;
 import org.slf4j.event.Level;
 
-public class DefaultLoggingFormatterTest {
+public class LogFmtLoggingFormatterTest {
   private final LoggingFormatter formatter =
-      new DefaultLoggingFormatter(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
+      new LogFmtLoggingFormatter(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
 
   @Before
   public void clearAndSetMDC() {
@@ -29,13 +27,14 @@ public class DefaultLoggingFormatterTest {
   }
 
   @Test
-  public void test_1() {
+  public void testBasic() {
     String result = formatter.format("foo.bar.baz", Level.DEBUG, "This is a message!");
+
     assertThat(
         result,
         is(
             equalTo(
-                "00:00:00.000 DEBUG [INVOCATION e3a4ae2b-fefb-4277-89d0-7068e7e39b99] foo.bar.baz - This is a message!\n")));
+                "dateTime=1970-01-01T00:00:00Z level=DEBUG loggerName=foo.bar.baz message=\"This is a message!\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
   }
 
   @Test
@@ -50,7 +49,7 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "00:00:00.000 WARN  [INVOCATION e3a4ae2b-fefb-4277-89d0-7068e7e39b99] c.s.f.jvm.runtime.logger.ClassName - This is a message!\n")));
+                "dateTime=1970-01-01T00:00:00Z level=WARN loggerName=c.s.f.jvm.runtime.logger.ClassName message=\"This is a message!\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
   }
 
   @Test
@@ -66,6 +65,18 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                "00:00:00.000 TRACE [INVOCATION null] c.s.f.jvm.runtime.logger.EmptyMDC - This is a message!\n")));
+                "dateTime=1970-01-01T00:00:00Z level=TRACE loggerName=c.s.f.jvm.runtime.logger.EmptyMDC message=\"This is a message!\" invocationId=\"null\"")));
+  }
+
+  @Test
+  public void testEscaping() {
+    String result =
+        formatter.format("blank", Level.INFO, "Checking escaping: \"test\" \\o/ foo=bar");
+
+    assertThat(
+        result,
+        is(
+            equalTo(
+                "dateTime=1970-01-01T00:00:00Z level=INFO loggerName=blank message=\"Checking escaping: \\\"test\\\" \\\\o/ foo=bar\" invocationId=e3a4ae2b-fefb-4277-89d0-7068e7e39b99")));
   }
 }

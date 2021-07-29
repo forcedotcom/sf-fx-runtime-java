@@ -17,7 +17,7 @@ public class FunctionsLoggerFactory implements ILoggerFactory {
 
   public FunctionsLoggerFactory() {
     loggerConfiguration = LoggingConfigurator.configureFromEnvironment(System.getenv());
-    loggingFormatter = new DefaultLoggingFormatter(Clock.systemDefaultZone());
+    loggingFormatter = new LogFmtLoggingFormatter(Clock.systemDefaultZone());
   }
 
   @Override
