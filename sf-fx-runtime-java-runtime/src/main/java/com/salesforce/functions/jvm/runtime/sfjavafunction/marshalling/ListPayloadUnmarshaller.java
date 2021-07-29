@@ -48,8 +48,7 @@ public class ListPayloadUnmarshaller<A> implements PayloadUnmarshaller {
     Type type = new ListParameterizedType(clazz);
     try {
 
-      return jsonLibrary.deserializeListAt(
-          new String(data.toBytes(), StandardCharsets.UTF_8), clazz);
+      return jsonLibrary.deserializeAt(new String(data.toBytes(), StandardCharsets.UTF_8), type);
     } catch (JsonDeserializationException e) {
       throw new PayloadUnmarshallingException("Could not unmarshall payload!", e);
     }

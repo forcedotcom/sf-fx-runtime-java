@@ -10,17 +10,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 
-/**
- * Used to determine the "type" of a dynamic class at runtime for JSON deserializing via the Gson
- * libray
- *
- * <p>``` Type type = new ListParameterizedType(clazz); return new Gson().fromJson(new
- * String(data.toBytes(), StandardCharsets.UTF_8), type); ```
- *
- * <p>From https://stackoverflow.com/a/25223817/147390
- */
 public class ListParameterizedType implements ParameterizedType {
-
   private final Type type;
 
   public ListParameterizedType(Type type) {
@@ -41,6 +31,4 @@ public class ListParameterizedType implements ParameterizedType {
   public Type getOwnerType() {
     return null;
   }
-
-  // implement equals method too! (as per javadoc)
 }

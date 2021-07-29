@@ -52,12 +52,13 @@ public class GsonJsonLibraryTest {
   public void testPojoListDeserialization() throws JsonDeserializationException {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
 
-    List<Object> testClassList =
-        jsonLibrary.deserializeListAt(
-            "[{\"foo\": \"one\"},{\"foo\": \"two\"},{\"foo\": \"three\"}]", TestClass.class);
+    Object testClassList =
+        jsonLibrary.deserializeAt(
+            "[{\"foo\": \"one\"},{\"foo\": \"two\"},{\"foo\": \"three\"}]",
+            new ListParameterizedType(TestClass.class));
 
     assertThat(
-        testClassList,
+        (List<Object>) testClassList,
         hasItems(
             hasProperty("foo", equalTo("one")),
             hasProperty("foo", equalTo("two")),
@@ -68,10 +69,11 @@ public class GsonJsonLibraryTest {
   public void testStringListDeserialization() throws JsonDeserializationException {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
 
-    List<Object> testClass =
-        jsonLibrary.deserializeListAt("[\"foo\", \"foo\", \"foo\"]", String.class);
+    Object testClass =
+        jsonLibrary.deserializeAt(
+            "[\"foo\", \"foo\", \"foo\"]", new ListParameterizedType(String.class));
 
-    assertThat(testClass, hasItems(equalTo("foo"), equalTo("foo"), equalTo("foo")));
+    assertThat((List<Object>) testClass, hasItems(equalTo("foo"), equalTo("foo"), equalTo("foo")));
   }
 
   @Test
@@ -98,6 +100,20 @@ public class GsonJsonLibraryTest {
   public void testMustBeUsedForPositive() {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
     assertThat(jsonLibrary.mustBeUsedFor(TestClassWithGsonAnnotations.class), is(true));
+  }
+
+  @Test
+  public void testMustBeUsedForListNegative() {
+    JsonLibrary jsonLibrary = new GsonJsonLibrary();
+    assertThat(jsonLibrary.mustBeUsedFor(new ListParameterizedType(TestClass.class)), is(false));
+  }
+
+  @Test
+  public void testMustBeUsedForListPositive() {
+    JsonLibrary jsonLibrary = new GsonJsonLibrary();
+    assertThat(
+        jsonLibrary.mustBeUsedFor(new ListParameterizedType(TestClassWithGsonAnnotations.class)),
+        is(true));
   }
 
   public static class TestClass {

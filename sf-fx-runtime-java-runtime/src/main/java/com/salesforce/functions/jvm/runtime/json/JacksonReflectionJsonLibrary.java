@@ -9,10 +9,9 @@ package com.salesforce.functions.jvm.runtime.json;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonLibraryNotPresentException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
+import java.lang.reflect.Type;
 
 public final class JacksonReflectionJsonLibrary implements JsonLibrary {
   private final Method readTreeMethod;
@@ -22,11 +21,10 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
   private final Method writeValueAsStringMethod;
 
   private final Package annotationsPackage;
+  private final Package annotationsPackageDatabind;
 
   private final Object objectMapper;
-  private final Method readValueListMethod;
-  private final Method constructCollectionTypeMethod;
-  private final Object typeFactory;
+  private final Method constructTypeMethod;
 
   public JacksonReflectionJsonLibrary(ClassLoader classLoader)
       throws JsonLibraryNotPresentException {
@@ -36,23 +34,16 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
       Class<?> objectReaderClass =
           classLoader.loadClass("com.fasterxml.jackson.databind.ObjectReader");
       Class<?> jsonNodeClass = classLoader.loadClass("com.fasterxml.jackson.databind.JsonNode");
-      Class<?> typeFactoryClass =
-          classLoader.loadClass("com.fasterxml.jackson.databind.type.TypeFactory");
-      Class<?> jacksonJavaTypeClass =
-          classLoader.loadClass("com.fasterxml.jackson.databind.JavaType");
+      Class<?> javaTypeClass = classLoader.loadClass("com.fasterxml.jackson.databind.JavaType");
 
       readTreeMethod = objectMapperClass.getMethod("readTree", String.class);
       atMethod = jsonNodeClass.getMethod("at", String.class);
-      readerForMethod = objectMapperClass.getMethod("readerFor", Class.class);
-      readValueListMethod =
-          objectMapperClass.getMethod("readValue", String.class, jacksonJavaTypeClass);
+      readerForMethod = objectMapperClass.getMethod("readerFor", javaTypeClass);
       readValueMethod = objectReaderClass.getMethod("readValue", jsonNodeClass);
       writeValueAsStringMethod = objectMapperClass.getMethod("writeValueAsString", Object.class);
-      objectMapper = objectMapperClass.getConstructor().newInstance();
+      constructTypeMethod = objectMapperClass.getMethod("constructType", Type.class);
 
-      typeFactory = objectMapperClass.getMethod("getTypeFactory", null).invoke(objectMapper);
-      constructCollectionTypeMethod =
-          typeFactoryClass.getMethod("constructCollectionType", Class.class, Class.class);
+      objectMapper = objectMapperClass.getConstructor().newInstance();
 
       // Configure the ObjectMapper to not fail on empty beans
       Class<?> serializationFeatureClass =
@@ -66,6 +57,11 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
       Class<?> jsonValueAnnotationClass =
           classLoader.loadClass("com.fasterxml.jackson.annotation.JsonValue");
       annotationsPackage = jsonValueAnnotationClass.getPackage();
+
+      Class<?> jsonSerializeAnnotationClass =
+          classLoader.loadClass("com.fasterxml.jackson.databind.annotation.JsonSerialize");
+      annotationsPackageDatabind = jsonSerializeAnnotationClass.getPackage();
+
     } catch (NoSuchMethodException
         | ClassNotFoundException
         | InstantiationException
@@ -79,43 +75,13 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public List<Object> deserializeListAt(String json, Class<?> clazz, String... path)
-      throws JsonDeserializationException {
-    try {
-      Object jsonNode = readTreeMethod.invoke(objectMapper, json);
-
-      if (path.length > 0) {
-        jsonNode = atMethod.invoke(jsonNode, "/" + String.join("/", path));
-      }
-      return (List<Object>)
-          readValueListMethod.invoke(
-              objectMapper,
-              json,
-              constructCollectionTypeMethod.invoke(
-                  typeFactory,
-                  List.class,
-                  clazz)); // mapper.getTypeFactory().constructCollectionType(List.class, clazz)
-    } catch (IllegalAccessException e) {
-      throw new JsonDeserializationException(e);
-    } catch (InvocationTargetException e) {
-      throw new JsonDeserializationException(e.getCause());
-    }
+  public boolean mustBeUsedFor(Type type) {
+    return Util.typeContainsAnnotationFromPackage(type, annotationsPackage)
+        || Util.typeContainsAnnotationFromPackage(type, annotationsPackageDatabind);
   }
 
   @Override
-  public boolean mustBeUsedFor(Class<?> clazz) {
-    for (Annotation annotation : Util.getAnnotationsOnClassFieldsAndMethods(clazz)) {
-      if (annotation.annotationType().getPackage().equals(annotationsPackage)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  @Override
-  public Object deserializeAt(String json, Class<?> clazz, String... path)
+  public Object deserializeAt(String json, Type type, String... path)
       throws JsonDeserializationException {
     try {
       Object jsonNode = readTreeMethod.invoke(objectMapper, json);
@@ -124,7 +90,8 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
         jsonNode = atMethod.invoke(jsonNode, "/" + String.join("/", path));
       }
 
-      Object objectReader = readerForMethod.invoke(objectMapper, clazz);
+      Object objectReader =
+          readerForMethod.invoke(objectMapper, constructTypeMethod.invoke(objectMapper, type));
       return readValueMethod.invoke(objectReader, jsonNode);
     } catch (IllegalAccessException e) {
       throw new JsonDeserializationException(e);

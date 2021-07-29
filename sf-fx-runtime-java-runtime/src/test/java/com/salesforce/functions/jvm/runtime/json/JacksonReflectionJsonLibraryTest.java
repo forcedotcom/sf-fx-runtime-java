@@ -40,12 +40,13 @@ public class JacksonReflectionJsonLibraryTest {
   public void testPojoListDeserialization() throws Exception {
     JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
 
-    List<Object> testClassList =
-        jsonLibrary.deserializeListAt(
-            "[{\"foo\": \"one\"},{\"foo\": \"two\"},{\"foo\": \"three\"}]", TestClass.class);
+    Object testClassList =
+        jsonLibrary.deserializeAt(
+            "[{\"foo\": \"one\"},{\"foo\": \"two\"},{\"foo\": \"three\"}]",
+            new ListParameterizedType(TestClass.class));
 
     assertThat(
-        testClassList,
+        (List<Object>) testClassList,
         hasItems(
             hasProperty("foo", equalTo("one")),
             hasProperty("foo", equalTo("two")),
@@ -56,10 +57,11 @@ public class JacksonReflectionJsonLibraryTest {
   public void testStringListDeserialization() throws Exception {
     JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
 
-    List<Object> testClass =
-        jsonLibrary.deserializeListAt("[\"foo\", \"foo\", \"foo\"]", String.class);
+    Object testClass =
+        jsonLibrary.deserializeAt(
+            "[\"foo\", \"foo\", \"foo\"]", new ListParameterizedType(String.class));
 
-    assertThat(testClass, hasItems(equalTo("foo"), equalTo("foo"), equalTo("foo")));
+    assertThat((List<Object>) testClass, hasItems(equalTo("foo"), equalTo("foo"), equalTo("foo")));
   }
 
   @Test
@@ -80,6 +82,32 @@ public class JacksonReflectionJsonLibraryTest {
   public void testSerializationExceptionWrapping() throws Exception {
     JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
     jsonLibrary.serialize(new TestClassThatFailsSerialization());
+  }
+
+  @Test
+  public void testMustBeUsedForNegative() throws Exception {
+    JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
+    assertThat(jsonLibrary.mustBeUsedFor(TestClass.class), is(false));
+  }
+
+  @Test
+  public void testMustBeUsedForPositive() throws Exception {
+    JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
+    assertThat(jsonLibrary.mustBeUsedFor(TestClassThatFailsSerialization.class), is(true));
+  }
+
+  @Test
+  public void testMustBeUsedForListNegative() throws Exception {
+    JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
+    assertThat(jsonLibrary.mustBeUsedFor(new ListParameterizedType(TestClass.class)), is(false));
+  }
+
+  @Test
+  public void testMustBeUsedForListPositive() throws Exception {
+    JsonLibrary jsonLibrary = new JacksonReflectionJsonLibrary(getClass().getClassLoader());
+    assertThat(
+        jsonLibrary.mustBeUsedFor(new ListParameterizedType(TestClassThatFailsSerialization.class)),
+        is(true));
   }
 
   public static class TestClass {

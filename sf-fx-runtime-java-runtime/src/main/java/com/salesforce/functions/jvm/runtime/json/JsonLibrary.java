@@ -8,7 +8,7 @@ package com.salesforce.functions.jvm.runtime.json;
 
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
-import java.util.List;
+import java.lang.reflect.Type;
 
 /**
  * An abstracted interface to a JSON library.
@@ -24,7 +24,7 @@ public interface JsonLibrary {
    * Deserializes the given JSON string to an Object of the given class.
    *
    * @param json The JSON string to deserialize.
-   * @param clazz The class of the object the JSON string should be deserialized to.
+   * @param type The type of the object the JSON string should be deserialized to.
    * @param path The path where to find the object in the given JSON string. Useful when the target
    *     JSON object is wrapped in one or more objects. Can be empty.
    * @return The given JSON object as a Java object of the given class. The exact outcome of this
@@ -32,23 +32,7 @@ public interface JsonLibrary {
    * @throws JsonDeserializationException When the deserialization failed for any reason. Look at
    *     the exception's cause for the underlying library exception.
    */
-  Object deserializeAt(String json, Class<?> clazz, String... path)
-      throws JsonDeserializationException;
-
-  /**
-   * Deserializes the given JSON string to a List of Objects of the given class.
-   *
-   * @param json The JSON string to deserialize.
-   * @param clazz The class of the objects in the list the JSON string should be deserialized to.
-   * @param path The path where to find the array in the given JSON string. Useful when the target
-   *     JSON array is wrapped in one or more objects. Can be empty.
-   * @return The given JSON object as a Java list of objects of the given class. The exact outcome
-   *     of this method is library specific.
-   * @throws JsonDeserializationException When the deserialization failed for any reason. Look at
-   *     the exception's cause for the underlying library exception.
-   */
-  List<Object> deserializeListAt(String json, Class<?> clazz, String... path)
-      throws JsonDeserializationException;
+  Object deserializeAt(String json, Type type, String... path) throws JsonDeserializationException;
 
   /**
    * Serializes the given object to a JSON compliant string. The exact outcome of this method is
@@ -63,14 +47,14 @@ public interface JsonLibrary {
   String serialize(Object object) throws JsonSerializationException;
 
   /**
-   * Returns if the given class must be processed by this JSON library. Implementations should only
-   * return true when the class strongly indicates it should be processed with this library. This is
-   * usually decided when the class has library specific annotations but different mechanisms can be
+   * Returns if the given type must be processed by this JSON library. Implementations should only
+   * return true when the type strongly indicates it should be processed with this library. This is
+   * usually decided when the type has library specific annotations but different mechanisms can be
    * used too. Implementations must not return true just to indicate that a class can be processed
    * by this library.
    *
-   * @param clazz The class to check.
-   * @return Whether the JSON library must be used for this class.
+   * @param clazz The type to check.
+   * @return Whether the JSON library must be used for this type.
    */
-  boolean mustBeUsedFor(Class<?> clazz);
+  boolean mustBeUsedFor(Type clazz);
 }
