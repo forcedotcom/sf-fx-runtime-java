@@ -16,9 +16,9 @@ import org.junit.Test;
 import org.slf4j.MDC;
 import org.slf4j.event.Level;
 
-public class DefaultLoggingFormatterTest {
+public class LogFmtLoggingFormatterTest {
   private final LoggingFormatter formatter =
-      new DefaultLoggingFormatter(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
+      new LogFmtLoggingFormatter(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
 
   @Before
   public void clearAndSetMDC() {

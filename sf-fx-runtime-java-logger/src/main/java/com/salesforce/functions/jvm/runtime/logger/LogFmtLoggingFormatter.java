@@ -17,11 +17,11 @@ import org.apache.commons.text.translate.LookupTranslator;
 import org.slf4j.MDC;
 import org.slf4j.event.Level;
 
-public class DefaultLoggingFormatter implements LoggingFormatter {
+public class LogFmtLoggingFormatter implements LoggingFormatter {
   private final Clock clock;
   private final LookupTranslator lookupTranslator;
 
-  public DefaultLoggingFormatter(Clock clock) {
+  public LogFmtLoggingFormatter(Clock clock) {
     this.clock = clock;
 
     Map<CharSequence, CharSequence> mapping = new HashMap<>();
