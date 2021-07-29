@@ -37,8 +37,7 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                String.format(
-                    "\"localDateTime\"=\"1970-01-01T00:00:00Z\" \"level\"=\"DEBUG\" \"loggerName\"=\"foo.bar.baz\" \"message\"=\"This is a message!\" \"invocationId\"=\"e3a4ae2b-fefb-4277-89d0-7068e7e39b99\" \n"))));
+                "\"localDateTime\"=\"1970-01-01T00:00:00Z\" \"level\"=\"DEBUG\" \"loggerName\"=\"foo.bar.baz\" \"message\"=\"This is a message!\" \"invocationId\"=\"e3a4ae2b-fefb-4277-89d0-7068e7e39b99\" \n")));
   }
 
   @Test
@@ -53,8 +52,7 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                String.format(
-                    "\"localDateTime\"=\"1970-01-01T00:00:00Z\" \"level\"=\"WARN\" \"loggerName\"=\"c.s.f.jvm.runtime.logger.ClassName\" \"message\"=\"This is a message!\" \"invocationId\"=\"e3a4ae2b-fefb-4277-89d0-7068e7e39b99\" \n"))));
+                "\"localDateTime\"=\"1970-01-01T00:00:00Z\" \"level\"=\"WARN\" \"loggerName\"=\"c.s.f.jvm.runtime.logger.ClassName\" \"message\"=\"This is a message!\" \"invocationId\"=\"e3a4ae2b-fefb-4277-89d0-7068e7e39b99\" \n")));
   }
 
   @Test
@@ -70,8 +68,7 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                String.format(
-                    "\"localDateTime\"=\"1970-01-01T00:00:00Z\" \"level\"=\"TRACE\" \"loggerName\"=\"c.s.f.jvm.runtime.logger.EmptyMDC\" \"message\"=\"This is a message!\" \"invocationId\"=\"null\" \n"))));
+                "\"localDateTime\"=\"1970-01-01T00:00:00Z\" \"level\"=\"TRACE\" \"loggerName\"=\"c.s.f.jvm.runtime.logger.EmptyMDC\" \"message\"=\"This is a message!\" \"invocationId\"=\"null\" \n")));
   }
 
   @Test
@@ -82,7 +79,6 @@ public class DefaultLoggingFormatterTest {
         result,
         is(
             equalTo(
-                String.format(
-                    "\"localDateTime\"=\"1970-01-01T00:00:00Z\" \"level\"=\"INFO\" \"loggerName\"=\"blank\" \"message\"=\"Checking backslash \"test\"\" \"invocationId\"=\"e3a4ae2b-fefb-4277-89d0-7068e7e39b99\" \n"))));
+                "\"localDateTime\"=\"1970-01-01T00:00:00Z\" \"level\"=\"INFO\" \"loggerName\"=\"blank\" \"message\"=\"Checking backslash \"test\"\" \"invocationId\"=\"e3a4ae2b-fefb-4277-89d0-7068e7e39b99\" \n")));
   }
 }
