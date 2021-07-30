@@ -9,6 +9,7 @@ package com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling;
 import com.google.common.net.MediaType;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.CloudEventData;
+import java.lang.reflect.Type;
 
 public class ByteArrayPayloadUnmarshaller implements PayloadUnmarshaller {
   @Override
@@ -17,7 +18,7 @@ public class ByteArrayPayloadUnmarshaller implements PayloadUnmarshaller {
   }
 
   @Override
-  public Class<?> getTargetClass() {
+  public Type getTargetType() {
     return byte[].class;
   }
 

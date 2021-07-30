@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.json;
 
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonLibraryNotPresentException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public final class JsonLibraryDetector {
    * Detects which JsonLibrary should be used with the given class. If no specific JsonLibrary is
    * strictly required for the given class, a fallback JsonLibrary will be used as a catch-all.
    *
-   * @see JsonLibrary#mustBeUsedFor(java.lang.reflect.Type)
+   * @see JsonLibrary#mustBeUsedFor(Type)
    * @param clazz The class to detect the JSON library for.
    * @return The JsonLibrary to use with the given class.
    * @throws AmbiguousJsonLibraryException If multiple JSON libraries announce they must be used for
@@ -33,6 +34,22 @@ public final class JsonLibraryDetector {
       classLoader = ClassLoader.getSystemClassLoader().getParent();
     }
 
+    return detect(clazz, classLoader);
+  }
+
+  /**
+   * Detects which JsonLibrary should be used with the given type. If no specific JsonLibrary is
+   * strictly required for the given type, a fallback JsonLibrary will be used as a catch-all.
+   *
+   * @see JsonLibrary#mustBeUsedFor(Type)
+   * @param type The type to detect the JSON library for.
+   * @param classLoader The class loader to use to load classes for given type.
+   * @return The JsonLibrary to use with the given class.
+   * @throws AmbiguousJsonLibraryException If multiple JSON libraries announce they must be used for
+   *     the given class.
+   */
+  public static JsonLibrary detect(Type type, ClassLoader classLoader)
+      throws AmbiguousJsonLibraryException {
     List<JsonLibrary> availableJsonLibraries = new ArrayList<>();
 
     try {
@@ -52,12 +69,12 @@ public final class JsonLibraryDetector {
     // Find the JSON library that declares to be responsible for the given class
     JsonLibrary responsibleJsonLibrary = null;
     for (JsonLibrary jsonLibrary : availableJsonLibraries) {
-      if (jsonLibrary.mustBeUsedFor(clazz)) {
+      if (jsonLibrary.mustBeUsedFor(type)) {
         if (responsibleJsonLibrary != null) {
           throw new AmbiguousJsonLibraryException(
               String.format(
-                  "Multiple JSON libraries declared responsibility for class %s!",
-                  clazz.getName()));
+                  "Multiple JSON libraries declared responsibility for type %s!",
+                  type.getTypeName()));
         }
 
         responsibleJsonLibrary = jsonLibrary;

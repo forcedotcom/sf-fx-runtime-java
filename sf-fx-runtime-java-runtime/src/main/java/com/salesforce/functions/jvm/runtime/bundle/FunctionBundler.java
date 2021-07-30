@@ -63,7 +63,7 @@ public class FunctionBundler {
       printWriter.println("[function]");
       printWriter.printf("class = \"%s\"\n", function.getName());
       printWriter.printf(
-          "payload_class = \"%s\"\n", function.getUnmarshaller().getTargetClass().getName());
+          "payload_class = \"%s\"\n", function.getUnmarshaller().getTargetType().getTypeName());
       printWriter.printf(
           "payload_media_type = \"%s\"\n",
           function.getUnmarshaller().getHandledMediaType().toString());

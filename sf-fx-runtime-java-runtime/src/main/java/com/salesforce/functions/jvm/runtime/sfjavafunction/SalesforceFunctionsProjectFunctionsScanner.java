@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.sfjavafunction;
 
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
+import com.salesforce.functions.jvm.runtime.json.ListParameterizedType;
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
@@ -274,11 +275,12 @@ public class SalesforceFunctionsProjectFunctionsScanner
           unmarshaller = new ByteArrayPayloadUnmarshaller();
         } else if (listMatcher.matches()) {
           String listClassName = listMatcher.group(1);
-          Class<?> clazz = null;
 
           try {
-            clazz = projectClassLoader.loadClass(listClassName);
-            unmarshaller = new ListPayloadUnmarshaller(clazz);
+            Class<?> clazz = projectClassLoader.loadClass(listClassName);
+            unmarshaller =
+                new JsonPayloadUnmarshaller(
+                    new ListParameterizedType(clazz), clazz.getClassLoader());
           } catch (ClassNotFoundException | AmbiguousJsonLibraryException e) {
             e.printStackTrace();
             System.exit(1234);
@@ -286,7 +288,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
         } else {
           try {
             Class<?> clazz = projectClassLoader.loadClass(payloadTypeArgument);
-            unmarshaller = new PojoFromJsonPayloadUnmarshaller(clazz);
+            unmarshaller = new JsonPayloadUnmarshaller(clazz);
           } catch (ClassNotFoundException e) {
             LOGGER.warn(
                 "Potential function {} declares a payload type ({}) that cannot be found. Function will be ignored!",

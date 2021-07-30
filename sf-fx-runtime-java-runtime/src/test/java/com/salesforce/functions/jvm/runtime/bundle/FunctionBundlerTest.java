@@ -129,7 +129,7 @@ public class FunctionBundlerTest {
 
     assertThat(result.get("function.class"), is(equalTo(functionClassName)));
 
-    assertThat(result.get("function.payload_class"), is(equalTo("[B")));
+    assertThat(result.get("function.payload_class"), is(equalTo("byte[]")));
     assertThat(
         result.get("function.payload_media_type"),
         is(equalTo(unmarshaller.getHandledMediaType().toString())));
