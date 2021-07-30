@@ -13,17 +13,20 @@ import static org.hamcrest.Matchers.is;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.net.MediaType;
 import com.google.gson.annotations.SerializedName;
+import com.salesforce.functions.jvm.runtime.json.ListParameterizedType;
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunctionResult;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Test;
 
-public class PojoAsJsonFunctionResultMarshallerTest {
+public class JsonFunctionResultMarshallerTest {
 
   @Test
   public void testPojoWithoutAnnotations() throws Exception {
     FunctionResultMarshaller marshaller =
-        new PojoAsJsonFunctionResultMarshaller(PojoWithoutAnnotations.class);
+        new JsonFunctionResultMarshaller(PojoWithoutAnnotations.class);
     PojoWithoutAnnotations data = new PojoWithoutAnnotations("Hello 👋🏻!");
     SalesforceFunctionResult result = marshaller.marshall(data);
 
@@ -37,7 +40,7 @@ public class PojoAsJsonFunctionResultMarshallerTest {
   @Test
   public void testPojoWithGsonAnnotations() throws Exception {
     FunctionResultMarshaller marshaller =
-        new PojoAsJsonFunctionResultMarshaller(PojoWithGsonAnnotations.class);
+        new JsonFunctionResultMarshaller(PojoWithGsonAnnotations.class);
     PojoWithGsonAnnotations data = new PojoWithGsonAnnotations("Hello 👋🏻!");
     SalesforceFunctionResult result = marshaller.marshall(data);
 
@@ -50,7 +53,7 @@ public class PojoAsJsonFunctionResultMarshallerTest {
   @Test
   public void testPojoWithJacksonAnnotations() throws Exception {
     FunctionResultMarshaller marshaller =
-        new PojoAsJsonFunctionResultMarshaller(PojoWithJacksonAnnotations.class);
+        new JsonFunctionResultMarshaller(PojoWithJacksonAnnotations.class);
     PojoWithJacksonAnnotations data = new PojoWithJacksonAnnotations("Hello 👋🏻!");
     SalesforceFunctionResult result = marshaller.marshall(data);
 
@@ -60,9 +63,62 @@ public class PojoAsJsonFunctionResultMarshallerTest {
         is(equalTo("{\"jacksonData\":\"Hello 👋🏻!\"}".getBytes(StandardCharsets.UTF_8))));
   }
 
+  @Test
+  public void testListOfPojoWithoutAnnotations() throws Exception {
+    FunctionResultMarshaller marshaller =
+        new JsonFunctionResultMarshaller(
+            new ListParameterizedType(PojoWithoutAnnotations.class), getClass().getClassLoader());
+
+    List<PojoWithoutAnnotations> data = new ArrayList<>();
+    data.add(new PojoWithoutAnnotations("Hello 👋🏻!"));
+
+    SalesforceFunctionResult result = marshaller.marshall(data);
+
+    assertThat(result.getMediaType(), is(MediaType.JSON_UTF_8));
+
+    assertThat(
+        result.getData(),
+        is(equalTo("[{\"data\":\"Hello 👋🏻!\"}]".getBytes(StandardCharsets.UTF_8))));
+  }
+
+  @Test
+  public void testListOfPojoWithGsonAnnotations() throws Exception {
+    FunctionResultMarshaller marshaller =
+        new JsonFunctionResultMarshaller(
+            new ListParameterizedType(PojoWithGsonAnnotations.class), getClass().getClassLoader());
+
+    List<PojoWithGsonAnnotations> data = new ArrayList<>();
+    data.add(new PojoWithGsonAnnotations("Hello 👋🏻!"));
+
+    SalesforceFunctionResult result = marshaller.marshall(data);
+
+    assertThat(result.getMediaType(), is(MediaType.JSON_UTF_8));
+    assertThat(
+        result.getData(),
+        is(equalTo("[{\"gsonData\":\"Hello 👋🏻!\"}]".getBytes(StandardCharsets.UTF_8))));
+  }
+
+  @Test
+  public void testListOfPojoWithJacksonAnnotations() throws Exception {
+    FunctionResultMarshaller marshaller =
+        new JsonFunctionResultMarshaller(
+            new ListParameterizedType(PojoWithJacksonAnnotations.class),
+            getClass().getClassLoader());
+
+    List<PojoWithJacksonAnnotations> data = new ArrayList<>();
+    data.add(new PojoWithJacksonAnnotations("Hello 👋🏻!"));
+
+    SalesforceFunctionResult result = marshaller.marshall(data);
+
+    assertThat(result.getMediaType(), is(MediaType.JSON_UTF_8));
+    assertThat(
+        result.getData(),
+        is(equalTo("[{\"jacksonData\":\"Hello 👋🏻!\"}]".getBytes(StandardCharsets.UTF_8))));
+  }
+
   @Test(expected = AmbiguousJsonLibraryException.class)
   public void testPojoWithAmbiguousJsonLibraryAnnotations() throws Exception {
-    new PojoAsJsonFunctionResultMarshaller(PojoWithJacksonAndGsonAnnotations.class);
+    new JsonFunctionResultMarshaller(PojoWithJacksonAndGsonAnnotations.class);
   }
 
   static class PojoWithoutAnnotations {

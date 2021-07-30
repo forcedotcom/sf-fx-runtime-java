@@ -21,8 +21,8 @@ import com.salesforce.functions.jvm.runtime.commands.StdOutAndStdErrCapturingTes
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayPayloadUnmarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.JsonFunctionResultMarshaller;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.JsonPayloadUnmarshaller;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PojoAsJsonFunctionResultMarshaller;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.StringFunctionResultMarshaller;
 import com.salesforce.functions.jvm.runtime.test.Util;
 import io.cloudevents.CloudEvent;
@@ -121,7 +121,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
             allOf(
                 hasProperty("name", equalTo("com.example.CountBytesFunction")),
                 hasProperty("unmarshaller", instanceOf(ByteArrayPayloadUnmarshaller.class)),
-                hasProperty("marshaller", instanceOf(PojoAsJsonFunctionResultMarshaller.class)))));
+                hasProperty("marshaller", instanceOf(JsonFunctionResultMarshaller.class)))));
 
     assertThat(
         functions.get(0).apply(cloudEventWithData("1138".getBytes(StandardCharsets.UTF_8))),

@@ -68,7 +68,7 @@ public class FunctionBundler {
           "payload_media_type = \"%s\"\n",
           function.getUnmarshaller().getHandledMediaType().toString());
       printWriter.printf(
-          "return_class = \"%s\"\n", function.getMarshaller().getSourceClass().getName());
+          "return_class = \"%s\"\n", function.getMarshaller().getSourceType().getTypeName());
       printWriter.printf(
           "return_media_type = \"%s\"\n", function.getMarshaller().getMediaType().toString());
     }

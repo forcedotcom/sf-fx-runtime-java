@@ -12,14 +12,21 @@ import com.salesforce.functions.jvm.runtime.json.JsonLibraryDetector;
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionResultMarshallingException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 
-public class PojoAsJsonFunctionResultMarshaller implements FunctionResultMarshaller {
-  private final Class<?> clazz;
+public class JsonFunctionResultMarshaller implements FunctionResultMarshaller {
+  private final Type type;
   private final JsonLibrary jsonLibrary;
 
-  public PojoAsJsonFunctionResultMarshaller(Class<?> clazz) throws AmbiguousJsonLibraryException {
-    this.clazz = clazz;
+  public JsonFunctionResultMarshaller(Type type, ClassLoader classLoader)
+      throws AmbiguousJsonLibraryException {
+    this.type = type;
+    this.jsonLibrary = JsonLibraryDetector.detect(type, classLoader);
+  }
+
+  public JsonFunctionResultMarshaller(Class<?> clazz) throws AmbiguousJsonLibraryException {
+    this.type = clazz;
     this.jsonLibrary = JsonLibraryDetector.detect(clazz);
   }
 
@@ -29,8 +36,8 @@ public class PojoAsJsonFunctionResultMarshaller implements FunctionResultMarshal
   }
 
   @Override
-  public Class<?> getSourceClass() {
-    return clazz;
+  public Type getSourceType() {
+    return type;
   }
 
   @Override

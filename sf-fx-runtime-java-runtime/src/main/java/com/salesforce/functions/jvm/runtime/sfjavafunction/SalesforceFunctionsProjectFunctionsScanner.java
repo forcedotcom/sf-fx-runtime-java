@@ -315,11 +315,22 @@ public class SalesforceFunctionsProjectFunctionsScanner
         if (returnTypeString.equals("java.lang.String")) {
           marshaller = new StringFunctionResultMarshaller();
         } else if (listMatcher.matches()) {
-          marshaller = new ListFunctionResultMarshaller();
+          String listClassName = listMatcher.group(1);
+
+          try {
+            Class<?> clazz = projectClassLoader.loadClass(listClassName);
+            marshaller =
+                new JsonFunctionResultMarshaller(
+                    new ListParameterizedType(clazz), projectClassLoader);
+          } catch (ClassNotFoundException | AmbiguousJsonLibraryException e) {
+            e.printStackTrace();
+            System.exit(1234);
+          }
+
         } else {
           try {
             Class<?> clazz = projectClassLoader.loadClass(returnTypeString);
-            marshaller = new PojoAsJsonFunctionResultMarshaller(clazz);
+            marshaller = new JsonFunctionResultMarshaller(clazz);
           } catch (ClassNotFoundException e) {
             // This is very unlikely to happen with the current implementation. We get the apply
             // method from the loaded function class earlier in the code which would fail with a
