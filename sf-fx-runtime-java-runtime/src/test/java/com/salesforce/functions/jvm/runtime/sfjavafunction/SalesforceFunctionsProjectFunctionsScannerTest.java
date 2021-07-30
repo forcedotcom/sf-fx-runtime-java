@@ -134,6 +134,41 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
   }
 
   @Test
+  public void testSuccessJoinStringListFunction() {
+    SalesforceFunctionsProjectFunctionsScanner scanner =
+        new SalesforceFunctionsProjectFunctionsScanner();
+
+    List<Path> paths = new ArrayList<>();
+    paths.add(sdkJarPath);
+    paths.add(Paths.get("src", "test", "resources", "sdk-1.0-join-string-list-function"));
+
+    Project mockProject = mock(Project.class);
+    when(mockProject.getTypeName()).thenReturn("Mocked");
+    when(mockProject.getClasspathPaths()).thenReturn(paths);
+
+    List<SalesforceFunction> functions = scanner.scan(mockProject);
+    assertThat(
+        functions,
+        contains(
+            allOf(
+                hasProperty("name", equalTo("com.example.JoinStringListFunction")),
+                hasProperty("unmarshaller", instanceOf(JsonPayloadUnmarshaller.class)),
+                hasProperty("marshaller", instanceOf(StringFunctionResultMarshaller.class)))));
+
+    assertThat(
+        functions
+            .get(0)
+            .apply(
+                cloudEventWithData("[\"foo\", \"bar\", \"baz\"]".getBytes(StandardCharsets.UTF_8))),
+        allOf(
+            hasProperty("mediaType", equalTo(MediaType.JSON_UTF_8)),
+            hasProperty("data", equalTo("\"foo, bar, baz\"".getBytes(StandardCharsets.UTF_8)))));
+
+    assertThat(systemOutContent.toString(), is(emptyString()));
+    assertThat(systemErrContent.toString(), is(emptyString()));
+  }
+
+  @Test
   public void testFailingFunction() {
     SalesforceFunctionsProjectFunctionsScanner scanner =
         new SalesforceFunctionsProjectFunctionsScanner();
