@@ -52,6 +52,8 @@ public class SalesforceFunctionsProjectFunctionsScanner
         SalesforceFunction, CloudEvent, SalesforceFunctionResult, SalesforceFunctionException> {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SalesforceFunctionsProjectFunctionsScanner.class);
+  private static final Pattern LIST_TYPE_STRING_PATTERN =
+      Pattern.compile("java\\.util\\.List<(.*)>");
 
   @Override
   public List<SalesforceFunction> scan(Project project) {
@@ -267,28 +269,24 @@ public class SalesforceFunctionsProjectFunctionsScanner
 
         final String payloadTypeArgument = typeSignature.getTypeArguments().get(0).toString();
         final String returnTypeString = typeSignature.getTypeArguments().get(1).toString();
-        Pattern listPattern = Pattern.compile("java\\.util\\.List<(.*)>");
-        Matcher listMatcher = listPattern.matcher(payloadTypeArgument);
         // Determine PayloadUnmarshaller for this user function
         PayloadUnmarshaller unmarshaller = null;
         if (payloadTypeArgument.equals("byte[]")) {
           unmarshaller = new ByteArrayPayloadUnmarshaller();
-        } else if (listMatcher.matches()) {
-          String listClassName = listMatcher.group(1);
-
-          try {
-            Class<?> clazz = projectClassLoader.loadClass(listClassName);
-            unmarshaller =
-                new JsonPayloadUnmarshaller(
-                    new ListParameterizedType(clazz), clazz.getClassLoader());
-          } catch (ClassNotFoundException | AmbiguousJsonLibraryException e) {
-            e.printStackTrace();
-            System.exit(1234);
-          }
         } else {
           try {
-            Class<?> clazz = projectClassLoader.loadClass(payloadTypeArgument);
-            unmarshaller = new JsonPayloadUnmarshaller(clazz);
+            Matcher listMatcher = LIST_TYPE_STRING_PATTERN.matcher(payloadTypeArgument);
+
+            if (listMatcher.matches()) {
+              String listItemClassName = listMatcher.group(1);
+              Class<?> listItemClazz = projectClassLoader.loadClass(listItemClassName);
+              unmarshaller =
+                  new JsonPayloadUnmarshaller(
+                      new ListParameterizedType(listItemClazz), projectClassLoader);
+            } else {
+              Class<?> clazz = projectClassLoader.loadClass(payloadTypeArgument);
+              unmarshaller = new JsonPayloadUnmarshaller(clazz);
+            }
           } catch (ClassNotFoundException e) {
             LOGGER.warn(
                 "Potential function {} declares a payload type ({}) that cannot be found. Function will be ignored!",
@@ -314,23 +312,20 @@ public class SalesforceFunctionsProjectFunctionsScanner
         FunctionResultMarshaller marshaller = null;
         if (returnTypeString.equals("java.lang.String")) {
           marshaller = new StringFunctionResultMarshaller();
-        } else if (listMatcher.matches()) {
-          String listClassName = listMatcher.group(1);
-
-          try {
-            Class<?> clazz = projectClassLoader.loadClass(listClassName);
-            marshaller =
-                new JsonFunctionResultMarshaller(
-                    new ListParameterizedType(clazz), projectClassLoader);
-          } catch (ClassNotFoundException | AmbiguousJsonLibraryException e) {
-            e.printStackTrace();
-            System.exit(1234);
-          }
-
         } else {
           try {
-            Class<?> clazz = projectClassLoader.loadClass(returnTypeString);
-            marshaller = new JsonFunctionResultMarshaller(clazz);
+            Matcher listMatcher = LIST_TYPE_STRING_PATTERN.matcher(returnTypeString);
+
+            if (listMatcher.matches()) {
+              String listItemClassName = listMatcher.group(1);
+              Class<?> listItemClazz = projectClassLoader.loadClass(listItemClassName);
+              marshaller =
+                  new JsonFunctionResultMarshaller(
+                      new ListParameterizedType(listItemClazz), projectClassLoader);
+            } else {
+              Class<?> clazz = projectClassLoader.loadClass(returnTypeString);
+              marshaller = new JsonFunctionResultMarshaller(clazz);
+            }
           } catch (ClassNotFoundException e) {
             // This is very unlikely to happen with the current implementation. We get the apply
             // method from the loaded function class earlier in the code which would fail with a
