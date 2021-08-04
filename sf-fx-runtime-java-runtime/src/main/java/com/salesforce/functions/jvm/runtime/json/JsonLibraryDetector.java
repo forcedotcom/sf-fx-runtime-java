@@ -43,7 +43,7 @@ public final class JsonLibraryDetector {
    *
    * @see JsonLibrary#mustBeUsedFor(Type)
    * @param type The type to detect the JSON library for.
-   * @param classLoader The class loader to use to load classes for given type.
+   * @param classLoader The class loader to use to load classes for the given type.
    * @return The JsonLibrary to use with the given class.
    * @throws AmbiguousJsonLibraryException If multiple JSON libraries announce they must be used for
    *     the given class.
