@@ -7,8 +7,7 @@
 package com.salesforce.functions.jvm.runtime.json;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
@@ -21,6 +20,7 @@ import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationExce
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Type;
+import java.util.List;
 import org.junit.Test;
 
 public class GsonJsonLibraryTest {
@@ -49,6 +49,34 @@ public class GsonJsonLibraryTest {
   }
 
   @Test
+  public void testPojoListDeserialization() throws JsonDeserializationException {
+    JsonLibrary jsonLibrary = new GsonJsonLibrary();
+
+    Object testClassList =
+        jsonLibrary.deserializeAt(
+            "[{\"foo\": \"one\"},{\"foo\": \"two\"},{\"foo\": \"three\"}]",
+            new ListParameterizedType(TestClass.class));
+
+    assertThat(
+        (List<Object>) testClassList,
+        hasItems(
+            hasProperty("foo", equalTo("one")),
+            hasProperty("foo", equalTo("two")),
+            hasProperty("foo", equalTo("three"))));
+  }
+
+  @Test
+  public void testStringListDeserialization() throws JsonDeserializationException {
+    JsonLibrary jsonLibrary = new GsonJsonLibrary();
+
+    Object testClass =
+        jsonLibrary.deserializeAt(
+            "[\"foo\", \"foo\", \"foo\"]", new ListParameterizedType(String.class));
+
+    assertThat((List<Object>) testClass, hasItems(equalTo("foo"), equalTo("foo"), equalTo("foo")));
+  }
+
+  @Test
   public void testSerialization() throws Exception {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
 
@@ -72,6 +100,20 @@ public class GsonJsonLibraryTest {
   public void testMustBeUsedForPositive() {
     JsonLibrary jsonLibrary = new GsonJsonLibrary();
     assertThat(jsonLibrary.mustBeUsedFor(TestClassWithGsonAnnotations.class), is(true));
+  }
+
+  @Test
+  public void testMustBeUsedForListNegative() {
+    JsonLibrary jsonLibrary = new GsonJsonLibrary();
+    assertThat(jsonLibrary.mustBeUsedFor(new ListParameterizedType(TestClass.class)), is(false));
+  }
+
+  @Test
+  public void testMustBeUsedForListPositive() {
+    JsonLibrary jsonLibrary = new GsonJsonLibrary();
+    assertThat(
+        jsonLibrary.mustBeUsedFor(new ListParameterizedType(TestClassWithGsonAnnotations.class)),
+        is(true));
   }
 
   public static class TestClass {

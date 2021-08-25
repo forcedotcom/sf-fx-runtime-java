@@ -9,10 +9,11 @@ package com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling;
 import com.google.common.net.MediaType;
 import com.google.gson.Gson;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionResultMarshallingException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 
 public class StringFunctionResultMarshaller implements FunctionResultMarshaller {
-  private Gson gson = new Gson();
+  private final Gson gson = new Gson();
 
   @Override
   public MediaType getMediaType() {
@@ -20,7 +21,7 @@ public class StringFunctionResultMarshaller implements FunctionResultMarshaller 
   }
 
   @Override
-  public Class<?> getSourceClass() {
+  public Type getSourceType() {
     return String.class;
   }
 

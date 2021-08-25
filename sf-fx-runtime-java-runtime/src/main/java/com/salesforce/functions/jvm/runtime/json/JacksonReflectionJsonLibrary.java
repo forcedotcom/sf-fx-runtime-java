@@ -9,9 +9,9 @@ package com.salesforce.functions.jvm.runtime.json;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonLibraryNotPresentException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 
 public final class JacksonReflectionJsonLibrary implements JsonLibrary {
   private final Method readTreeMethod;
@@ -21,8 +21,10 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
   private final Method writeValueAsStringMethod;
 
   private final Package annotationsPackage;
+  private final Package annotationsPackageDatabind;
 
   private final Object objectMapper;
+  private final Method constructTypeMethod;
 
   public JacksonReflectionJsonLibrary(ClassLoader classLoader)
       throws JsonLibraryNotPresentException {
@@ -32,12 +34,14 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
       Class<?> objectReaderClass =
           classLoader.loadClass("com.fasterxml.jackson.databind.ObjectReader");
       Class<?> jsonNodeClass = classLoader.loadClass("com.fasterxml.jackson.databind.JsonNode");
+      Class<?> javaTypeClass = classLoader.loadClass("com.fasterxml.jackson.databind.JavaType");
 
       readTreeMethod = objectMapperClass.getMethod("readTree", String.class);
       atMethod = jsonNodeClass.getMethod("at", String.class);
-      readerForMethod = objectMapperClass.getMethod("readerFor", Class.class);
+      readerForMethod = objectMapperClass.getMethod("readerFor", javaTypeClass);
       readValueMethod = objectReaderClass.getMethod("readValue", jsonNodeClass);
       writeValueAsStringMethod = objectMapperClass.getMethod("writeValueAsString", Object.class);
+      constructTypeMethod = objectMapperClass.getMethod("constructType", Type.class);
 
       objectMapper = objectMapperClass.getConstructor().newInstance();
 
@@ -53,6 +57,11 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
       Class<?> jsonValueAnnotationClass =
           classLoader.loadClass("com.fasterxml.jackson.annotation.JsonValue");
       annotationsPackage = jsonValueAnnotationClass.getPackage();
+
+      Class<?> jsonSerializeAnnotationClass =
+          classLoader.loadClass("com.fasterxml.jackson.databind.annotation.JsonSerialize");
+      annotationsPackageDatabind = jsonSerializeAnnotationClass.getPackage();
+
     } catch (NoSuchMethodException
         | ClassNotFoundException
         | InstantiationException
@@ -66,18 +75,13 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
   }
 
   @Override
-  public boolean mustBeUsedFor(Class<?> clazz) {
-    for (Annotation annotation : Util.getAnnotationsOnClassFieldsAndMethods(clazz)) {
-      if (annotation.annotationType().getPackage().equals(annotationsPackage)) {
-        return true;
-      }
-    }
-
-    return false;
+  public boolean mustBeUsedFor(Type type) {
+    return Util.typeContainsAnnotationFromPackage(type, annotationsPackage)
+        || Util.typeContainsAnnotationFromPackage(type, annotationsPackageDatabind);
   }
 
   @Override
-  public Object deserializeAt(String json, Class<?> clazz, String... path)
+  public Object deserializeAt(String json, Type type, String... path)
       throws JsonDeserializationException {
     try {
       Object jsonNode = readTreeMethod.invoke(objectMapper, json);
@@ -86,7 +90,8 @@ public final class JacksonReflectionJsonLibrary implements JsonLibrary {
         jsonNode = atMethod.invoke(jsonNode, "/" + String.join("/", path));
       }
 
-      Object objectReader = readerForMethod.invoke(objectMapper, clazz);
+      Object objectReader =
+          readerForMethod.invoke(objectMapper, constructTypeMethod.invoke(objectMapper, type));
       return readValueMethod.invoke(objectReader, jsonNode);
     } catch (IllegalAccessException e) {
       throw new JsonDeserializationException(e);

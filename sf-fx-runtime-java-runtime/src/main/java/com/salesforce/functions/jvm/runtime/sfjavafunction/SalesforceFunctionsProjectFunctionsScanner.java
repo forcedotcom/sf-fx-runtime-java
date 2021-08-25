@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.sfjavafunction;
 
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
+import com.salesforce.functions.jvm.runtime.json.ListParameterizedType;
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
@@ -31,6 +32,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +52,8 @@ public class SalesforceFunctionsProjectFunctionsScanner
         SalesforceFunction, CloudEvent, SalesforceFunctionResult, SalesforceFunctionException> {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(SalesforceFunctionsProjectFunctionsScanner.class);
+  private static final Pattern LIST_TYPE_STRING_PATTERN =
+      Pattern.compile("java\\.util\\.List<(.*)>");
 
   @Override
   public List<SalesforceFunction> scan(Project project) {
@@ -264,15 +269,24 @@ public class SalesforceFunctionsProjectFunctionsScanner
 
         final String payloadTypeArgument = typeSignature.getTypeArguments().get(0).toString();
         final String returnTypeString = typeSignature.getTypeArguments().get(1).toString();
-
         // Determine PayloadUnmarshaller for this user function
         PayloadUnmarshaller unmarshaller = null;
         if (payloadTypeArgument.equals("byte[]")) {
           unmarshaller = new ByteArrayPayloadUnmarshaller();
         } else {
           try {
-            Class<?> clazz = projectClassLoader.loadClass(payloadTypeArgument);
-            unmarshaller = new PojoFromJsonPayloadUnmarshaller(clazz);
+            Matcher listMatcher = LIST_TYPE_STRING_PATTERN.matcher(payloadTypeArgument);
+
+            if (listMatcher.matches()) {
+              String listItemClassName = listMatcher.group(1);
+              Class<?> listItemClazz = projectClassLoader.loadClass(listItemClassName);
+              unmarshaller =
+                  new JsonPayloadUnmarshaller(
+                      new ListParameterizedType(listItemClazz), projectClassLoader);
+            } else {
+              Class<?> clazz = projectClassLoader.loadClass(payloadTypeArgument);
+              unmarshaller = new JsonPayloadUnmarshaller(clazz);
+            }
           } catch (ClassNotFoundException e) {
             LOGGER.warn(
                 "Potential function {} declares a payload type ({}) that cannot be found. Function will be ignored!",
@@ -300,8 +314,18 @@ public class SalesforceFunctionsProjectFunctionsScanner
           marshaller = new StringFunctionResultMarshaller();
         } else {
           try {
-            Class<?> clazz = projectClassLoader.loadClass(returnTypeString);
-            marshaller = new PojoAsJsonFunctionResultMarshaller(clazz);
+            Matcher listMatcher = LIST_TYPE_STRING_PATTERN.matcher(returnTypeString);
+
+            if (listMatcher.matches()) {
+              String listItemClassName = listMatcher.group(1);
+              Class<?> listItemClazz = projectClassLoader.loadClass(listItemClassName);
+              marshaller =
+                  new JsonFunctionResultMarshaller(
+                      new ListParameterizedType(listItemClazz), projectClassLoader);
+            } else {
+              Class<?> clazz = projectClassLoader.loadClass(returnTypeString);
+              marshaller = new JsonFunctionResultMarshaller(clazz);
+            }
           } catch (ClassNotFoundException e) {
             // This is very unlikely to happen with the current implementation. We get the apply
             // method from the loaded function class earlier in the code which would fail with a

@@ -21,8 +21,8 @@ import com.salesforce.functions.jvm.runtime.commands.StdOutAndStdErrCapturingTes
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayPayloadUnmarshaller;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PojoAsJsonFunctionResultMarshaller;
-import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.PojoFromJsonPayloadUnmarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.JsonFunctionResultMarshaller;
+import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.JsonPayloadUnmarshaller;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.StringFunctionResultMarshaller;
 import com.salesforce.functions.jvm.runtime.test.Util;
 import io.cloudevents.CloudEvent;
@@ -85,7 +85,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
         contains(
             allOf(
                 hasProperty("name", equalTo("com.example.ExampleFunction")),
-                hasProperty("unmarshaller", instanceOf(PojoFromJsonPayloadUnmarshaller.class)),
+                hasProperty("unmarshaller", instanceOf(JsonPayloadUnmarshaller.class)),
                 hasProperty("marshaller", instanceOf(StringFunctionResultMarshaller.class)))));
 
     assertThat(
@@ -121,13 +121,84 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
             allOf(
                 hasProperty("name", equalTo("com.example.CountBytesFunction")),
                 hasProperty("unmarshaller", instanceOf(ByteArrayPayloadUnmarshaller.class)),
-                hasProperty("marshaller", instanceOf(PojoAsJsonFunctionResultMarshaller.class)))));
+                hasProperty("marshaller", instanceOf(JsonFunctionResultMarshaller.class)))));
 
     assertThat(
         functions.get(0).apply(cloudEventWithData("1138".getBytes(StandardCharsets.UTF_8))),
         allOf(
             hasProperty("mediaType", equalTo(MediaType.JSON_UTF_8)),
             hasProperty("data", equalTo("{\"length\":4}".getBytes(StandardCharsets.UTF_8)))));
+
+    assertThat(systemOutContent.toString(), is(emptyString()));
+    assertThat(systemErrContent.toString(), is(emptyString()));
+  }
+
+  @Test
+  public void testSuccessJoinStringListFunction() {
+    SalesforceFunctionsProjectFunctionsScanner scanner =
+        new SalesforceFunctionsProjectFunctionsScanner();
+
+    List<Path> paths = new ArrayList<>();
+    paths.add(sdkJarPath);
+    paths.add(Paths.get("src", "test", "resources", "sdk-1.0-join-string-list-function"));
+
+    Project mockProject = mock(Project.class);
+    when(mockProject.getTypeName()).thenReturn("Mocked");
+    when(mockProject.getClasspathPaths()).thenReturn(paths);
+
+    List<SalesforceFunction> functions = scanner.scan(mockProject);
+    assertThat(
+        functions,
+        contains(
+            allOf(
+                hasProperty("name", equalTo("com.example.JoinStringListFunction")),
+                hasProperty("unmarshaller", instanceOf(JsonPayloadUnmarshaller.class)),
+                hasProperty("marshaller", instanceOf(StringFunctionResultMarshaller.class)))));
+
+    assertThat(
+        functions
+            .get(0)
+            .apply(
+                cloudEventWithData("[\"foo\", \"bar\", \"baz\"]".getBytes(StandardCharsets.UTF_8))),
+        allOf(
+            hasProperty("mediaType", equalTo(MediaType.JSON_UTF_8)),
+            hasProperty("data", equalTo("\"foo, bar, baz\"".getBytes(StandardCharsets.UTF_8)))));
+
+    assertThat(systemOutContent.toString(), is(emptyString()));
+    assertThat(systemErrContent.toString(), is(emptyString()));
+  }
+
+  @Test
+  public void testSuccessUppercaseListOfStringsFunction() {
+    SalesforceFunctionsProjectFunctionsScanner scanner =
+        new SalesforceFunctionsProjectFunctionsScanner();
+
+    List<Path> paths = new ArrayList<>();
+    paths.add(sdkJarPath);
+    paths.add(Paths.get("src", "test", "resources", "sdk-1.0-uppercase-list-of-strings-function"));
+
+    Project mockProject = mock(Project.class);
+    when(mockProject.getTypeName()).thenReturn("Mocked");
+    when(mockProject.getClasspathPaths()).thenReturn(paths);
+
+    List<SalesforceFunction> functions = scanner.scan(mockProject);
+    assertThat(
+        functions,
+        contains(
+            allOf(
+                hasProperty("name", equalTo("com.example.UppercaseListOfStringsFunction")),
+                hasProperty("unmarshaller", instanceOf(JsonPayloadUnmarshaller.class)),
+                hasProperty("marshaller", instanceOf(JsonFunctionResultMarshaller.class)))));
+
+    assertThat(
+        functions
+            .get(0)
+            .apply(
+                cloudEventWithData("[\"foo\", \"bar\", \"baz\"]".getBytes(StandardCharsets.UTF_8))),
+        allOf(
+            hasProperty("mediaType", equalTo(MediaType.JSON_UTF_8)),
+            hasProperty(
+                "data", equalTo("[\"FOO\",\"BAR\",\"BAZ\"]".getBytes(StandardCharsets.UTF_8)))));
 
     assertThat(systemOutContent.toString(), is(emptyString()));
     assertThat(systemErrContent.toString(), is(emptyString()));

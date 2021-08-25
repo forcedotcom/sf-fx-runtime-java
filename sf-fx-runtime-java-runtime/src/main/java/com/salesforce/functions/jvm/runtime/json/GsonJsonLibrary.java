@@ -10,13 +10,13 @@ import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.json.exception.JsonSerializationException;
-import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 public final class GsonJsonLibrary implements JsonLibrary {
   private final Gson gson = new Gson();
 
   @Override
-  public Object deserializeAt(String json, Class<?> clazz, String... path)
+  public Object deserializeAt(String json, Type type, String... path)
       throws JsonDeserializationException {
     try {
       JsonElement jsonElement = JsonParser.parseString(json);
@@ -30,7 +30,7 @@ public final class GsonJsonLibrary implements JsonLibrary {
         jsonElement = jsonObject;
       }
 
-      return gson.fromJson(jsonElement, clazz);
+      return gson.fromJson(jsonElement, type);
     } catch (JsonSyntaxException e) {
       throw new JsonDeserializationException(e);
     }
@@ -46,15 +46,8 @@ public final class GsonJsonLibrary implements JsonLibrary {
   }
 
   @Override
-  public boolean mustBeUsedFor(Class<?> clazz) {
+  public boolean mustBeUsedFor(Type type) {
     Package annotationsPackage = SerializedName.class.getPackage();
-
-    for (Annotation annotation : Util.getAnnotationsOnClassFieldsAndMethods(clazz)) {
-      if (annotation.annotationType().getPackage().equals(annotationsPackage)) {
-        return true;
-      }
-    }
-
-    return false;
+    return Util.typeContainsAnnotationFromPackage(type, annotationsPackage);
   }
 }

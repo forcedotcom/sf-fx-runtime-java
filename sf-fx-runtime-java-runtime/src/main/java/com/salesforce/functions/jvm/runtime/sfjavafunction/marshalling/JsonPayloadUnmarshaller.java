@@ -13,14 +13,21 @@ import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryE
 import com.salesforce.functions.jvm.runtime.json.exception.JsonDeserializationException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.PayloadUnmarshallingException;
 import io.cloudevents.CloudEvent;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 
-public class PojoFromJsonPayloadUnmarshaller implements PayloadUnmarshaller {
-  private final Class<?> clazz;
+public class JsonPayloadUnmarshaller implements PayloadUnmarshaller {
+  private final Type type;
   private final JsonLibrary jsonLibrary;
 
-  public PojoFromJsonPayloadUnmarshaller(Class<?> clazz) throws AmbiguousJsonLibraryException {
-    this.clazz = clazz;
+  public JsonPayloadUnmarshaller(Type type, ClassLoader classLoader)
+      throws AmbiguousJsonLibraryException {
+    this.type = type;
+    this.jsonLibrary = JsonLibraryDetector.detect(type, classLoader);
+  }
+
+  public JsonPayloadUnmarshaller(Class<?> clazz) throws AmbiguousJsonLibraryException {
+    this.type = clazz;
     this.jsonLibrary = JsonLibraryDetector.detect(clazz);
   }
 
@@ -30,8 +37,8 @@ public class PojoFromJsonPayloadUnmarshaller implements PayloadUnmarshaller {
   }
 
   @Override
-  public Class<?> getTargetClass() {
-    return clazz;
+  public Type getTargetType() {
+    return type;
   }
 
   @Override
@@ -53,7 +60,7 @@ public class PojoFromJsonPayloadUnmarshaller implements PayloadUnmarshaller {
         new String(cloudEvent.getData().toBytes(), StandardCharsets.UTF_8);
 
     try {
-      return jsonLibrary.deserializeAt(cloudEventDataUtf8String, clazz);
+      return jsonLibrary.deserializeAt(cloudEventDataUtf8String, type);
     } catch (JsonDeserializationException e) {
       throw new PayloadUnmarshallingException("Could not unmarshall payload!", e);
     }
