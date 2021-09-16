@@ -136,8 +136,8 @@ public class SalesforceFunctionTest {
           "accessToken",
           "functionInvocationId",
           "functionName",
-          "apexClassId",
-          "apexClassFQN",
+          "apexId",
+          "apexFQN",
           "requestId",
           "resource");
 
