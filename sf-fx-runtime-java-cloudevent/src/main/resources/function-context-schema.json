@@ -13,10 +13,10 @@
     "functionName": {
       "type": "string"
     },
-    "apexClassId": {
+    "apexId": {
       "type": "string"
     },
-    "apexClassFQN": {
+    "apexFQN": {
       "type": "string"
     },
     "requestId": {

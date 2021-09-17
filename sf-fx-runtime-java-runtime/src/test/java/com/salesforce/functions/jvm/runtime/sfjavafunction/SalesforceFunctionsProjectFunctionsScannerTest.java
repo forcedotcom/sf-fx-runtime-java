@@ -374,8 +374,8 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
                     "accessToken",
                     "invocationId",
                     "functionname",
-                    "apexClassId",
-                    "apexClassFQN",
+                    "apexId",
+                    "apexFQN",
                     "requestId",
                     "resource")))
         .withExtension(
