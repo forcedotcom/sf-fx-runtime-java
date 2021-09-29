@@ -30,7 +30,7 @@ public class RestApiQueryTest {
   private final RestApi restApi =
       new RestApi(
           URI.create("http://localhost:8080/"),
-          "51.0",
+          "53.0",
           "00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS");
 
   @Test
@@ -46,7 +46,7 @@ public class RestApiQueryTest {
 
     assertThat(
         result.getNextRecordsPath(),
-        is(optionalWithValue(equalTo("/services/data/v51.0/query/01gB000003OCxSPIA1-2000"))));
+        is(optionalWithValue(equalTo("/services/data/v53.0/query/01gB000003OCxSPIA1-2000"))));
   }
 
   @Test
@@ -123,35 +123,35 @@ public class RestApiQueryTest {
         new Record(
             map(
                 new Tuple("type", "Account"),
-                new Tuple("url", "/services/data/v51.0/sobjects/Account/001B000001LntWlIAJ")),
+                new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LntWlIAJ")),
             map(new Tuple("Name", "An awesome test account"))));
 
     expectedRecords.add(
         new Record(
             map(
                 new Tuple("type", "Account"),
-                new Tuple("url", "/services/data/v51.0/sobjects/Account/001B000001LwihtIAB")),
+                new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LwihtIAB")),
             map(new Tuple("Name", "Global Media"))));
 
     expectedRecords.add(
         new Record(
             map(
                 new Tuple("type", "Account"),
-                new Tuple("url", "/services/data/v51.0/sobjects/Account/001B000001LwihuIAB")),
+                new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
             map(new Tuple("Name", "Acme"))));
 
     expectedRecords.add(
         new Record(
             map(
                 new Tuple("type", "Account"),
-                new Tuple("url", "/services/data/v51.0/sobjects/Account/001B000001LwihvIAB")),
+                new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LwihvIAB")),
             map(new Tuple("Name", "salesforce.com"))));
 
     expectedRecords.add(
         new Record(
             map(
                 new Tuple("type", "Account"),
-                new Tuple("url", "/services/data/v51.0/sobjects/Account/001B000001LnobCIAR")),
+                new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
             map(new Tuple("Name", "Sample Account for Entitlements"))));
 
     assertThat(result.getRecords(), is(equalTo(expectedRecords)));

@@ -2,7 +2,7 @@
   "id": "38eb30ec-e4de-4aab-bbb4-7764a48f65bf",
   "name": "services_data_v510_sobjects_account_001b000001lp1fxiaj",
   "request": {
-    "url": "/services/data/v51.0/sobjects/Account/001B000001Lp1FxIAJ",
+    "url": "/services/data/v53.0/sobjects/Account/001B000001Lp1FxIAJ",
     "method": "DELETE",
     "headers": {
       "Authorization": {

@@ -2,7 +2,7 @@
   "id": "789ffdd0-0697-4805-adb4-6df04d0f9fcb",
   "name": "services_data_v510_sobjects_movie__c",
   "request": {
-    "url": "/services/data/v51.0/sobjects/Movie__c",
+    "url": "/services/data/v53.0/sobjects/Movie__c",
     "method": "POST",
     "bodyPatterns": [
       {

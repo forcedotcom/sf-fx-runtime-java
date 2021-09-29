@@ -2,7 +2,7 @@
   "id": "b843b8c1-6492-4048-90d5-08d6f90cb739",
   "name": "services_data_v510_query",
   "request": {
-    "urlPath": "/services/data/v51.0/query",
+    "urlPath": "/services/data/v53.0/query",
     "method": "GET",
     "queryParameters" : {
       "q": {

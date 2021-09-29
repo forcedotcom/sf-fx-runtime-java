@@ -2,7 +2,7 @@
   "id": "4423cb35-8e3f-49b5-a5b4-5107d627e208",
   "name": "services_data_v510_sobjects_account",
   "request": {
-    "url": "/services/data/v51.0/sobjects/Account",
+    "url": "/services/data/v53.0/sobjects/Account",
     "method": "POST",
     "bodyPatterns": [
       {

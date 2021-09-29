@@ -382,7 +382,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
             "sfcontext",
             SalesforceCloudEventExtensionParser.serializeSalesforceContextCloudEventExtension(
                 new SalesforceContextCloudEventExtension(
-                    "51.0",
+                    "53.0",
                     "1.0",
                     new UserContext(
                         "orgId",
