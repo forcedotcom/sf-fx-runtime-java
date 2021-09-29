@@ -24,7 +24,7 @@ public class RestApiTest {
   private final RestApi restApi =
       new RestApi(
           URI.create("http://localhost:8080/"),
-          "51.0",
+          "53.0",
           "00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS");
 
   @Test
@@ -45,7 +45,7 @@ public class RestApiTest {
 
   @Test
   public void testApiVersionGetter() {
-    assertThat(restApi.getApiVersion(), is(equalTo("51.0")));
+    assertThat(restApi.getApiVersion(), is(equalTo("53.0")));
   }
 
   @Test

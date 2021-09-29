@@ -41,7 +41,7 @@ public class ContextImplTest {
 
     this.contextExtension =
         new SalesforceContextCloudEventExtension(
-            "51.0",
+            "53.0",
             "xyz",
             new UserContext(
                 "00Dxx0000006IYJ",

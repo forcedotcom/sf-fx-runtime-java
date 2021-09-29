@@ -2,7 +2,7 @@
   "id": "31a0631a-8930-44b6-b990-89a3cc1c6f75",
   "name": "services_data_v510_sobjects_playingcard__c",
   "request": {
-    "url": "/services/data/v51.0/sobjects/PlayingCard__c",
+    "url": "/services/data/v53.0/sobjects/PlayingCard__c",
     "method": "POST",
     "bodyPatterns": [
       {

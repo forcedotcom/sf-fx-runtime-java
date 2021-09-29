@@ -2,7 +2,7 @@
   "id": "20efd3ef-3b3a-4c68-9bde-6d42ed3e0554",
   "name": "services_data_v510_sobjects_spaceship__c",
   "request": {
-    "url": "/services/data/v51.0/sobjects/Spaceship__c",
+    "url": "/services/data/v53.0/sobjects/Spaceship__c",
     "method": "POST",
     "bodyPatterns": [
       {

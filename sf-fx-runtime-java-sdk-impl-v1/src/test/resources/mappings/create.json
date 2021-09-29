@@ -2,7 +2,7 @@
   "id": "de18b82b-5dcc-4eea-9b2a-cf5973282031",
   "name": "services_data_v510_sobjects_movie__c",
   "request": {
-    "url": "/services/data/v51.0/sobjects/Movie__c",
+    "url": "/services/data/v53.0/sobjects/Movie__c",
     "method": "POST",
     "bodyPatterns": [
       {
@@ -35,7 +35,7 @@
         "BrowserId_sec=bmg9450oEeuFnSMDERhUCg; domain=.salesforce.com; path=/; expires=Thu, 14-Apr-2022 13:50:54 GMT; Max-Age=31536000; secure; SameSite=None"
       ],
       "Sforce-Limit-Info": "api-usage=51/100000",
-      "Location": "/services/data/v51.0/sobjects/Movie__c/a00B000000FSkcvIAD",
+      "Location": "/services/data/v53.0/sobjects/Movie__c/a00B000000FSkcvIAD",
       "Content-Type": "application/json;charset=UTF-8",
       "Vary": "Accept-Encoding"
     }

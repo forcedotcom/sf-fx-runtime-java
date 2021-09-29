@@ -2,7 +2,7 @@
   "id": "d8405304-0f8e-43db-bc9a-25bcaf7632da",
   "name": "services_data_v510_sobjects_movie__c_a00b000000fsjvuia1",
   "request": {
-    "url": "/services/data/v51.0/sobjects/Movie__c/a00B000000FSjVUIA1",
+    "url": "/services/data/v53.0/sobjects/Movie__c/a00B000000FSjVUIA1",
     "method": "PATCH",
     "bodyPatterns": [
       {

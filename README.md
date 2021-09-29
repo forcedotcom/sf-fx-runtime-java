@@ -5,7 +5,7 @@
 [![](https://codecov.io/gh/forcedotcom/sf-fx-runtime-java/branch/main/graph/badge.svg)](https://codecov.io/gh/forcedotcom/sf-fx-runtime-java)
 [![](https://badgen.net/github/dependabot/forcedotcom/sf-fx-runtime-java)](https://github.com/forcedotcom/sf-fx-runtime-java/security/dependabot)
 
-Java **language runtime** for Salesforce Functions. For the Java functions **SDK** see [forcedotcom/sf-fx-sdk-java](https://github.com/forcedotcom/sf-fx-sdk-java) 
+Java **language runtime** for Salesforce Functions. For the Java functions **SDK** see [forcedotcom/sf-fx-sdk-java](https://github.com/forcedotcom/sf-fx-sdk-java)
 and for the **Cloud Native Buildpacks** that assemble the Java function containers, see [heroku/buildpacks-jvm](https://github.com/heroku/buildpacks-jvm).
 
 ## Early Release Note
@@ -14,7 +14,7 @@ This feature is in beta and has been released early so we can collect feedback. 
 ## Local Development
 ### Building
 
-This project uses [Maven Wrapper](https://github.com/takari/maven-wrapper), run `./mvnw package` to build and package 
+This project uses [Maven Wrapper](https://github.com/takari/maven-wrapper), run `./mvnw package` to build and package
 the runtime. It requires at least OpenJDK 8.
 
 ### Running
@@ -64,3 +64,9 @@ $ ./mvnw clean package -Paggregate-coverage
 ```
 
 After building, an aggregated report across all project modules can be found at [coverage/target/site/jacoco-aggregate/index.html](coverage/target/site/jacoco-aggregate/index.html)
+
+### Run tests
+
+```
+$ ./mvnw clean package
+```
