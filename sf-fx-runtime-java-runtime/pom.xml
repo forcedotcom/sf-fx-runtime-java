@@ -19,7 +19,7 @@
     <undertow.version>2.2.12.Final</undertow.version>
     <picocli.version>4.6.1</picocli.version>
     <slf4j.version>1.7.32</slf4j.version>
-    <logback.version>1.2.6</logback.version>
+    <logback.version>1.2.7</logback.version>
   </properties>
 
   <dependencies>
