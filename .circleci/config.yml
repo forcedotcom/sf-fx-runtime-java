@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@1.0.2
+  windows: circleci/windows@2.4.1
 
 executors:
   openjdk-8:
@@ -57,10 +58,20 @@ jobs:
       - run: ./integration-test/<< parameters.executor >>/list-pojo/test.sh
       - run: ./integration-test/<< parameters.executor >>/exception/test.sh
 
+  maven-windows:
+    executor:
+      name: "windows/default"
+      shell: cmd.exe
+    steps:
+      - checkout
+      # Skipping JavaDoc due to a bug in the installed JavaDoc version that cases the process to fail.
+      - run: mvnw.cmd clean package -Dmaven.javadoc.skip=true
+
 workflows:
   ci:
     jobs:
       - coverage-report
+      - maven-windows
       - maven:
           matrix:
             parameters:
