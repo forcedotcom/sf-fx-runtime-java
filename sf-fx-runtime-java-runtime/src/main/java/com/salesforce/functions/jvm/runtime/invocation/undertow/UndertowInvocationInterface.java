@@ -217,7 +217,9 @@ public class UndertowInvocationInterface
                 + " ("
                 + e.getCause().getMessage()
                 + ")\n"
-                + Throwables.getStackTraceAsString(e.getCause());
+                // When running on Windows, the stack trace string will contain Windows
+                // line-endings so we have to normalize them here:
+                + Throwables.getStackTraceAsString(e.getCause()).replaceAll("\\r\\n", "\\\n");
 
         makeResponse(
             exchange,

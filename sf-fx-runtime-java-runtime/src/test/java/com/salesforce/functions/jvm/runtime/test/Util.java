@@ -27,6 +27,7 @@ public class Util {
     ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(url).openStream());
     FileOutputStream fileOutputStream = new FileOutputStream(path.toFile());
     fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+    fileOutputStream.close();
   }
 
   public static Path downloadFileToTemporary(String url) throws IOException {

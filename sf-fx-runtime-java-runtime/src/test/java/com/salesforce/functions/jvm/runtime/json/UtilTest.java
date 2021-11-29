@@ -28,7 +28,7 @@ public class UtilTest {
 
     assertThat(
         annotationList,
-        contains(
+        containsInAnyOrder(
             equalTo(createAnnotation(Foo.class, "publicField")),
             equalTo(createAnnotation(Bar.class, "privateField")),
             equalTo(createAnnotation(Foo.class, "publicMethod")),

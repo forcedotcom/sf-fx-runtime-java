@@ -60,8 +60,10 @@ public class ProjectTest {
     assertThat(
         classUrlsFromClassLoader,
         contains(
-            hasToString(containsString(log4jBindingJarPath.toString())),
-            hasToString(containsString(logbackClassicJarPath.toString())),
-            hasToString(containsString(julBindingJarPath.toString()))));
+            // On Windows, the backslashes, and only the backslashes are URI escaped. Because of
+            // this, we dont use URIEncoder here and rely on direct string replacements.
+            hasToString(containsString(log4jBindingJarPath.toString().replaceAll("\\\\", "%5C"))),
+            hasToString(containsString(logbackClassicJarPath.toString().replaceAll("\\\\", "%5C"))),
+            hasToString(containsString(julBindingJarPath.toString().replaceAll("\\\\", "%5C")))));
   }
 }
