@@ -50,6 +50,10 @@ public final class ProjectClassLoaderBuilder {
   private static URL pathToURLClassLoaderURL(Path path) {
     String absolutePathAsString = path.toAbsolutePath().toString();
 
+    if (!absolutePathAsString.startsWith("/")) {
+      absolutePathAsString = "/" + absolutePathAsString;
+    }
+
     // URLClassLoader strictly requires that directories end with a slash. Without it, the contents
     // of the directory will not be visible to the classloader.
     if (Files.isDirectory(path)) {
