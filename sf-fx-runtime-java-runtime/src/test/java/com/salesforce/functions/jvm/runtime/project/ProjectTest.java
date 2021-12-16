@@ -22,9 +22,9 @@ public class ProjectTest {
 
   @Test
   public void testJarOrdering() throws IOException {
-    Path log4jBindingJarPath =
+    Path nopBindingPath =
         downloadFileToTemporary(
-            "https://repo1.maven.org/maven2/org/slf4j/slf4j-log4j12/1.7.30/slf4j-log4j12-1.7.30.jar");
+            "https://repo1.maven.org/maven2/org/slf4j/slf4j-nop/1.7.32/slf4j-nop-1.7.32.jar");
 
     Path logbackClassicJarPath =
         downloadFileToTemporary(
@@ -51,7 +51,7 @@ public class ProjectTest {
           }
         };
 
-    ClassLoader classLoader = project.createClassLoader(log4jBindingJarPath);
+    ClassLoader classLoader = project.createClassLoader(nopBindingPath);
     List<URL> classUrlsFromClassLoader =
         Collections.list(classLoader.getResources("org/slf4j/impl/StaticLoggerBinder.class"));
 
@@ -62,7 +62,7 @@ public class ProjectTest {
         contains(
             // On Windows, the backslashes, and only the backslashes are URI escaped. Because of
             // this, we dont use URIEncoder here and rely on direct string replacements.
-            hasToString(containsString(log4jBindingJarPath.toString().replaceAll("\\\\", "%5C"))),
+            hasToString(containsString(nopBindingPath.toString().replaceAll("\\\\", "%5C"))),
             hasToString(containsString(logbackClassicJarPath.toString().replaceAll("\\\\", "%5C"))),
             hasToString(containsString(julBindingJarPath.toString().replaceAll("\\\\", "%5C")))));
   }

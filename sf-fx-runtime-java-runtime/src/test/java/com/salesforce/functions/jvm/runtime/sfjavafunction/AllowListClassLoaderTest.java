@@ -24,7 +24,7 @@ public class AllowListClassLoaderTest {
   private final ClassLoader allowListClassLoader;
 
   private final List<String> classesOnlyInParentClassLoader =
-      Collections.singletonList("org.apache.log4j.ConsoleAppender");
+      Collections.singletonList("org.tinylog.Logger");
 
   private final List<String> classesOnlyInExposedClassLoader =
       Arrays.asList(
@@ -41,10 +41,10 @@ public class AllowListClassLoaderTest {
   public AllowListClassLoaderTest() throws Exception {
     exposedClassLoader = getClass().getClassLoader();
 
-    Path log4jJarPath =
+    Path tinyLogJarPath =
         Util.downloadFileToTemporary(
-            "https://repo1.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar");
-    parentClassLoader = ProjectClassLoaderBuilder.build(Collections.singletonList(log4jJarPath));
+            "https://repo1.maven.org/maven2/org/tinylog/tinylog-api/2.4.1/tinylog-api-2.4.1.jar");
+    parentClassLoader = ProjectClassLoaderBuilder.build(Collections.singletonList(tinyLogJarPath));
 
     allowListClassLoader =
         new AllowListClassLoader(

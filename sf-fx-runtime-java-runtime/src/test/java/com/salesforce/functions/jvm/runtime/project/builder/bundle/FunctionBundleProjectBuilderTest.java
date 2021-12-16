@@ -34,8 +34,8 @@ public class FunctionBundleProjectBuilderTest {
 
     Files.move(
         downloadFileToTemporary(
-            "https://repo1.maven.org/maven2/org/slf4j/slf4j-log4j12/1.7.30/slf4j-log4j12-1.7.30.jar"),
-        classpathPath.resolve("slf4j-log4j12-1.7.30.jar"));
+            "https://repo1.maven.org/maven2/org/tinylog/tinylog-api/2.4.1/tinylog-api-2.4.1.jar"),
+        classpathPath.resolve("tinylog-1.3.6.jar"));
 
     Files.move(
         downloadFileToTemporary(
@@ -55,7 +55,7 @@ public class FunctionBundleProjectBuilderTest {
     ClassLoader classLoader = project.createClassLoader();
 
     assertThat(classLoader.loadClass("ch.qos.logback.classic.Level"), is(notNullValue()));
-    assertThat(classLoader.loadClass("org.slf4j.impl.VersionUtil"), is(notNullValue()));
+    assertThat(classLoader.loadClass("org.tinylog.Logger"), is(notNullValue()));
   }
 
   @Test
