@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.salesforce.functions</groupId>
     <artifactId>sf-fx-runtime-java</artifactId>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>sf-fx-runtime-java</name>
@@ -110,7 +110,7 @@
         <dependency>
             <groupId>nl.jqno.equalsverifier</groupId>
             <artifactId>equalsverifier</artifactId>
-            <version>3.8</version>
+            <version>3.8.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
