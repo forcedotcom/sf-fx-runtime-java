@@ -52,7 +52,7 @@ public class FunctionsLogger implements Logger {
 
   private void log(Level level, String s, Throwable throwable) {
     if (isLevelEnabled(level)) {
-      System.out.print(formatter.format(name, level, s));
+      System.out.println(formatter.format(name, level, s));
       if (throwable != null) {
         throwable.printStackTrace();
       }
