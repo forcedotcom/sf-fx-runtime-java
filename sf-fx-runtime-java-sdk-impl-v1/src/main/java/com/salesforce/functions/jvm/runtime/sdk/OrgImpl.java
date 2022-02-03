@@ -17,6 +17,7 @@ public class OrgImpl implements Org {
   private final SalesforceContextCloudEventExtension salesforceContext;
   private final UserImpl user;
   private final DataApiImpl dataApi;
+  private final SalesforceConfigImpl salesforceConfig = new SalesforceConfigImpl();
 
   public OrgImpl(
       SalesforceContextCloudEventExtension salesforceContext,
@@ -48,10 +49,7 @@ public class OrgImpl implements Org {
   @Override
   @Nonnull
   public String getApiVersion() {
-    // An API version is also available in the context via #getApiVersion(). That value differs
-    // between orgs and can change seemingly randomly. To avoid surprises at runtime, we
-    // intentionally don't use that value and instead fix the version.
-    return "53.0";
+    return salesforceConfig.getSalesforceApiVersion();
   }
 
   @Override
