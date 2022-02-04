@@ -17,7 +17,7 @@ public class OrgImpl implements Org {
   private final SalesforceContextCloudEventExtension salesforceContext;
   private final UserImpl user;
   private final DataApiImpl dataApi;
-  private final SalesforceConfigImpl salesforceConfig = new SalesforceConfigImpl();
+  private final SalesforceConfig salesforceConfig = new SalesforceConfig();
 
   public OrgImpl(
       SalesforceContextCloudEventExtension salesforceContext,
