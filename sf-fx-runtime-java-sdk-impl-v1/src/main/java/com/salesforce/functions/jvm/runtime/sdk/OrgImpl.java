@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
+import com.salesforce.functions.jvm.runtime.sfconfig.SalesforceConfig;
 import com.salesforce.functions.jvm.sdk.Org;
 import com.salesforce.functions.jvm.sdk.User;
 import java.net.URI;

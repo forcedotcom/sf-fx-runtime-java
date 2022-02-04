@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-package com.salesforce.functions.jvm.runtime.sdk;
+package sfconfig;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import com.salesforce.functions.jvm.runtime.sfconfig.SalesforceConfig;
 import org.junit.Before;
 import org.junit.Test;
 
