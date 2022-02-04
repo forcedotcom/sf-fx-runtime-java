@@ -10,9 +10,6 @@ import com.moandjiezana.toml.Toml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class SalesforceConfig {
 
@@ -75,13 +72,14 @@ public class SalesforceConfig {
     // the project.toml file, if it doesn't exit it will return an empty string
     try {
       System.out.println("retrieving project.toml");
-      File file = new File(PROJECT_TOML);
-      String projectTomlFile = file.getAbsolutePath();
+      File projectTomlFile = new File(PROJECT_TOML);
       System.out.println(projectTomlFile);
-      if (!projectTomlFile.isEmpty()) {
-        Toml toml = new Toml().read(file);
+      if (!projectTomlFile.exists()) {
+        InputStream targetStream = new FileInputStream(projectTomlFile);
+
+        Toml toml = new Toml().read(targetStream);
         String projectTomlConfig = toml.getString(id);
-        System.out.println("config found is "+projectTomlConfig);
+        System.out.println("config found is " + projectTomlConfig);
         if (!projectTomlConfig.equals(null)) {
           return projectTomlConfig;
         } else {
