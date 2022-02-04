@@ -45,6 +45,6 @@ public class SalesforceConfigTest {
 
   @Test
   public void testGetSalesforceApiVersionWithProjectToml() {
-    assertThat(salesforceConfig.getSalesforceApiVersion(), is(equalTo("51.0")));
+    assertThat(salesforceConfig.getSalesforceApiVersion(), is(equalTo("54.0")));
   }
 }
