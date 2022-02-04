@@ -71,14 +71,14 @@ public class SalesforceConfig {
     // This method returns the string value of the config found inside
     // the project.toml file, if it doesn't exit it will return an empty string
     try {
-      System.out.println("retrieving project.toml");
+//      System.out.println("retrieving project.toml");
       File projectTomlFile = new File(PROJECT_TOML);
       System.out.println(projectTomlFile);
       if (!projectTomlFile.exists()) {
         InputStream targetStream = new FileInputStream(projectTomlFile);
 
         Toml toml = new Toml().read(targetStream);
-        String projectTomlConfig = toml.getString(id);
+        String projectTomlConfig = toml.getString(config);
         System.out.println("config found is " + projectTomlConfig);
         if (!projectTomlConfig.equals(null)) {
           return projectTomlConfig;
