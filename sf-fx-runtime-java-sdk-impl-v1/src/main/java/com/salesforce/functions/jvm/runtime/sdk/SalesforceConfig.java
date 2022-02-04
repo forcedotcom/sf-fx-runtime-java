@@ -71,7 +71,6 @@ public class SalesforceConfig {
   }
 
   private String readSalesforceConfig(String config) {
-    // //needs to read from outside the jar
     // This method returns the string value of the config found inside
     // the project.toml file, if it doesn't exit it will return an empty string
     try {
