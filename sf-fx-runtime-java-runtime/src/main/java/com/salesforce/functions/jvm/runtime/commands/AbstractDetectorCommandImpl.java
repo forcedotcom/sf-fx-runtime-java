@@ -79,7 +79,7 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
       LOGGER.info("Project uses Salesforce API version {}.", salesforceApiVersion);
     } else {
       LOGGER.error(
-          "Project declares to use unsupported Salesforce API version {}. Exiting.",
+          "Project configuration specifies an unsupported Salesforce API version {}. Exiting.",
           salesforceApiVersion);
       return ExitCodes.UNSUPPORTED_SALESFORCE_API_VERSION;
     }
