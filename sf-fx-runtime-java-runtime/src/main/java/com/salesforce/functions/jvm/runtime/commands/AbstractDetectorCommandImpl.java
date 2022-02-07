@@ -8,8 +8,11 @@ package com.salesforce.functions.jvm.runtime.commands;
 
 import static com.salesforce.functions.jvm.runtime.commands.ExitCodes.NO_PROJECT_FOUND;
 
+import com.salesforce.functions.jvm.runtime.Constants;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
+import com.salesforce.functions.jvm.runtime.project.ProjectMetadata;
+import com.salesforce.functions.jvm.runtime.project.ProjectMetadataParser;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunction;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunctionsProjectFunctionsScanner;
 import java.nio.file.Path;
@@ -58,16 +61,33 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
         projectPath,
         projectDetectDuration);
 
+    LOGGER.info("Reading project metadata at path {}...", projectPath);
+    ProjectMetadata projectMetadata =
+        ProjectMetadataParser.parse(projectPath.resolve("project.toml"))
+            .orElseThrow(
+                () -> new IllegalStateException("Cannot parse project metadata (project.toml)!"));
+
+    if (!projectMetadata.getSalesforceApiVersion().isPresent()) {
+      LOGGER.warn(
+          "Project Salesforce API version isn't explicitly defined in project.toml. The default version {} will be used.",
+          Constants.DEFAULT_SALESFORCE_API_VERSION);
+    }
+
+    LOGGER.info(
+        "Project uses Salesforce API version {}.",
+        projectMetadata.getSalesforceApiVersion().orElse(Constants.DEFAULT_SALESFORCE_API_VERSION));
+
     LOGGER.info("Scanning project for functions...");
     long scanStart = System.currentTimeMillis();
     List<SalesforceFunction> functions =
-        new SalesforceFunctionsProjectFunctionsScanner().scan(project);
+        new SalesforceFunctionsProjectFunctionsScanner(projectMetadata).scan(project);
     long scanDuration = System.currentTimeMillis() - scanStart;
     LOGGER.info("Found {} function(s) after {}ms.", functions.size(), scanDuration);
 
-    return handle(project, functions);
+    return handle(project, projectMetadata, functions);
   }
 
-  protected abstract Integer handle(Project project, List<SalesforceFunction> functions)
+  protected abstract Integer handle(
+      Project project, ProjectMetadata projectMetadata, List<SalesforceFunction> functions)
       throws Exception;
 }

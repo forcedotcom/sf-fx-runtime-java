@@ -21,8 +21,11 @@ public class FunctionBundler {
 
   private FunctionBundler() {}
 
-  public static void bundle(Project project, SalesforceFunction function, Path bundlePath)
+  public static void bundle(
+      Path projectPath, Project project, SalesforceFunction function, Path bundlePath)
       throws IOException {
+
+    Files.copy(projectPath.resolve("project.toml"), bundlePath.resolve("project.toml"));
 
     Path bundleClassPath = Paths.get(bundlePath.toString(), "classpath");
     Files.createDirectories(bundleClassPath);

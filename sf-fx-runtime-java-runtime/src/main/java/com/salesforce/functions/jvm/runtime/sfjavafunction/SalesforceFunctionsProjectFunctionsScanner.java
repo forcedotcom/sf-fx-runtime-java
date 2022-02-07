@@ -6,12 +6,14 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction;
 
+import com.salesforce.functions.jvm.runtime.Constants;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.json.ListParameterizedType;
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
+import com.salesforce.functions.jvm.runtime.project.ProjectMetadata;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.*;
@@ -54,6 +56,12 @@ public class SalesforceFunctionsProjectFunctionsScanner
       LoggerFactory.getLogger(SalesforceFunctionsProjectFunctionsScanner.class);
   private static final Pattern LIST_TYPE_STRING_PATTERN =
       Pattern.compile("java\\.util\\.List<(.*)>");
+
+  private final ProjectMetadata projectMetadata;
+
+  public SalesforceFunctionsProjectFunctionsScanner(ProjectMetadata projectMetadata) {
+    this.projectMetadata = projectMetadata;
+  }
 
   @Override
   public List<SalesforceFunction> scan(Project project) {
@@ -362,7 +370,8 @@ public class SalesforceFunctionsProjectFunctionsScanner
               contextClass.getConstructor(
                   CloudEvent.class,
                   SalesforceContextCloudEventExtension.class,
-                  SalesforceFunctionContextCloudEventExtension.class);
+                  SalesforceFunctionContextCloudEventExtension.class,
+                  String.class);
         } catch (ClassNotFoundException | NoSuchMethodException e) {
           LOGGER.error("Could not find SDK implementation class or constructor!", e);
           return Collections.emptyList();
@@ -390,7 +399,12 @@ public class SalesforceFunctionsProjectFunctionsScanner
                       try {
                         context =
                             contextClassConstructor.newInstance(
-                                cloudEvent, salesforceContext, functionContext);
+                                cloudEvent,
+                                salesforceContext,
+                                functionContext,
+                                projectMetadata
+                                    .getSalesforceApiVersion()
+                                    .orElse(Constants.DEFAULT_SALESFORCE_API_VERSION));
                       } catch (InstantiationException
                           | IllegalAccessException
                           | InvocationTargetException e) {

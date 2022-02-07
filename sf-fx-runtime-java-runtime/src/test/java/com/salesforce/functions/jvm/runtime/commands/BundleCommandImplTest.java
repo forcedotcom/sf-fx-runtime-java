@@ -13,15 +13,15 @@ import static org.mockito.Mockito.*;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
 import com.salesforce.functions.jvm.runtime.test.Util;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -35,6 +35,15 @@ public class BundleCommandImplTest extends StdOutAndStdErrCapturingTest {
     this.sdkJarPath =
         Util.downloadFileToTemporary(
             "https://repo1.maven.org/maven2/com/salesforce/functions/sf-fx-sdk-java/1.0.0/sf-fx-sdk-java-1.0.0.jar");
+  }
+
+  @Before
+  public void before() throws IOException {
+    File projectTomlFile = projectDirectoryFolder.newFile("project.toml");
+    Files.copy(
+        Paths.get("src", "test", "resources", "default-test-project.toml"),
+        projectTomlFile.toPath(),
+        StandardCopyOption.REPLACE_EXISTING);
   }
 
   @Test

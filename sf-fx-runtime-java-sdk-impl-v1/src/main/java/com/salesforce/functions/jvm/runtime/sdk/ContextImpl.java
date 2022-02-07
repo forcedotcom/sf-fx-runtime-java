@@ -22,9 +22,10 @@ public class ContextImpl implements Context {
   public ContextImpl(
       CloudEvent cloudEvent,
       SalesforceContextCloudEventExtension salesforceContext,
-      SalesforceFunctionContextCloudEventExtension functionContext) {
+      SalesforceFunctionContextCloudEventExtension functionContext,
+      String apiVersion) {
     this.cloudEvent = cloudEvent;
-    this.org = new OrgImpl(salesforceContext, functionContext);
+    this.org = new OrgImpl(salesforceContext, functionContext, apiVersion);
   }
 
   @Override

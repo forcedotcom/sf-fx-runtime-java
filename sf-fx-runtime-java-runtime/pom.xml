@@ -20,6 +20,7 @@
     <picocli.version>4.6.2</picocli.version>
     <slf4j.version>1.7.35</slf4j.version>
     <logback.version>1.2.10</logback.version>
+    <tomlj.version>1.0.0</tomlj.version>
   </properties>
 
   <dependencies>
@@ -78,6 +79,11 @@
       <artifactId>logback-classic</artifactId>
       <version>${logback.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.tomlj</groupId>
+      <artifactId>tomlj</artifactId>
+      <version>${tomlj.version}</version>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -95,12 +101,6 @@
       <groupId>io.leangen.geantyref</groupId>
       <artifactId>geantyref</artifactId>
       <version>1.3.13</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.tomlj</groupId>
-      <artifactId>tomlj</artifactId>
-      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

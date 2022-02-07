@@ -64,7 +64,8 @@ public class ContextImplTest {
 
   @Test
   public void testContextValues() {
-    Context context = new ContextImpl(cloudEvent, contextExtension, functionContextExtension);
+    Context context =
+        new ContextImpl(cloudEvent, contextExtension, functionContextExtension, "53.0");
 
     assertThat(context.getId(), is(equalTo(cloudEvent.getId())));
     assertThat(context.getOrg(), is(optionalWithValue()));
@@ -72,7 +73,7 @@ public class ContextImplTest {
 
   @Test
   public void testOrgValues() {
-    Org org = new OrgImpl(contextExtension, functionContextExtension);
+    Org org = new OrgImpl(contextExtension, functionContextExtension, "53.0");
 
     assertThat(org.getId(), is(equalTo(contextExtension.getUserContext().getOrgId())));
     assertThat(

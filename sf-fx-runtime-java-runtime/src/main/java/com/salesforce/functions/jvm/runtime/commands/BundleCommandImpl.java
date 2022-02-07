@@ -11,6 +11,7 @@ import static com.salesforce.functions.jvm.runtime.commands.ExitCodes.*;
 import com.salesforce.functions.jvm.runtime.bundle.FunctionBundler;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
+import com.salesforce.functions.jvm.runtime.project.ProjectMetadata;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunction;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,7 +31,9 @@ class BundleCommandImpl extends AbstractDetectorCommandImpl {
   }
 
   @Override
-  protected Integer handle(Project project, List<SalesforceFunction> functions) throws Exception {
+  protected Integer handle(
+      Project project, ProjectMetadata projectMetadata, List<SalesforceFunction> functions)
+      throws Exception {
     if (!Files.exists(bundlePath)) {
       Files.createDirectories(bundlePath);
     } else if (!Files.isDirectory(bundlePath)) {
@@ -49,7 +52,7 @@ class BundleCommandImpl extends AbstractDetectorCommandImpl {
       return MULTIPLE_FUNCTIONS_FOUND;
     }
 
-    FunctionBundler.bundle(project, functions.get(0), bundlePath);
+    FunctionBundler.bundle(projectPath, project, functions.get(0), bundlePath);
 
     return SUCCESS;
   }
