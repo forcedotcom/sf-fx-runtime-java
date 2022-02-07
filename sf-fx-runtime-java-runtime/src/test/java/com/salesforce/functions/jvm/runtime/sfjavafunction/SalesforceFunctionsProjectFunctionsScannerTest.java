@@ -20,7 +20,6 @@ import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContext
 import com.salesforce.functions.jvm.runtime.cloudevent.UserContext;
 import com.salesforce.functions.jvm.runtime.commands.StdOutAndStdErrCapturingTest;
 import com.salesforce.functions.jvm.runtime.project.Project;
-import com.salesforce.functions.jvm.runtime.project.ProjectMetadata;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.ByteArrayPayloadUnmarshaller;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.JsonFunctionResultMarshaller;
@@ -71,8 +70,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
   @Test
   public void testSuccessPojoInStringOutFunction() {
     SalesforceFunctionsProjectFunctionsScanner scanner =
-        new SalesforceFunctionsProjectFunctionsScanner(
-            new ProjectMetadata(Constants.DEFAULT_SALESFORCE_API_VERSION));
+        new SalesforceFunctionsProjectFunctionsScanner(Constants.DEFAULT_SALESFORCE_API_VERSION);
 
     List<Path> paths = new ArrayList<>();
     paths.add(sdkJarPath);
@@ -107,8 +105,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
   @Test
   public void testSuccessBytesInPojoOutFunction() {
     SalesforceFunctionsProjectFunctionsScanner scanner =
-        new SalesforceFunctionsProjectFunctionsScanner(
-            new ProjectMetadata(Constants.DEFAULT_SALESFORCE_API_VERSION));
+        new SalesforceFunctionsProjectFunctionsScanner(Constants.DEFAULT_SALESFORCE_API_VERSION);
 
     List<Path> paths = new ArrayList<>();
     paths.add(sdkJarPath);
@@ -140,8 +137,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
   @Test
   public void testSuccessJoinStringListFunction() {
     SalesforceFunctionsProjectFunctionsScanner scanner =
-        new SalesforceFunctionsProjectFunctionsScanner(
-            new ProjectMetadata(Constants.DEFAULT_SALESFORCE_API_VERSION));
+        new SalesforceFunctionsProjectFunctionsScanner(Constants.DEFAULT_SALESFORCE_API_VERSION);
 
     List<Path> paths = new ArrayList<>();
     paths.add(sdkJarPath);
@@ -179,8 +175,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
   @Test
   public void testSuccessUppercaseListOfStringsFunction() {
     SalesforceFunctionsProjectFunctionsScanner scanner =
-        new SalesforceFunctionsProjectFunctionsScanner(
-            new ProjectMetadata(Constants.DEFAULT_SALESFORCE_API_VERSION));
+        new SalesforceFunctionsProjectFunctionsScanner(Constants.DEFAULT_SALESFORCE_API_VERSION);
 
     List<Path> paths = new ArrayList<>();
     paths.add(sdkJarPath);
@@ -216,8 +211,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
   @Test
   public void testFailingFunction() {
     SalesforceFunctionsProjectFunctionsScanner scanner =
-        new SalesforceFunctionsProjectFunctionsScanner(
-            new ProjectMetadata(Constants.DEFAULT_SALESFORCE_API_VERSION));
+        new SalesforceFunctionsProjectFunctionsScanner(Constants.DEFAULT_SALESFORCE_API_VERSION);
 
     List<Path> paths = new ArrayList<>();
     paths.add(sdkJarPath);
@@ -359,8 +353,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
   private List<SalesforceFunction> scanTestFunctionDirectory(
       String functionDirectory, Path... classpathJarFiles) {
     SalesforceFunctionsProjectFunctionsScanner scanner =
-        new SalesforceFunctionsProjectFunctionsScanner(
-            new ProjectMetadata(Constants.DEFAULT_SALESFORCE_API_VERSION));
+        new SalesforceFunctionsProjectFunctionsScanner(Constants.DEFAULT_SALESFORCE_API_VERSION);
 
     List<Path> paths = new ArrayList<>();
     paths.add(Paths.get("src", "test", "resources", functionDirectory));

@@ -87,14 +87,13 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
     LOGGER.info("Scanning project for functions...");
     long scanStart = System.currentTimeMillis();
     List<SalesforceFunction> functions =
-        new SalesforceFunctionsProjectFunctionsScanner(projectMetadata).scan(project);
+        new SalesforceFunctionsProjectFunctionsScanner(salesforceApiVersion).scan(project);
     long scanDuration = System.currentTimeMillis() - scanStart;
     LOGGER.info("Found {} function(s) after {}ms.", functions.size(), scanDuration);
 
-    return handle(project, projectMetadata, functions);
+    return handle(project, functions);
   }
 
-  protected abstract Integer handle(
-      Project project, ProjectMetadata projectMetadata, List<SalesforceFunction> functions)
+  protected abstract Integer handle(Project project, List<SalesforceFunction> functions)
       throws Exception;
 }

@@ -10,7 +10,6 @@ import com.salesforce.functions.jvm.runtime.InvocationInterface;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunction;
-import com.salesforce.functions.jvm.runtime.project.ProjectMetadata;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunction;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.SalesforceFunctionResult;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
@@ -37,9 +36,8 @@ class ServeCommandImpl extends AbstractDetectorCommandImpl {
     this.invocationInterface = invocationInterface;
   }
 
-  protected Integer handle(
-      Project project, ProjectMetadata projectMetadata, List<SalesforceFunction> functions)
-      throws Exception {
+  @Override
+  protected Integer handle(Project project, List<SalesforceFunction> functions) throws Exception {
     functions.forEach(function -> LOGGER.info("Found function: {}", function.getName()));
 
     ProjectFunction<CloudEvent, SalesforceFunctionResult, SalesforceFunctionException> function =

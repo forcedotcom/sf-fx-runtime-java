@@ -6,14 +6,12 @@
  */
 package com.salesforce.functions.jvm.runtime.sfjavafunction;
 
-import com.salesforce.functions.jvm.runtime.Constants;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.cloudevent.SalesforceFunctionContextCloudEventExtension;
 import com.salesforce.functions.jvm.runtime.json.ListParameterizedType;
 import com.salesforce.functions.jvm.runtime.json.exception.AmbiguousJsonLibraryException;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectFunctionsScanner;
-import com.salesforce.functions.jvm.runtime.project.ProjectMetadata;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.FunctionThrewExceptionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.exception.SalesforceFunctionException;
 import com.salesforce.functions.jvm.runtime.sfjavafunction.marshalling.*;
@@ -57,10 +55,10 @@ public class SalesforceFunctionsProjectFunctionsScanner
   private static final Pattern LIST_TYPE_STRING_PATTERN =
       Pattern.compile("java\\.util\\.List<(.*)>");
 
-  private final ProjectMetadata projectMetadata;
+  private final String salesforceApiVersion;
 
-  public SalesforceFunctionsProjectFunctionsScanner(ProjectMetadata projectMetadata) {
-    this.projectMetadata = projectMetadata;
+  public SalesforceFunctionsProjectFunctionsScanner(String salesforceApiVersion) {
+    this.salesforceApiVersion = salesforceApiVersion;
   }
 
   @Override
@@ -402,9 +400,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
                                 cloudEvent,
                                 salesforceContext,
                                 functionContext,
-                                projectMetadata
-                                    .getSalesforceApiVersion()
-                                    .orElse(Constants.DEFAULT_SALESFORCE_API_VERSION));
+                                salesforceApiVersion);
                       } catch (InstantiationException
                           | IllegalAccessException
                           | InvocationTargetException e) {
