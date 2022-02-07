@@ -6,8 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.commands;
 
-import static com.salesforce.functions.jvm.runtime.commands.ExitCodes.NO_PROJECT_FOUND;
-
 import com.salesforce.functions.jvm.runtime.Constants;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
@@ -49,7 +47,7 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
 
     if (!optionalProject.isPresent()) {
       LOGGER.info("Could not find project at path {}!", projectPath);
-      return NO_PROJECT_FOUND;
+      return ExitCodes.NO_PROJECT_FOUND;
     }
 
     Project project = optionalProject.get();
@@ -67,15 +65,24 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
             .orElseThrow(
                 () -> new IllegalStateException("Cannot parse project metadata (project.toml)!"));
 
-    if (!projectMetadata.getSalesforceApiVersion().isPresent()) {
+    String salesforceApiVersion = Constants.DEFAULT_SALESFORCE_API_VERSION;
+
+    if (projectMetadata.getSalesforceApiVersion().isPresent()) {
+      salesforceApiVersion = projectMetadata.getSalesforceApiVersion().get();
+    } else {
       LOGGER.warn(
           "Project Salesforce API version isn't explicitly defined in project.toml. The default version {} will be used.",
           Constants.DEFAULT_SALESFORCE_API_VERSION);
     }
 
-    LOGGER.info(
-        "Project uses Salesforce API version {}.",
-        projectMetadata.getSalesforceApiVersion().orElse(Constants.DEFAULT_SALESFORCE_API_VERSION));
+    if (Constants.SUPPORTED_SALESFORCE_API_VERSIONS.contains(salesforceApiVersion)) {
+      LOGGER.info("Project uses Salesforce API version {}.", salesforceApiVersion);
+    } else {
+      LOGGER.error(
+          "Project declares to use unsupported Salesforce API version {}. Exiting.",
+          salesforceApiVersion);
+      return ExitCodes.UNSUPPORTED_SALESFORCE_API_VERSION;
+    }
 
     LOGGER.info("Scanning project for functions...");
     long scanStart = System.currentTimeMillis();

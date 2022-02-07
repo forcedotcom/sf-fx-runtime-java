@@ -6,6 +6,19 @@
  */
 package com.salesforce.functions.jvm.runtime;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public final class Constants {
   public static String DEFAULT_SALESFORCE_API_VERSION = "53.0";
+
+  public static final List<String> SUPPORTED_SALESFORCE_API_VERSIONS;
+
+  static {
+    List<String> versions = new ArrayList<>();
+    versions.add("53.0");
+
+    SUPPORTED_SALESFORCE_API_VERSIONS = Collections.unmodifiableList(versions);
+  }
 }
