@@ -71,7 +71,7 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
       salesforceApiVersion = projectMetadata.getSalesforceApiVersion().get();
     } else {
       LOGGER.warn(
-          "Project Salesforce API version isn't explicitly defined in project.toml. The default version {} will be used.",
+          "Project's Salesforce API version isn't explicitly defined in project.toml. The default version {} will be used.",
           Constants.DEFAULT_SALESFORCE_API_VERSION);
     }
 
