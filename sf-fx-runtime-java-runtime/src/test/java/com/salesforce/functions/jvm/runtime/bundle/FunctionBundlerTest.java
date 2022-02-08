@@ -10,6 +10,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.io.FileMatchers.anExistingDirectory;
+import static org.hamcrest.io.FileMatchers.anExistingFile;
 import static org.mockito.Mockito.mock;
 
 import com.salesforce.functions.jvm.runtime.project.Project;
@@ -24,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -41,6 +43,7 @@ public class FunctionBundlerTest {
   private final SalesforceFunction function =
       new SalesforceFunction(unmarshaller, marshaller, functionClassName, mockedInvocationWrapper);
 
+  @Rule public TemporaryFolder temporaryProjectFolder = new TemporaryFolder();
   @Rule public TemporaryFolder temporaryBundleFolder = new TemporaryFolder();
   @Rule public TemporaryFolder temporaryClasspathFolder = new TemporaryFolder();
 
@@ -78,6 +81,11 @@ public class FunctionBundlerTest {
 
   @Test
   public void testBundling() throws IOException {
+    Files.copy(
+        Paths.get("src", "test", "resources", "default-test-project.toml"),
+        temporaryProjectFolder.getRoot().toPath().resolve("project.toml"),
+        StandardCopyOption.REPLACE_EXISTING);
+
     Path temporaryClasspathPath = temporaryClasspathFolder.getRoot().toPath();
 
     createFakeFiles(
@@ -122,7 +130,15 @@ public class FunctionBundlerTest {
           }
         };
 
-    FunctionBundler.bundle(project, function, temporaryBundleFolder.getRoot().toPath());
+    FunctionBundler.bundle(
+        temporaryProjectFolder.getRoot().toPath(),
+        project,
+        function,
+        temporaryBundleFolder.getRoot().toPath());
+
+    assertThat(
+        temporaryBundleFolder.getRoot().toPath().resolve("project.toml").toFile(),
+        is(anExistingFile()));
 
     TomlParseResult result =
         Toml.parse(temporaryBundleFolder.getRoot().toPath().resolve("function-bundle.toml"));

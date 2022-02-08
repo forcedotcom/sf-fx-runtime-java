@@ -36,6 +36,7 @@ class ServeCommandImpl extends AbstractDetectorCommandImpl {
     this.invocationInterface = invocationInterface;
   }
 
+  @Override
   protected Integer handle(Project project, List<SalesforceFunction> functions) throws Exception {
     functions.forEach(function -> LOGGER.info("Found function: {}", function.getName()));
 

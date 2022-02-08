@@ -15,6 +15,7 @@ final class ExitCodes {
   public static final int BUNDLE_DIRECTORY_NOT_A_DIRECTORY = 5;
   public static final int UNEXPECTED_FILE_TYPE = 6;
   public static final int NO_PROJECT_FOUND = 7;
+  public static final int UNSUPPORTED_SALESFORCE_API_VERSION = 8;
   public static final int MISSING_OR_INVALID_ARGUMENTS = 250;
 
   private ExitCodes() {}

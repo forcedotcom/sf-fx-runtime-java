@@ -55,6 +55,12 @@ public class SalesforceFunctionsProjectFunctionsScanner
   private static final Pattern LIST_TYPE_STRING_PATTERN =
       Pattern.compile("java\\.util\\.List<(.*)>");
 
+  private final String salesforceApiVersion;
+
+  public SalesforceFunctionsProjectFunctionsScanner(String salesforceApiVersion) {
+    this.salesforceApiVersion = salesforceApiVersion;
+  }
+
   @Override
   public List<SalesforceFunction> scan(Project project) {
     Objects.requireNonNull(project);
@@ -362,7 +368,8 @@ public class SalesforceFunctionsProjectFunctionsScanner
               contextClass.getConstructor(
                   CloudEvent.class,
                   SalesforceContextCloudEventExtension.class,
-                  SalesforceFunctionContextCloudEventExtension.class);
+                  SalesforceFunctionContextCloudEventExtension.class,
+                  String.class);
         } catch (ClassNotFoundException | NoSuchMethodException e) {
           LOGGER.error("Could not find SDK implementation class or constructor!", e);
           return Collections.emptyList();
@@ -390,7 +397,10 @@ public class SalesforceFunctionsProjectFunctionsScanner
                       try {
                         context =
                             contextClassConstructor.newInstance(
-                                cloudEvent, salesforceContext, functionContext);
+                                cloudEvent,
+                                salesforceContext,
+                                functionContext,
+                                salesforceApiVersion);
                       } catch (InstantiationException
                           | IllegalAccessException
                           | InvocationTargetException e) {

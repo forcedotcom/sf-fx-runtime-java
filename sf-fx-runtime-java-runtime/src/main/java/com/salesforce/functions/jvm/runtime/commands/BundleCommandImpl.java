@@ -49,7 +49,7 @@ class BundleCommandImpl extends AbstractDetectorCommandImpl {
       return MULTIPLE_FUNCTIONS_FOUND;
     }
 
-    FunctionBundler.bundle(project, functions.get(0), bundlePath);
+    FunctionBundler.bundle(projectPath, project, functions.get(0), bundlePath);
 
     return SUCCESS;
   }
