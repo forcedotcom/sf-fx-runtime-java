@@ -128,7 +128,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
 
     try {
       Optional<Path> optionalSdkImplementationJarPath =
-          ClassLoaderUtils.copyFileFromClassLoader(getClass().getClassLoader(), "sdk-impl-v0.jar");
+          ClassLoaderUtils.copyFileFromClassLoader(getClass().getClassLoader(), "sdk-impl-v1.jar");
 
       if (!optionalSdkImplementationJarPath.isPresent()) {
         LOGGER.error("Could not find logger implementation JAR!");
