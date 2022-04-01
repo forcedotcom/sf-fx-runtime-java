@@ -23,6 +23,7 @@ import io.github.classgraph.ClassInfo;
 import io.github.classgraph.ClassRefTypeSignature;
 import io.github.classgraph.ScanResult;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -105,6 +106,25 @@ public class SalesforceFunctionsProjectFunctionsScanner
             "io.cloudevents.",
             "com.salesforce.functions.jvm.runtime.cloudevent.");
 
+    // There are multiple SDK versions that all require a different implementation JAR file. Before
+    // we can continue, we need to figure out which SDK JAR the function requires.
+    final String sdkImplementationJarName;
+
+    try {
+      Optional<String> optionalSdkImplementationJarName =
+          getSdkImplementationJarName(projectClassLoader);
+
+      if (optionalSdkImplementationJarName.isPresent()) {
+        sdkImplementationJarName = optionalSdkImplementationJarName.get();
+      } else {
+        LOGGER.error("Could not find compatible SDK implementation!");
+        return Collections.emptyList();
+      }
+    } catch (IOException e) {
+      LOGGER.error("Unexpected IO exception while determining SDK implementation JAR!", e);
+      return Collections.emptyList();
+    }
+
     // Class loader that can load SDK implementation classes. It will fall back to the
     // AllowListClassLoader above to load CloudEvent related classes. The class loader above that
     // one is the project class loader that contains the SDK interface required by the SDK
@@ -113,25 +133,13 @@ public class SalesforceFunctionsProjectFunctionsScanner
     // for the SDK implementation project.
     final ClassLoader sdkClassLoader;
 
-    // In the future when we might have multiple incompatible SDK interfaces, we can implement
-    // different strategies for each SDK version initialization and function detection. This is not
-    // a concern right now and therefore unimplemented. The SDK does include a properties files that
-    // can be used to reliably detect the SDK version:
-    //
-    // final Properties properties = new Properties();
-    // try (final InputStream stream =
-    // projectClassLoader.getResourceAsStream("sf-fx-sdk-java.properties")) {
-    //   properties.load(stream);
-    // }
-    //
-    // properties.getProperty("version");
-
     try {
       Optional<Path> optionalSdkImplementationJarPath =
-          ClassLoaderUtils.copyFileFromClassLoader(getClass().getClassLoader(), "sdk-impl-v0.jar");
+          ClassLoaderUtils.copyFileFromClassLoader(
+              getClass().getClassLoader(), sdkImplementationJarName);
 
       if (!optionalSdkImplementationJarPath.isPresent()) {
-        LOGGER.error("Could not find logger implementation JAR!");
+        LOGGER.error("Could not find SDK implementation JAR: {}!", sdkImplementationJarName);
         return Collections.emptyList();
       }
 
@@ -426,5 +434,23 @@ public class SalesforceFunctionsProjectFunctionsScanner
     }
 
     return foundFunctions;
+  }
+
+  private Optional<String> getSdkImplementationJarName(ClassLoader classLoader) throws IOException {
+    final Properties properties = new Properties();
+
+    // sf-fx-sdk-java.properties is packaged with every SDK JAR to make SDK version detection easy.
+    try (final InputStream stream = classLoader.getResourceAsStream("sf-fx-sdk-java.properties")) {
+      // If the file does not exist, the stream will be null.
+      if (stream != null) {
+        properties.load(stream);
+      }
+    }
+
+    Map<String, String> mapping = new HashMap<>();
+    mapping.put("1.0.0", "sdk-impl-v1.jar");
+
+    return Optional.ofNullable(properties.getProperty("version"))
+        .flatMap((version) -> Optional.ofNullable(mapping.get(version)));
   }
 }

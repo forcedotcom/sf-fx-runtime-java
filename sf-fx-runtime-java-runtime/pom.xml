@@ -133,7 +133,7 @@
                   <classifier>jar-with-dependencies</classifier>
                   <type>jar</type>
                   <overWrite>true</overWrite>
-                  <destFileName>sdk-impl-v0.jar</destFileName>
+                  <destFileName>sdk-impl-v1.jar</destFileName>
                 </artifactItem>
                 <artifactItem>
                   <groupId>${project.parent.groupId}</groupId>
