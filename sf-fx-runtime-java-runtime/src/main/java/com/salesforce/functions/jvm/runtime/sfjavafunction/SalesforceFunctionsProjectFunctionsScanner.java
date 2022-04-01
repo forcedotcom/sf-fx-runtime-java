@@ -441,12 +441,16 @@ public class SalesforceFunctionsProjectFunctionsScanner
 
     // sf-fx-sdk-java.properties is packaged with every SDK JAR to make SDK version detection easy.
     try (final InputStream stream = classLoader.getResourceAsStream("sf-fx-sdk-java.properties")) {
-      properties.load(stream);
+      // If the file does not exist, the stream will be null.
+      if (stream != null) {
+        properties.load(stream);
+      }
     }
 
     Map<String, String> mapping = new HashMap<>();
     mapping.put("1.0.0", "sdk-impl-v1.jar");
 
-    return Optional.ofNullable(mapping.get(properties.getProperty("version")));
+    return Optional.ofNullable(properties.getProperty("version"))
+        .flatMap((version) -> Optional.ofNullable(mapping.get(version)));
   }
 }

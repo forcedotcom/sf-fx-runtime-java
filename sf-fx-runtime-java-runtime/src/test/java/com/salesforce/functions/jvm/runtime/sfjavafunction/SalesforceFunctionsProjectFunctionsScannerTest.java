@@ -312,8 +312,7 @@ public class SalesforceFunctionsProjectFunctionsScannerTest extends StdOutAndStd
   @Test
   public void testNoSdkFunction() {
     scanTestFunctionDirectoryExpectErrorMessageAndNoFunctions(
-        "Could not load function API class com.salesforce.functions.jvm.sdk.SalesforceFunction. Please ensure your project depends on the Java Functions API.",
-        "sdk-1.0-string-reverse-function");
+        "Could not find compatible SDK implementation!", "sdk-1.0-string-reverse-function");
   }
 
   @Test
