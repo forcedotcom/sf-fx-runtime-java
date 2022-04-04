@@ -30,6 +30,7 @@
 
     <modules>
         <module>sf-fx-runtime-java-cloudevent</module>
+        <module>sf-fx-runtime-java-sdk-rest-api</module>
         <module>sf-fx-runtime-java-sdk-impl-v1</module>
         <module>sf-fx-runtime-java-logger</module>
         <module>sf-fx-runtime-java-runtime</module>

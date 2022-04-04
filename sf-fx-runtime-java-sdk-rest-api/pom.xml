@@ -9,7 +9,7 @@
     <version>1.0.7-SNAPSHOT</version>
   </parent>
 
-  <artifactId>sf-fx-runtime-java-sdk-impl-v1</artifactId>
+  <artifactId>sf-fx-runtime-java-sdk-rest-api</artifactId>
 
   <dependencies>
     <dependency>
@@ -28,11 +28,6 @@
       <artifactId>sf-fx-runtime-java-cloudevent</artifactId>
       <version>${project.parent.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.salesforce.functions</groupId>
-      <artifactId>sf-fx-runtime-java-sdk-rest-api</artifactId>
-      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
