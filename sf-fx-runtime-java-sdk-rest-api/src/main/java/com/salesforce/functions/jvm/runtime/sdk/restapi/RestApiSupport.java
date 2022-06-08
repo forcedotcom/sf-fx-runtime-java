@@ -27,8 +27,7 @@ public class RestApiSupport {
     return statusCode >= 200 && statusCode < 300;
   }
 
-  public static JsonElement parseJson(HttpResponse response)
-      throws IOException, RestApiException {
+  public static JsonElement parseJson(HttpResponse response) throws IOException, RestApiException {
     return parseJson(response, JsonElement.class);
   }
 
