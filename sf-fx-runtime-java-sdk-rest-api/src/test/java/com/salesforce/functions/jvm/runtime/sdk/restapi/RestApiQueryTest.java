@@ -118,42 +118,42 @@ public class RestApiQueryTest {
     assertThat(result.isDone(), is(true));
     assertThat(result.getNextRecordsPath(), equalTo(Optional.empty()));
 
-    List<Record> expectedRecords = new ArrayList<>();
-    expectedRecords.add(
-        new Record(
+    List<QueryRecord> expectedQueryRecords = new ArrayList<>();
+    expectedQueryRecords.add(
+        new QueryRecord(
             map(
                 new Tuple("type", "Account"),
                 new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LntWlIAJ")),
             map(new Tuple("Name", "An awesome test account"))));
 
-    expectedRecords.add(
-        new Record(
+    expectedQueryRecords.add(
+        new QueryRecord(
             map(
                 new Tuple("type", "Account"),
                 new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LwihtIAB")),
             map(new Tuple("Name", "Global Media"))));
 
-    expectedRecords.add(
-        new Record(
+    expectedQueryRecords.add(
+        new QueryRecord(
             map(
                 new Tuple("type", "Account"),
                 new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
             map(new Tuple("Name", "Acme"))));
 
-    expectedRecords.add(
-        new Record(
+    expectedQueryRecords.add(
+        new QueryRecord(
             map(
                 new Tuple("type", "Account"),
                 new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LwihvIAB")),
             map(new Tuple("Name", "salesforce.com"))));
 
-    expectedRecords.add(
-        new Record(
+    expectedQueryRecords.add(
+        new QueryRecord(
             map(
                 new Tuple("type", "Account"),
                 new Tuple("url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
             map(new Tuple("Name", "Sample Account for Entitlements"))));
 
-    assertThat(result.getRecords(), is(equalTo(expectedRecords)));
+    assertThat(result.getRecords(), is(equalTo(expectedQueryRecords)));
   }
 }

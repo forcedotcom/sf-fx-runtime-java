@@ -16,6 +16,10 @@ public final class RestApiError {
   private final String errorCode;
   private final List<String> fields;
 
+  public RestApiError(String message, String errorCode) {
+    this(message, errorCode, Collections.emptyList());
+  }
+
   public RestApiError(String message, String errorCode, List<String> fields) {
     this.message = message;
     this.errorCode = errorCode;

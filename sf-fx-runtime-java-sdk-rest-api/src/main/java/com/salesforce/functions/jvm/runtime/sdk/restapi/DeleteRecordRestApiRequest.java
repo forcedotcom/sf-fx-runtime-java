@@ -6,11 +6,13 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import com.google.gson.JsonElement;
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiSupport.isOK;
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiSupport.parseJsonErrors;
+
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.Optional;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.utils.URIBuilder;
 
 public class DeleteRecordRestApiRequest implements RestApiRequest<ModifyRecordResult> {
@@ -35,17 +37,11 @@ public class DeleteRecordRestApiRequest implements RestApiRequest<ModifyRecordRe
   }
 
   @Override
-  public Optional<JsonElement> getBody() {
-    return Optional.empty();
-  }
-
-  @Override
-  public ModifyRecordResult processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiErrorsException {
-    if (statusCode == 204) {
-      return new ModifyRecordResult(id);
-    } else {
-      throw new RestApiErrorsException(ErrorResponseParser.parse(body));
+  public ModifyRecordResult processResponse(HttpResponse response)
+      throws RestApiErrorsException, IOException, RestApiException {
+    if (!isOK(response)) {
+      throw parseJsonErrors(response);
     }
+    return new ModifyRecordResult(id);
   }
 }

@@ -11,18 +11,18 @@ import java.util.*;
 public final class QueryRecordResult {
   private final long totalSize;
   private final boolean done;
-  private final List<Record> records;
+  private final List<QueryRecord> records;
   private final String nextRecordsPath;
 
   public QueryRecordResult(
-      long totalSize, boolean done, List<Record> records, String nextRecordsPath) {
+      long totalSize, boolean done, List<QueryRecord> records, String nextRecordsPath) {
     this.totalSize = totalSize;
     this.done = done;
     this.records = new ArrayList<>(records);
     this.nextRecordsPath = nextRecordsPath;
   }
 
-  public List<Record> getRecords() {
+  public List<QueryRecord> getRecords() {
     return Collections.unmodifiableList(records);
   }
 

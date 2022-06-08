@@ -6,13 +6,20 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiSupport.*;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Optional;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 
 public class CreateRecordRestApiRequest implements RestApiRequest<ModifyRecordResult> {
   private final String type;
@@ -36,17 +43,16 @@ public class CreateRecordRestApiRequest implements RestApiRequest<ModifyRecordRe
   }
 
   @Override
-  public Optional<JsonElement> getBody() {
-    return Optional.of(new Gson().toJsonTree(values));
+  public Optional<HttpEntity> getBody() {
+    return Optional.of(new StringEntity(new Gson().toJson(values), ContentType.APPLICATION_JSON));
   }
 
   @Override
-  public ModifyRecordResult processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiErrorsException {
-    if (statusCode == 201) {
-      return new ModifyRecordResult(body.getAsJsonObject().get("id").getAsString());
-    } else {
-      throw new RestApiErrorsException(ErrorResponseParser.parse(body));
+  public ModifyRecordResult processResponse(HttpResponse response)
+      throws RestApiErrorsException, IOException, RestApiException {
+    if (!isOK(response)) {
+      throw parseJsonErrors(response);
     }
+    return new ModifyRecordResult(parseJson(response).getAsJsonObject().get("id").getAsString());
   }
 }

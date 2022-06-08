@@ -6,10 +6,8 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import com.google.gson.JsonElement;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Optional;
 import org.apache.http.client.utils.URIBuilder;
 
 public class QueryRecordRestApiRequest extends AbstractQueryRestApiRequest {
@@ -30,10 +28,5 @@ public class QueryRecordRestApiRequest extends AbstractQueryRestApiRequest {
         .setPathSegments("services", "data", "v" + apiVersion, "query")
         .setParameter("q", soql)
         .build();
-  }
-
-  @Override
-  public Optional<JsonElement> getBody() {
-    return Optional.empty();
   }
 }

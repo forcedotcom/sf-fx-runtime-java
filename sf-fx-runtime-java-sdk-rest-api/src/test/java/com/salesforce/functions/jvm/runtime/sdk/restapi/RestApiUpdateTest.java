@@ -8,9 +8,7 @@ package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonElement;
