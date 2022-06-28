@@ -19,6 +19,7 @@ public final class Constants {
     List<String> versions = new ArrayList<>();
     versions.add("53.0");
     versions.add("54.0");
+    versions.add("55.0");
 
     SUPPORTED_SALESFORCE_API_VERSIONS = Collections.unmodifiableList(versions);
   }
