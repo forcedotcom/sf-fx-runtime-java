@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 public final class Constants {
-  public static String DEFAULT_SALESFORCE_API_VERSION = "55.0";
+  public static String DEFAULT_SALESFORCE_API_VERSION = "53.0";
 
   public static final List<String> SUPPORTED_SALESFORCE_API_VERSIONS;
 
