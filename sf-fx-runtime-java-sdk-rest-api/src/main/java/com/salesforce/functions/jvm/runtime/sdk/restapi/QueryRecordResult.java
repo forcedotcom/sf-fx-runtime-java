@@ -7,6 +7,7 @@
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import java.util.*;
+import javax.annotation.Nullable;
 
 public final class QueryRecordResult {
   private final long totalSize;
@@ -15,7 +16,7 @@ public final class QueryRecordResult {
   private final String nextRecordsPath;
 
   public QueryRecordResult(
-      long totalSize, boolean done, List<Record> records, String nextRecordsPath) {
+      long totalSize, boolean done, List<Record> records, @Nullable String nextRecordsPath) {
     this.totalSize = totalSize;
     this.done = done;
     this.records = new ArrayList<>(records);
@@ -56,5 +57,20 @@ public final class QueryRecordResult {
   @Override
   public int hashCode() {
     return Objects.hash(totalSize, done, records, nextRecordsPath);
+  }
+
+  @Override
+  public String toString() {
+    return "QueryRecordResult{"
+        + "totalSize="
+        + totalSize
+        + ", done="
+        + done
+        + ", records="
+        + records
+        + ", nextRecordsPath='"
+        + nextRecordsPath
+        + '\''
+        + '}';
   }
 }

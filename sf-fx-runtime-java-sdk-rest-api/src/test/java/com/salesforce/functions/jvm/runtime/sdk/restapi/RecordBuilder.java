@@ -11,35 +11,62 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class RecordBuilder {
-  public static Map<String, JsonPrimitive> map(Tuple... data) {
+  public static Map<String, JsonPrimitive> jsonPrimitiveMap(JsonPrimitiveTuple... data) {
     HashMap<String, JsonPrimitive> result = new HashMap<>();
-    for (Tuple tuple : data) {
+    for (JsonPrimitiveTuple tuple : data) {
       result.put(tuple.getKey(), tuple.getValue());
     }
 
     return result;
   }
 
-  public static class Tuple {
+  public static Map<String, QueryRecordResult> queryResultMap(QueryResultTuple... data) {
+    HashMap<String, QueryRecordResult> result = new HashMap<>();
+    for (QueryResultTuple tuple : data) {
+      result.put(tuple.getKey(), tuple.getValue());
+    }
+
+    return result;
+  }
+
+  public static class QueryResultTuple {
+    private final String key;
+    private final QueryRecordResult value;
+
+    public QueryResultTuple(String key, QueryRecordResult value) {
+      this.key = key;
+      this.value = value;
+    }
+
+    public String getKey() {
+      return key;
+    }
+
+    public QueryRecordResult getValue() {
+      return value;
+    }
+  }
+
+  public static class JsonPrimitiveTuple {
     private final String key;
     private final JsonPrimitive value;
 
-    public Tuple(String key, String value) {
+    public JsonPrimitiveTuple(String key, String value) {
       this.key = key;
       this.value = new JsonPrimitive(value);
     }
 
-    public Tuple(String key, Number value) {
+    public JsonPrimitiveTuple(String key, Number value) {
       this.key = key;
       this.value = new JsonPrimitive(value);
     }
 
-    public Tuple(String key, Boolean value) {
+    public JsonPrimitiveTuple(String key, Boolean value) {
       this.key = key;
       this.value = new JsonPrimitive(value);
     }
 
-    public Tuple(String key, Character value) {
+    public JsonPrimitiveTuple(String key, Character value) {
       this.key = key;
       this.value = new JsonPrimitive(value);
     }

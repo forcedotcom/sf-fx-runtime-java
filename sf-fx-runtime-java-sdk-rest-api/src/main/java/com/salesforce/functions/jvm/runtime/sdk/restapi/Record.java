@@ -15,10 +15,15 @@ import javax.annotation.Nonnull;
 public final class Record {
   private final Map<String, JsonPrimitive> attributes;
   private final Map<String, JsonPrimitive> values;
+  private final Map<String, QueryRecordResult> subQueryResults;
 
-  public Record(Map<String, JsonPrimitive> attributes, Map<String, JsonPrimitive> values) {
+  public Record(
+      Map<String, JsonPrimitive> attributes,
+      Map<String, JsonPrimitive> values,
+      Map<String, QueryRecordResult> subQueryResults) {
     this.attributes = attributes;
     this.values = values;
+    this.subQueryResults = subQueryResults;
   }
 
   @Nonnull
@@ -31,20 +36,35 @@ public final class Record {
     return Collections.unmodifiableMap(values);
   }
 
+  @Nonnull
+  public Map<String, QueryRecordResult> getSubQueryResults() {
+    return Collections.unmodifiableMap(subQueryResults);
+  }
+
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
     Record record = (Record) o;
-    return attributes.equals(record.attributes) && values.equals(record.values);
+    return Objects.equals(attributes, record.attributes)
+        && Objects.equals(values, record.values)
+        && Objects.equals(subQueryResults, record.subQueryResults);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attributes, values);
+    return Objects.hash(attributes, values, subQueryResults);
+  }
+
+  @Override
+  public String toString() {
+    return "Record{"
+        + "attributes="
+        + attributes
+        + ", values="
+        + values
+        + ", subQueryResults="
+        + subQueryResults
+        + '}';
   }
 }
