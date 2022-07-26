@@ -14,12 +14,11 @@ popd
 "${test_dir}"/../../../sf-fx-runtime-java serve -p "${port}" "${test_dir}" >"${runtime_output_logfile}" &
 runtime_pid=$!
 
-# The curl version used by CircleCI does not correctly support curl's --retry-connrefused
-# which would work around having this fixed sleep in here. We should revisit this code in the future
-# to see if we can get rid of this sleep then.
-sleep 5
-
 curl "http://localhost:${port}" \
+	--connect-timeout 3 \
+	--retry 3 \
+	--retry-all-errors \
+	--fail \
 	-d '[{"name": "Jonas", age: 0}, {"name": "Johanna", age: 5}]' \
 	-H "Content-Type: application/json" \
 	-H "ce-specversion: 1.0" \
