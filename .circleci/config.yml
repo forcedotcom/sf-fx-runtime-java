@@ -57,6 +57,7 @@ jobs:
       - run: ./integration-test/<< parameters.executor >>/pojo-jackson/test.sh
       - run: ./integration-test/<< parameters.executor >>/list-pojo/test.sh
       - run: ./integration-test/<< parameters.executor >>/exception/test.sh
+      - run: ./integration-test/<< parameters.executor >>/sdk-1.1.0/test.sh
 
   maven-windows:
     executor:
