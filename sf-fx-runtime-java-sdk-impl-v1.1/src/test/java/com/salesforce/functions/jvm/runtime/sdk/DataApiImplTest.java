@@ -100,6 +100,91 @@ public class DataApiImplTest {
   }
 
   @Test
+  public void testQueryWithSubQueryResults() throws DataApiException {
+    RecordQueryResult result =
+        dataApi.query(
+            "SELECT Account.Name, (SELECT Contact.FirstName, Contact.LastName FROM Account.Contacts) FROM Account LIMIT 5");
+    assertThat(result.isDone(), is(true));
+    assertThat(result.getTotalSize(), is(5L));
+
+    List<RecordWithSubQueryResults> records = result.getRecords();
+    assertThat(records.get(0).getStringField("Name"), is(optionalWithValue(equalTo("GenePoint"))));
+
+    RecordQueryResult contactSubQueryResult = records.get(0).getSubQueryResult("Contacts").get();
+    assertThat(contactSubQueryResult.getTotalSize(), is(1L));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("FirstName"),
+        is(optionalWithValue(equalTo("Edna"))));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("LastName"),
+        is(optionalWithValue(equalTo("Frank"))));
+
+    assertThat(
+        records.get(1).getStringField("Name"),
+        is(optionalWithValue(equalTo("United Oil & Gas, UK"))));
+
+    contactSubQueryResult = records.get(1).getSubQueryResult("Contacts").get();
+    assertThat(contactSubQueryResult.getTotalSize(), is(1L));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("FirstName"),
+        is(optionalWithValue(equalTo("Ashley"))));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("LastName"),
+        is(optionalWithValue(equalTo("James"))));
+
+    assertThat(
+        records.get(2).getStringField("Name"),
+        is(optionalWithValue(equalTo("United Oil & Gas, Singapore"))));
+
+    contactSubQueryResult = records.get(2).getSubQueryResult("Contacts").get();
+    assertThat(contactSubQueryResult.getTotalSize(), is(2L));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("FirstName"),
+        is(optionalWithValue(equalTo("Tom"))));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("LastName"),
+        is(optionalWithValue(equalTo("Ripley"))));
+    assertThat(
+        contactSubQueryResult.getRecords().get(1).getStringField("FirstName"),
+        is(optionalWithValue(equalTo("Liz"))));
+    assertThat(
+        contactSubQueryResult.getRecords().get(1).getStringField("LastName"),
+        is(optionalWithValue(equalTo("D'Cruz"))));
+
+    assertThat(
+        records.get(3).getStringField("Name"),
+        is(optionalWithValue(equalTo("Edge Communications"))));
+
+    contactSubQueryResult = records.get(3).getSubQueryResult("Contacts").get();
+    assertThat(contactSubQueryResult.getTotalSize(), is(2L));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("FirstName"),
+        is(optionalWithValue(equalTo("Rose"))));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("LastName"),
+        is(optionalWithValue(equalTo("Gonzalez"))));
+    assertThat(
+        contactSubQueryResult.getRecords().get(1).getStringField("FirstName"),
+        is(optionalWithValue(equalTo("Sean"))));
+    assertThat(
+        contactSubQueryResult.getRecords().get(1).getStringField("LastName"),
+        is(optionalWithValue(equalTo("Forbes"))));
+
+    assertThat(
+        records.get(4).getStringField("Name"),
+        is(optionalWithValue(equalTo("Burlington Textiles Corp of America"))));
+
+    contactSubQueryResult = records.get(4).getSubQueryResult("Contacts").get();
+    assertThat(contactSubQueryResult.getTotalSize(), is(1L));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("FirstName"),
+        is(optionalWithValue(equalTo("Jack"))));
+    assertThat(
+        contactSubQueryResult.getRecords().get(0).getStringField("LastName"),
+        is(optionalWithValue(equalTo("Rogers"))));
+  }
+
+  @Test
   public void testCreate() throws DataApiException {
     RecordModificationResult result =
         dataApi.create(
