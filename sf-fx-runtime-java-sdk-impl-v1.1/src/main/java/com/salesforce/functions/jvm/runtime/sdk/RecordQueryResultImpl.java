@@ -7,8 +7,8 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
-import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.RecordQueryResult;
+import com.salesforce.functions.jvm.sdk.data.RecordWithSubQueryResults;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,13 +31,13 @@ public class RecordQueryResultImpl implements RecordQueryResult {
     return queryRecordResult.getTotalSize();
   }
 
-  @Override
   @Nonnull
-  public List<Record> getRecords() {
+  @Override
+  public List<RecordWithSubQueryResults> getRecords() {
     return queryRecordResult.getRecords().stream()
         .map(
             record ->
-                new RecordImpl(
+                new RecordWithSubQueryResultsImpl(
                     record.getAttributes().get("type").getAsString(), record.getValues()))
         .collect(Collectors.toList());
   }

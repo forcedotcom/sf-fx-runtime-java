@@ -39,7 +39,7 @@ public class DataApiImplTest {
     assertThat(result.isDone(), is(true));
     assertThat(result.getTotalSize(), is(5L));
 
-    List<Record> records = result.getRecords();
+    List<RecordWithSubQueryResults> records = result.getRecords();
     assertThat(
         records.get(0).getStringField("Name"),
         is(optionalWithValue(equalTo("An awesome test account"))));

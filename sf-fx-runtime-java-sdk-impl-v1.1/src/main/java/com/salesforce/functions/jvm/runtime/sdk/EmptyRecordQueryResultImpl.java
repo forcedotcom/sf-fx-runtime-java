@@ -7,8 +7,8 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
-import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.RecordQueryResult;
+import com.salesforce.functions.jvm.sdk.data.RecordWithSubQueryResults;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -30,9 +30,9 @@ public class EmptyRecordQueryResultImpl implements RecordQueryResult {
     return queryRecordResult.getTotalSize();
   }
 
-  @Override
   @Nonnull
-  public List<Record> getRecords() {
+  @Override
+  public List<RecordWithSubQueryResults> getRecords() {
     return Collections.emptyList();
   }
 }
