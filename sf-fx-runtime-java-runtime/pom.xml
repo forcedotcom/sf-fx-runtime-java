@@ -137,6 +137,15 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>${project.parent.groupId}</groupId>
+                  <artifactId>sf-fx-runtime-java-sdk-impl-v1.1</artifactId>
+                  <version>${project.parent.version}</version>
+                  <classifier>jar-with-dependencies</classifier>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                  <destFileName>sdk-impl-v1.1.jar</destFileName>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>${project.parent.groupId}</groupId>
                   <artifactId>sf-fx-runtime-java-logger</artifactId>
                   <version>${project.parent.version}</version>
                   <classifier>jar-with-dependencies</classifier>
