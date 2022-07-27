@@ -38,7 +38,9 @@ public class RecordQueryResultImpl implements RecordQueryResult {
         .map(
             record ->
                 new RecordWithSubQueryResultsImpl(
-                    record.getAttributes().get("type").getAsString(), record.getValues()))
+                    record.getAttributes().get("type").getAsString(),
+                    record.getValues(),
+                    record.getSubQueryResults()))
         .collect(Collectors.toList());
   }
 
