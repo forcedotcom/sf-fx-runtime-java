@@ -6,7 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
-import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
 import com.salesforce.functions.jvm.sdk.data.RecordQueryResult;
 import com.salesforce.functions.jvm.sdk.data.RecordWithSubQueryResults;
 import java.util.Collections;
@@ -14,20 +13,22 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public class EmptyRecordQueryResultImpl implements RecordQueryResult {
-  private final QueryRecordResult queryRecordResult;
+  private final boolean done;
+  private final long totalSize;
 
-  public EmptyRecordQueryResultImpl(QueryRecordResult queryRecordResult) {
-    this.queryRecordResult = queryRecordResult;
+  public EmptyRecordQueryResultImpl(boolean done, long totalSize) {
+    this.done = done;
+    this.totalSize = totalSize;
   }
 
   @Override
   public boolean isDone() {
-    return queryRecordResult.isDone();
+    return done;
   }
 
   @Override
   public long getTotalSize() {
-    return queryRecordResult.getTotalSize();
+    return totalSize;
   }
 
   @Nonnull

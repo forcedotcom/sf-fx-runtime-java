@@ -6,22 +6,21 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
-import com.google.gson.JsonElement;
 import com.salesforce.functions.jvm.sdk.data.Record;
 import java.util.Map;
 import java.util.TreeMap;
 
 public class RecordImpl extends AbstractRecordAccessorImpl implements Record {
-  private final TreeMap<String, JsonElement> fieldValues =
+  private final TreeMap<String, FieldValue> fieldValues =
       new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
-  public <A extends JsonElement> RecordImpl(String type, Map<String, A> fieldValues) {
+  public RecordImpl(String type, Map<String, FieldValue> fieldValues) {
     super(type);
     this.fieldValues.putAll(fieldValues);
   }
 
   @Override
-  public TreeMap<String, JsonElement> getFieldValues() {
+  public TreeMap<String, FieldValue> getFieldValues() {
     return fieldValues;
   }
 }
