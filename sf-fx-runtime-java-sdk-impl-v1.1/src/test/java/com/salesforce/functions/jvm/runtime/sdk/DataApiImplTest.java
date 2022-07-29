@@ -101,6 +101,7 @@ public class DataApiImplTest {
 
   @Test
   public void testQueryWithSubQueryResults() throws DataApiException {
+
     RecordQueryResult result =
         dataApi.query(
             "SELECT Account.Name, (SELECT Contact.FirstName, Contact.LastName FROM Account.Contacts) FROM Account LIMIT 5");

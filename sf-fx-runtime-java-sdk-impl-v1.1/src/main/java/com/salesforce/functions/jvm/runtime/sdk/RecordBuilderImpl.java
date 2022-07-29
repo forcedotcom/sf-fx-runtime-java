@@ -6,7 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.salesforce.functions.jvm.sdk.data.Record;
@@ -14,20 +13,21 @@ import com.salesforce.functions.jvm.sdk.data.ReferenceId;
 import com.salesforce.functions.jvm.sdk.data.builder.RecordBuilder;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements RecordBuilder {
-  private final TreeMap<String, JsonElement> fieldValues =
+  private final TreeMap<String, FieldValue> fieldValues =
       new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
   public RecordBuilderImpl(String type) {
     super(type);
   }
 
-  public RecordBuilderImpl(String type, Map<String, JsonElement> fieldValues) {
+  public RecordBuilderImpl(String type, Map<String, FieldValue> fieldValues) {
     super(type);
     this.fieldValues.putAll(fieldValues);
   }
@@ -48,7 +48,7 @@ public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements Rec
   @Nonnull
   @Override
   public RecordBuilder withNullField(String name) {
-    fieldValues.put(name, JsonNull.INSTANCE);
+    fieldValues.put(name, new FieldValue(JsonNull.INSTANCE));
     return this;
   }
 
@@ -59,56 +59,56 @@ public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements Rec
       return withNullField(name);
     }
 
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
   @Nonnull
   @Override
   public RecordBuilder withField(String name, short value) {
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
   @Nonnull
   @Override
   public RecordBuilder withField(String name, long value) {
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
   @Nonnull
   @Override
   public RecordBuilder withField(String name, int value) {
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
   @Nonnull
   @Override
   public RecordBuilder withField(String name, float value) {
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
   @Nonnull
   @Override
   public RecordBuilder withField(String name, double value) {
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
   @Nonnull
   @Override
   public RecordBuilder withField(String name, byte value) {
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
   @Nonnull
   @Override
   public RecordBuilder withField(String name, boolean value) {
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
@@ -119,7 +119,7 @@ public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements Rec
       return withNullField(name);
     }
 
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
@@ -130,7 +130,7 @@ public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements Rec
       return withNullField(name);
     }
 
-    fieldValues.put(name, new JsonPrimitive(value));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(value)));
     return this;
   }
 
@@ -148,12 +148,23 @@ public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements Rec
 
     ReferenceIdImpl referenceIdImpl = (ReferenceIdImpl) value;
 
-    fieldValues.put(name, new JsonPrimitive(referenceIdImpl.toApiString()));
+    fieldValues.put(name, new FieldValue(new JsonPrimitive(referenceIdImpl.toApiString())));
+    return this;
+  }
+
+  @Nonnull
+  @Override
+  public RecordBuilder withField(String name, @Nullable ByteBuffer value) {
+    if (value == null) {
+      return withNullField(name);
+    }
+
+    fieldValues.put(name, new FieldValue(value));
     return this;
   }
 
   @Override
-  protected TreeMap<String, JsonElement> getFieldValues() {
+  protected TreeMap<String, FieldValue> getFieldValues() {
     return fieldValues;
   }
 }

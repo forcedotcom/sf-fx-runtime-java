@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
@@ -68,10 +70,6 @@ public final class RestApi {
     HttpUriRequest request =
         createBaseHttpRequest(apiRequest.getHttpMethod(), uri, apiRequest.getBody());
 
-    request.addHeader("Authorization", "Bearer " + accessToken);
-    request.addHeader(
-        "Sforce-Call-Options", "client=sf-fx-runtime-java-sdk-impl-v1:" + clientVersion);
-
     HttpResponse response = client.execute(request);
 
     Map<String, String> headers = new HashMap<>();
@@ -97,37 +95,53 @@ public final class RestApi {
     }
   }
 
+  public ByteBuffer downloadFile(String relativeUrl) throws URISyntaxException, IOException {
+    URI uri = new URIBuilder(this.salesforceBaseUrl).setPath(relativeUrl).build();
+
+    HttpUriRequest request = createBaseHttpRequest(HttpMethod.GET, uri, Optional.empty());
+
+    HttpClient client = HttpClients.createDefault();
+    return ByteBuffer.wrap(EntityUtils.toByteArray(client.execute(request).getEntity()));
+  }
+
   private HttpUriRequest createBaseHttpRequest(
       HttpMethod method, URI uri, Optional<JsonElement> optionalBody) {
 
+    HttpUriRequest request;
+
     if (method == HttpMethod.GET) {
-      return new HttpGet(uri);
+      request = new HttpGet(uri);
     } else if (method == HttpMethod.DELETE) {
-      return new HttpDelete(uri);
+      request = new HttpDelete(uri);
+    } else {
+      HttpEntityEnclosingRequestBase httpEntityEnclosingRequest;
+      switch (method) {
+        case POST:
+          httpEntityEnclosingRequest = new HttpPost(uri);
+          break;
+        case PATCH:
+          httpEntityEnclosingRequest = new HttpPatch(uri);
+          break;
+        default:
+          // Since we don't get exhaustive switch/cases (JEP 361, previews since Java 12+) we put
+          // this as our own safeguard here. If another HttpMethod would be added, the code would
+          // compile but at least fail with a useful exception at runtime. There is no way we can
+          // get test coverage for this branch though.
+          throw new RuntimeException("Unexpected HTTP method: " + method.toString());
+      }
+
+      optionalBody.ifPresent(
+          body ->
+              httpEntityEnclosingRequest.setEntity(
+                  new StringEntity(gson.toJson(body), ContentType.APPLICATION_JSON)));
+
+      request = httpEntityEnclosingRequest;
     }
 
-    HttpEntityEnclosingRequestBase httpEntityEnclosingRequest;
-    switch (method) {
-      case POST:
-        httpEntityEnclosingRequest = new HttpPost(uri);
-        break;
-      case PATCH:
-        httpEntityEnclosingRequest = new HttpPatch(uri);
-        break;
-      default:
-        // Since we don't get exhaustive switch/cases (JEP 361, previews since Java 12+) we put
-        // this as our own safeguard here. If another HttpMethod would be added, the code would
-        // compile but at least fail with a useful exception at runtime. There is no way we can
-        // get test coverage for this branch though.
-        throw new RuntimeException("Unexpected HTTP method: " + method.toString());
-    }
-
-    optionalBody.ifPresent(
-        body ->
-            httpEntityEnclosingRequest.setEntity(
-                new StringEntity(gson.toJson(body), ContentType.APPLICATION_JSON)));
-
-    return httpEntityEnclosingRequest;
+    request.addHeader("Authorization", "Bearer " + accessToken);
+    request.addHeader(
+        "Sforce-Call-Options", "client=sf-fx-runtime-java-sdk-impl-v1:" + clientVersion);
+    return request;
   }
 
   private Optional<String> readVersionStringFromProperties() {

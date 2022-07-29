@@ -12,11 +12,13 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
+import com.salesforce.functions.jvm.sdk.data.error.FieldConversionException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -28,22 +30,23 @@ public class RecordImplTest {
 
   @Before
   public void setUp() {
-    Map<String, JsonElement> values = new HashMap<>();
-    values.put(NUMBER_MAX_BYTE_KEY, new JsonPrimitive(Byte.MAX_VALUE));
-    values.put(NUMBER_MAX_SHORT_KEY, new JsonPrimitive(Short.MAX_VALUE));
-    values.put(NUMBER_MAX_INT_KEY, new JsonPrimitive(Integer.MAX_VALUE));
-    values.put(NUMBER_MAX_LONG_KEY, new JsonPrimitive(Long.MAX_VALUE));
-    values.put(NUMBER_MAX_FLOAT_KEY, new JsonPrimitive(Float.MAX_VALUE));
-    values.put(NUMBER_MAX_DOUBLE_KEY, new JsonPrimitive(Double.MAX_VALUE));
-    values.put(NUMBER_BIG_INTEGER_KEY, new JsonPrimitive(BIG_INTEGER_TEST_VALUE));
-    values.put(NUMBER_BIG_DECIMAL_KEY, new JsonPrimitive(BIG_DECIMAL_TEST_VALUE));
-    values.put(STRING_ABC_KEY, new JsonPrimitive("abc"));
-    values.put(STRING_EMPTY_KEY, new JsonPrimitive(""));
-    values.put(STRING_TRUE_KEY, new JsonPrimitive("true"));
-    values.put(STRING_TRUE_UPPERCASE_KEY, new JsonPrimitive("TRUE"));
-    values.put(BOOLEAN_TRUE_KEY, new JsonPrimitive(true));
-    values.put(BOOLEAN_FALSE_KEY, new JsonPrimitive(false));
-    values.put(NULL_KEY, JsonNull.INSTANCE);
+    Map<String, FieldValue> values = new HashMap<>();
+    values.put(NUMBER_MAX_BYTE_KEY, new FieldValue(new JsonPrimitive(Byte.MAX_VALUE)));
+    values.put(NUMBER_MAX_SHORT_KEY, new FieldValue(new JsonPrimitive(Short.MAX_VALUE)));
+    values.put(NUMBER_MAX_INT_KEY, new FieldValue(new JsonPrimitive(Integer.MAX_VALUE)));
+    values.put(NUMBER_MAX_LONG_KEY, new FieldValue(new JsonPrimitive(Long.MAX_VALUE)));
+    values.put(NUMBER_MAX_FLOAT_KEY, new FieldValue(new JsonPrimitive(Float.MAX_VALUE)));
+    values.put(NUMBER_MAX_DOUBLE_KEY, new FieldValue(new JsonPrimitive(Double.MAX_VALUE)));
+    values.put(NUMBER_BIG_INTEGER_KEY, new FieldValue(new JsonPrimitive(BIG_INTEGER_TEST_VALUE)));
+    values.put(NUMBER_BIG_DECIMAL_KEY, new FieldValue(new JsonPrimitive(BIG_DECIMAL_TEST_VALUE)));
+    values.put(STRING_ABC_KEY, new FieldValue(new JsonPrimitive("abc")));
+    values.put(STRING_EMPTY_KEY, new FieldValue(new JsonPrimitive("")));
+    values.put(STRING_TRUE_KEY, new FieldValue(new JsonPrimitive("true")));
+    values.put(STRING_TRUE_UPPERCASE_KEY, new FieldValue(new JsonPrimitive("TRUE")));
+    values.put(BOOLEAN_TRUE_KEY, new FieldValue(new JsonPrimitive(true)));
+    values.put(BOOLEAN_FALSE_KEY, new FieldValue(new JsonPrimitive(false)));
+    values.put(NULL_KEY, new FieldValue(JsonNull.INSTANCE));
+    values.put(BINARY_DATA_KEY, new FieldValue(BINARY_DATA_TEST_VALUE));
 
     record = new RecordImpl("Movie__c", values);
   }
@@ -145,6 +148,11 @@ public class RecordImplTest {
     assertThat(record.getStringField(BOOLEAN_FALSE_KEY), is(optionalWithValue(equalTo("false"))));
   }
 
+  @Test(expected = FieldConversionException.class)
+  public void testGetStringValue_BINARY_DATA_KEY() {
+    record.getStringField(BINARY_DATA_KEY);
+  }
+
   @Test
   public void testGetBooleanValue_MISSING_VALUE_KEY() {
     assertThat(record.getBooleanField(MISSING_VALUE_KEY), is(emptyOptional()));
@@ -220,6 +228,11 @@ public class RecordImplTest {
     assertThat(record.getBooleanField(BOOLEAN_FALSE_KEY), is(optionalWithValue(is(false))));
   }
 
+  @Test(expected = FieldConversionException.class)
+  public void testGetBooleanValue_BINARY_DATA_KEY() {
+    record.getBooleanField(BINARY_DATA_KEY);
+  }
+
   @Test
   public void testGetIntValue_MISSING_VALUE_KEY() {
     assertThat(record.getIntField(MISSING_VALUE_KEY), is(emptyOptional()));
@@ -280,34 +293,39 @@ public class RecordImplTest {
         is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE.intValue()))));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetIntValue_STRING_ABC_KEY() {
     record.getIntField(STRING_ABC_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetIntValue_STRING_EMPTY_KEY() {
     record.getIntField(STRING_EMPTY_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetIntValue_STRING_TRUE_KEY() {
     record.getIntField(STRING_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetIntValue_STRING_TRUE_UPPERCASE_KEY() {
     record.getIntField(STRING_TRUE_UPPERCASE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetIntValue_BOOLEAN_TRUE_KEY() {
     record.getIntField(BOOLEAN_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetIntValue_BOOLEAN_FALSE_KEY() {
     record.getIntField(BOOLEAN_FALSE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetIntValue_BINARY_DATA_KEY_KEY() {
+    record.getIntField(BINARY_DATA_KEY);
   }
 
   @Test
@@ -370,34 +388,39 @@ public class RecordImplTest {
         is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE.longValue()))));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetLongValue_STRING_ABC_KEY() {
     record.getLongField(STRING_ABC_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetLongValue_STRING_EMPTY_KEY() {
     record.getLongField(STRING_EMPTY_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetLongValue_STRING_TRUE_KEY() {
     record.getLongField(STRING_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetLongValue_STRING_TRUE_UPPERCASE_KEY() {
     record.getLongField(STRING_TRUE_UPPERCASE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetLongValue_BOOLEAN_TRUE_KEY() {
     record.getLongField(BOOLEAN_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetLongValue_BOOLEAN_FALSE_KEY() {
     record.getLongField(BOOLEAN_FALSE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetLongValue_BINARY_DATA_KEY() {
+    record.getLongField(BINARY_DATA_KEY);
   }
 
   @Test
@@ -461,34 +484,39 @@ public class RecordImplTest {
         is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE.floatValue()))));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetFloatValue_STRING_ABC_KEY() {
     record.getFloatField(STRING_ABC_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetFloatValue_STRING_EMPTY_KEY() {
     record.getFloatField(STRING_EMPTY_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetFloatValue_STRING_TRUE_KEY() {
     record.getFloatField(STRING_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetFloatValue_STRING_TRUE_UPPERCASE_KEY() {
     record.getFloatField(STRING_TRUE_UPPERCASE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetFloatValue_BOOLEAN_TRUE_KEY() {
     record.getFloatField(BOOLEAN_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetFloatValue_BOOLEAN_FALSE_KEY() {
     record.getFloatField(BOOLEAN_FALSE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetFloatValue_BINARY_DATA_KEY() {
+    record.getFloatField(BINARY_DATA_KEY);
   }
 
   @Test
@@ -552,34 +580,39 @@ public class RecordImplTest {
         is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE.doubleValue()))));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetDoubleValue_STRING_ABC_KEY() {
     record.getDoubleField(STRING_ABC_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetDoubleValue_STRING_EMPTY_KEY() {
     record.getDoubleField(STRING_EMPTY_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetDoubleValue_STRING_TRUE_KEY() {
     record.getDoubleField(STRING_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetDoubleValue_STRING_TRUE_UPPERCASE_KEY() {
     record.getDoubleField(STRING_TRUE_UPPERCASE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetDoubleValue_BOOLEAN_TRUE_KEY() {
     record.getDoubleField(BOOLEAN_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetDoubleValue_BOOLEAN_FALSE_KEY() {
     record.getDoubleField(BOOLEAN_FALSE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetDoubleValue_BINARY_DATA_KEY() {
+    record.getDoubleField(BINARY_DATA_KEY);
   }
 
   @Test
@@ -643,34 +676,39 @@ public class RecordImplTest {
         is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE.shortValue()))));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetShortValue_STRING_ABC_KEY() {
     record.getShortField(STRING_ABC_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetShortValue_STRING_EMPTY_KEY() {
     record.getShortField(STRING_EMPTY_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetShortValue_STRING_TRUE_KEY() {
     record.getShortField(STRING_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetShortValue_STRING_TRUE_UPPERCASE_KEY() {
     record.getShortField(STRING_TRUE_UPPERCASE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetShortValue_BOOLEAN_TRUE_KEY() {
     record.getShortField(BOOLEAN_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetShortValue_BOOLEAN_FALSE_KEY() {
     record.getShortField(BOOLEAN_FALSE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetShortValue_BINARY_DATA_KEY() {
+    record.getShortField(BINARY_DATA_KEY);
   }
 
   @Test
@@ -733,34 +771,39 @@ public class RecordImplTest {
         is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE.byteValue()))));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetByteValue_STRING_ABC_KEY() {
     record.getByteField(STRING_ABC_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetByteValue_STRING_EMPTY_KEY() {
     record.getByteField(STRING_EMPTY_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetByteValue_STRING_TRUE_KEY() {
     record.getByteField(STRING_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetByteValue_STRING_TRUE_UPPERCASE_KEY() {
     record.getByteField(STRING_TRUE_UPPERCASE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetByteValue_BOOLEAN_TRUE_KEY() {
     record.getByteField(BOOLEAN_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetByteValue_BOOLEAN_FALSE_KEY() {
     record.getByteField(BOOLEAN_FALSE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetByteValue_BINARY_DATA_KEY() {
+    record.getByteField(BINARY_DATA_KEY);
   }
 
   @Test
@@ -829,34 +872,39 @@ public class RecordImplTest {
         is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE.toBigInteger()))));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigIntegerValue_STRING_ABC_KEY() {
     record.getBigIntegerField(STRING_ABC_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigIntegerValue_STRING_EMPTY_KEY() {
     record.getBigIntegerField(STRING_EMPTY_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigIntegerValue_STRING_TRUE_KEY() {
     record.getBigIntegerField(STRING_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigIntegerValue_STRING_TRUE_UPPERCASE_KEY() {
     record.getBigIntegerField(STRING_TRUE_UPPERCASE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigIntegerValue_BOOLEAN_TRUE_KEY() {
     record.getBigIntegerField(BOOLEAN_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigIntegerValue_BOOLEAN_FALSE_KEY() {
     record.getBigIntegerField(BOOLEAN_FALSE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBigIntegerValue_BINARY_DATA_KEY() {
+    record.getBigIntegerField(BINARY_DATA_KEY);
   }
 
   @Test
@@ -923,34 +971,128 @@ public class RecordImplTest {
         is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE))));
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigDecimalValue_STRING_ABC_KEY() {
     record.getBigDecimalField(STRING_ABC_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigDecimalValue_STRING_EMPTY_KEY() {
     record.getBigDecimalField(STRING_EMPTY_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigDecimalValue_STRING_TRUE_KEY() {
     record.getBigDecimalField(STRING_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigDecimalValue_STRING_TRUE_UPPERCASE_KEY() {
     record.getBigDecimalField(STRING_TRUE_UPPERCASE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigDecimalValue_BOOLEAN_TRUE_KEY() {
     record.getBigDecimalField(BOOLEAN_TRUE_KEY);
   }
 
-  @Test(expected = NumberFormatException.class)
+  @Test(expected = FieldConversionException.class)
   public void testGetBigDecimalValue_BOOLEAN_FALSE_KEY() {
     record.getBigDecimalField(BOOLEAN_FALSE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBigDecimalValue_BINARY_DATA_KEY() {
+    record.getBigDecimalField(BINARY_DATA_KEY);
+  }
+
+  @Test
+  public void testGetBinaryValue_MISSING_VALUE_KEY() {
+    assertThat(record.getBinaryField(MISSING_VALUE_KEY), is(emptyOptional()));
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_NUMBER_MAX_BYTE_KEY() {
+    record.getBinaryField(NUMBER_MAX_BYTE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_NUMBER_MAX_SHORT_KEY() {
+
+    record.getBinaryField(NUMBER_MAX_SHORT_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_NUMBER_MAX_INT_KEY() {
+
+    record.getBinaryField(NUMBER_MAX_INT_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_NUMBER_MAX_LONG_KEY() {
+
+    record.getBinaryField(NUMBER_MAX_LONG_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_NUMBER_MAX_FLOAT_KEY() {
+
+    record.getBinaryField(NUMBER_MAX_FLOAT_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_NUMBER_MAX_DOUBLE_KEY() {
+
+    record.getBinaryField(NUMBER_MAX_DOUBLE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_NUMBER_BIG_INT_KEY() {
+
+    record.getBinaryField(NUMBER_BIG_INTEGER_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_NUMBER_BIG_DECIMAL_KEY() {
+
+    record.getBinaryField(NUMBER_BIG_DECIMAL_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_STRING_ABC_KEY() {
+    record.getBinaryField(STRING_ABC_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_STRING_EMPTY_KEY() {
+    record.getBinaryField(STRING_EMPTY_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_STRING_TRUE_KEY() {
+    record.getBinaryField(STRING_TRUE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_STRING_TRUE_UPPERCASE_KEY() {
+    record.getBinaryField(STRING_TRUE_UPPERCASE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_BOOLEAN_TRUE_KEY() {
+    record.getBinaryField(BOOLEAN_TRUE_KEY);
+  }
+
+  @Test(expected = FieldConversionException.class)
+  public void testGetBinaryValue_BOOLEAN_FALSE_KEY() {
+    record.getBinaryField(BOOLEAN_FALSE_KEY);
+  }
+
+  @Test
+  public void testGetBinaryValue_BINARY_DATA_KEY() {
+    assertThat(
+        record.getBinaryField(BINARY_DATA_KEY),
+        is(optionalWithValue(equalTo(BINARY_DATA_TEST_VALUE))));
   }
 
   @Test
@@ -1001,6 +1143,11 @@ public class RecordImplTest {
   @Test
   public void testGetBigDecimalValue_NULL_KEY() {
     assertThat(record.getBigIntegerField(NULL_KEY), is(emptyOptional()));
+  }
+
+  @Test
+  public void testGetBinaryValue_NULL_KEY() {
+    assertThat(record.getBinaryField(NULL_KEY), is(emptyOptional()));
   }
 
   @Test
@@ -1084,6 +1231,11 @@ public class RecordImplTest {
   }
 
   @Test
+  public void testIsNullField_BINARY_KEY() {
+    assertThat(record.isNullField(BINARY_DATA_KEY), is(false));
+  }
+
+  @Test
   public void testIsNullFieldCaseSensitiveness() {
     assertThat(record.isNullField(randomizeCasing(NULL_KEY)), is(true));
   }
@@ -1158,6 +1310,13 @@ public class RecordImplTest {
         is(optionalWithValue(equalTo(BIG_DECIMAL_TEST_VALUE))));
   }
 
+  @Test
+  public void testGetBinaryValueCaseSensitiveness() {
+    assertThat(
+        record.getBinaryField(randomizeCasing(BINARY_DATA_KEY)),
+        is(optionalWithValue(equalTo(BINARY_DATA_TEST_VALUE))));
+  }
+
   private static String randomizeCasing(String s) {
     Random random = new Random(0x5FDC);
     char[] chars = new char[s.length()];
@@ -1190,9 +1349,13 @@ public class RecordImplTest {
   private static final String BOOLEAN_TRUE_KEY = "BooleanTrue__c";
   private static final String BOOLEAN_FALSE_KEY = "BooleanFalse__c";
   private static final String NULL_KEY = "Null__c";
+  private static final String BINARY_DATA_KEY = "BinaryData__c";
 
   private static final BigInteger BIG_INTEGER_TEST_VALUE =
       BigInteger.valueOf(Long.MAX_VALUE).multiply(BigInteger.valueOf(2));
   private static final BigDecimal BIG_DECIMAL_TEST_VALUE =
       BigDecimal.valueOf(Double.MAX_VALUE).multiply(BigDecimal.valueOf(2));
+
+  private static final ByteBuffer BINARY_DATA_TEST_VALUE =
+      ByteBuffer.wrap("☁️ Salesforce Functions".getBytes(StandardCharsets.UTF_8));
 }

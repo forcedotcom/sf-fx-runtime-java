@@ -30,9 +30,9 @@ import com.salesforce.functions.jvm.sdk.data.builder.UnitOfWorkBuilder;
 import com.salesforce.functions.jvm.sdk.data.error.DataApiException;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
@@ -54,7 +54,11 @@ public class DataApiImpl implements DataApi {
   public RecordQueryResult query(String soql) throws DataApiException {
     RestApiRequest<QueryRecordResult> request = new QueryRecordRestApiRequest(soql);
 
-    return new RecordQueryResultImpl(executeRequest(request));
+    try {
+      return BinaryFieldUtil.convert(executeRequest(request), restApi);
+    } catch (URISyntaxException | IOException e) {
+      throw new DataApiException("Could not process API response!", e);
+    }
   }
 
   @Override
@@ -63,11 +67,16 @@ public class DataApiImpl implements DataApi {
     RecordQueryResultImpl impl = (RecordQueryResultImpl) queryResult;
 
     if (impl.getNextRecordsPath().isPresent()) {
-      return new RecordQueryResultImpl(
-          executeRequest(new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get())));
+      try {
+        return BinaryFieldUtil.convert(
+            executeRequest(new QueryNextRecordsRestApiRequest(impl.getNextRecordsPath().get())),
+            restApi);
+      } catch (URISyntaxException | IOException e) {
+        throw new DataApiException("Could not process API response!", e);
+      }
     }
 
-    return new EmptyRecordQueryResultImpl(impl.getQueryRecordResult());
+    return new EmptyRecordQueryResultImpl(impl.isDone(), impl.getTotalSize());
   }
 
   @Nonnull
@@ -160,8 +169,7 @@ public class DataApiImpl implements DataApi {
                     new IllegalArgumentException(
                         "Given Record does not have an Id field and therefore cannot be updated."));
 
-    Map<String, JsonElement> fieldValues = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    fieldValues.putAll(recordImpl.getFieldValues());
+    Map<String, JsonElement> fieldValues = BinaryFieldUtil.convert(recordImpl.getFieldValues());
     fieldValues.remove("id");
 
     return new UpdateRecordRestApiRequest(id, recordImpl.getType(), fieldValues);
@@ -173,8 +181,8 @@ public class DataApiImpl implements DataApi {
     }
 
     RecordImpl recordImpl = (RecordImpl) record;
-
-    return new CreateRecordRestApiRequest(recordImpl.getType(), recordImpl.getFieldValues());
+    return new CreateRecordRestApiRequest(
+        recordImpl.getType(), BinaryFieldUtil.convert(recordImpl.getFieldValues()));
   }
 
   private <T> T executeRequest(RestApiRequest<T> request) throws DataApiException {
