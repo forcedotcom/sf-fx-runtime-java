@@ -44,7 +44,7 @@ public class RestApiCompositeTest {
 
     CompositeGraphRestApiRequest<ModifyRecordResult> request =
         new CompositeGraphRestApiRequest<>(
-            restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
+            restApi.getOrgDomainUrl(), restApi.getApiVersion(), subrequests);
     Map<String, ModifyRecordResult> result = restApi.execute(request);
 
     assertThat(
@@ -63,7 +63,7 @@ public class RestApiCompositeTest {
 
     CompositeGraphRestApiRequest<ModifyRecordResult> request =
         new CompositeGraphRestApiRequest<>(
-            restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
+            restApi.getOrgDomainUrl(), restApi.getApiVersion(), subrequests);
 
     try {
       restApi.execute(request);
@@ -93,7 +93,7 @@ public class RestApiCompositeTest {
 
     CompositeGraphRestApiRequest<ModifyRecordResult> request =
         new CompositeGraphRestApiRequest<>(
-            restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
+            restApi.getOrgDomainUrl(), restApi.getApiVersion(), subrequests);
     Map<String, ModifyRecordResult> result = restApi.execute(request);
 
     assertThat(
@@ -127,7 +127,7 @@ public class RestApiCompositeTest {
 
     CompositeGraphRestApiRequest<ModifyRecordResult> request =
         new CompositeGraphRestApiRequest<>(
-            restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
+            restApi.getOrgDomainUrl(), restApi.getApiVersion(), subrequests);
     Map<String, ModifyRecordResult> result = restApi.execute(request);
 
     assertThat(
@@ -155,7 +155,7 @@ public class RestApiCompositeTest {
 
     CompositeGraphRestApiRequest<ModifyRecordResult> request =
         new CompositeGraphRestApiRequest<>(
-            restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), subrequests);
+            restApi.getOrgDomainUrl(), restApi.getApiVersion(), subrequests);
     Map<String, ModifyRecordResult> result = restApi.execute(request);
 
     assertThat(

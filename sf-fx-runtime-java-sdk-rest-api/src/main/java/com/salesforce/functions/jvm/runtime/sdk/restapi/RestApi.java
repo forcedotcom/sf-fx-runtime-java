@@ -31,21 +31,21 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 public final class RestApi {
-  private final URI salesforceBaseUrl;
+  private final URI orgDomainUrl;
   private final String apiVersion;
   private final String accessToken;
   private final String clientVersion;
   private final Gson gson = new Gson();
 
-  public RestApi(URI salesforceBaseUrl, String apiVersion, String accessToken) {
-    this.salesforceBaseUrl = salesforceBaseUrl;
+  public RestApi(URI orgDomainUrl, String apiVersion, String accessToken) {
+    this.orgDomainUrl = orgDomainUrl;
     this.apiVersion = apiVersion;
     this.accessToken = accessToken;
     this.clientVersion = readVersionStringFromProperties().orElse("?.?.?-unknown");
   }
 
-  public URI getSalesforceBaseUrl() {
-    return salesforceBaseUrl;
+  public URI getOrgDomainUrl() {
+    return orgDomainUrl;
   }
 
   public String getApiVersion() {
@@ -60,7 +60,7 @@ public final class RestApi {
       throws RestApiErrorsException, RestApiException, IOException {
     URI uri;
     try {
-      uri = apiRequest.createUri(salesforceBaseUrl, apiVersion);
+      uri = apiRequest.createUri(orgDomainUrl, apiVersion);
     } catch (URISyntaxException e) {
       throw new RuntimeException("Unexpected URISyntaxException!", e);
     }
@@ -96,7 +96,7 @@ public final class RestApi {
   }
 
   public ByteBuffer downloadFile(String relativeUrl) throws URISyntaxException, IOException {
-    URI uri = new URIBuilder(this.salesforceBaseUrl).setPath(relativeUrl).build();
+    URI uri = new URIBuilder(this.orgDomainUrl).setPath(relativeUrl).build();
 
     HttpUriRequest request = createBaseHttpRequest(HttpMethod.GET, uri, Optional.empty());
 
