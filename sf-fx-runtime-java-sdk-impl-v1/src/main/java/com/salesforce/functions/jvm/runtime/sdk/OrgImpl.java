@@ -26,7 +26,8 @@ public class OrgImpl implements Org {
     this.apiVersion = apiVersion;
     this.salesforceContext = salesforceContext;
     this.dataApi =
-        new DataApiImpl(this.getBaseUrl(), this.getApiVersion(), functionContext.getAccessToken());
+        new DataApiImpl(
+            this.getDomainUrl(), this.getApiVersion(), functionContext.getAccessToken());
     this.user = new UserImpl(salesforceContext);
   }
 

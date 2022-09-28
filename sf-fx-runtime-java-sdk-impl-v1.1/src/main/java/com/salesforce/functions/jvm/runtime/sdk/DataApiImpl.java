@@ -45,8 +45,8 @@ public class DataApiImpl implements DataApi {
 
   private final RestApi restApi;
 
-  public DataApiImpl(URI salesforceBaseUrl, String apiVersion, String accessToken) {
-    this.restApi = new RestApi(salesforceBaseUrl, apiVersion, accessToken);
+  public DataApiImpl(URI orgDomainUrl, String apiVersion, String accessToken) {
+    this.restApi = new RestApi(orgDomainUrl, apiVersion, accessToken);
   }
 
   @Override
@@ -135,7 +135,7 @@ public class DataApiImpl implements DataApi {
 
     CompositeGraphRestApiRequest<ModifyRecordResult> request =
         new CompositeGraphRestApiRequest<>(
-            restApi.getSalesforceBaseUrl(), restApi.getApiVersion(), impl.getSubrequests());
+            restApi.getOrgDomainUrl(), restApi.getApiVersion(), impl.getSubrequests());
 
     Map<String, ModifyRecordResult> result = executeRequest(request);
 
