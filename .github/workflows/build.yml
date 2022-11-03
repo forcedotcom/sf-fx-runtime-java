@@ -1,0 +1,28 @@
+name: Build
+on:
+  pull_request:
+  push:
+    branches: [main] # Avoid duplicate builds on PRs.
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [11, 8]
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    name: Java ${{ matrix.version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.version }}
+          distribution: zulu
+          cache: maven
+      - run: ./mvnw --no-transfer-progress clean package
+      - uses: scacap/action-surefire-report@v1
+        name: Publish Test Report
+        if: ${{ always() }}
+
