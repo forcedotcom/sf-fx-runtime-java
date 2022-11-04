@@ -17,10 +17,10 @@ runtime_pid=$!
 # The curl version used by CircleCI does not correctly support curl's --retry-connrefused
 # which would work around having this fixed sleep in here. We should revisit this code in the future
 # to see if we can get rid of this sleep then.
-sleep 5
+sleep 10
 cat "${runtime_output_logfile}"
 
-curl "http://localhost:${port}" \
+curl "http://127.0.0.1:${port}" \
 	-d '"Hello World!"' \
 	-H "Content-Type: application/json" \
 	-H "ce-specversion: 1.0" \
