@@ -28,7 +28,7 @@ jobs:
         name: Test Report
         if: ${{ always() }}
         with:
-          name: JUnit / Java ${{ matrix.version }} / ${{ matrix.os }}
+          name: JUnit Report / Java ${{ matrix.version }} / ${{ matrix.os }}
           reporter: java-junit
           path: "**/target/surefire-reports/TEST-*.xml"
 
