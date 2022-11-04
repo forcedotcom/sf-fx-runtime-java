@@ -18,7 +18,9 @@ runtime_pid=$!
 # which would work around having this fixed sleep in here. We should revisit this code in the future
 # to see if we can get rid of this sleep then.
 sleep 10
+echo '==> server output'
 cat "${runtime_output_logfile}"
+echo '<== server output'
 
 curl "http://127.0.0.1:${port}" \
 	-d '"Hello World!"' \
