@@ -24,11 +24,13 @@ jobs:
           distribution: zulu
           cache: maven
       - run: ./mvnw --no-transfer-progress clean package
+      - run: ./integration-test/openjdk-${{ matrix.version }}/string-reverse/test.sh
+      - run: ./integration-test/openjdk-${{ matrix.version }}/pojo/test.sh
       - uses: dorny/test-reporter@v1
         name: Test Report
         if: ${{ always() }}
         with:
-          name: JUnit Results
+          name: Java ${{ matrix.version }} on ${{ matrix.os }} - JUnit
           reporter: java-junit
           path: "**/target/surefire-reports/TEST-*.xml"
 
