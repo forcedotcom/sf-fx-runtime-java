@@ -50,3 +50,8 @@ jobs:
       - run: ./mvnw --no-transfer-progress clean package -Dmaven.test.skip=true
       - run: ./integration-test/openjdk-${{ matrix.version }}/string-reverse/test.sh
       - run: ./integration-test/openjdk-${{ matrix.version }}/pojo/test.sh
+      - run: ./integration-test/openjdk-${{ matrix.version }}/pojo-gson/test.sh
+      - run: ./integration-test/openjdk-${{ matrix.version }}/pojo-jackson/test.sh
+      - run: ./integration-test/openjdk-${{ matrix.version }}/list-pojo/test.sh
+      - run: ./integration-test/openjdk-${{ matrix.version }}/exception/test.sh
+      - run: ./integration-test/openjdk-${{ matrix.version }}/sdk-1.1.0/test.sh

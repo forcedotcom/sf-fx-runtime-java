@@ -14,6 +14,9 @@ popd
 "${test_dir}"/../../../sf-fx-runtime-java serve -p "${port}" "${test_dir}" >"${runtime_output_logfile}" &
 runtime_pid=$!
 
+# The curl version used by GHA does not correctly support curl's --retry-connrefused
+# which would work around having this fixed sleep in here. We should revisit this code in the future
+# to see if we can get rid of this sleep then.
 sleep 10
 
 curl "http://localhost:${port}" \
