@@ -14,7 +14,7 @@ jobs:
       matrix:
         version: [11, 8]
         os: [windows-latest, ubuntu-latest, macos-latest]
-    name: Java ${{ matrix.version }} on ${{ matrix.os }}
+    name: Java ${{ matrix.version }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -25,12 +25,13 @@ jobs:
           cache: maven
       - run: ./mvnw --no-transfer-progress clean package
       - run: ./integration-test/openjdk-${{ matrix.version }}/string-reverse/test.sh
+        if: ${{ matrix.os != 'windows-latest' }}
       - run: ./integration-test/openjdk-${{ matrix.version }}/pojo/test.sh
       - uses: dorny/test-reporter@v1
         name: Test Report
         if: ${{ always() }}
         with:
-          name: Java ${{ matrix.version }} on ${{ matrix.os }} - JUnit
+          name: JUnit / ${{ matrix.version }} / ${{ matrix.os }}
           reporter: java-junit
           path: "**/target/surefire-reports/TEST-*.xml"
 
