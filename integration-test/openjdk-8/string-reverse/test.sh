@@ -2,15 +2,13 @@
 
 set -euox pipefail
 
-export MAVEN_OPTS="--no-transfer-progress"
-
 test_dir="$(cd "$(dirname "${0}")" &>/dev/null && pwd)"
 runtime_output_logfile="$(mktemp)"
 function_invocation_response_file="$(mktemp)"
 port=54321
 
 pushd "${test_dir}"
-./mvnw compile
+./mvnw --no-transfer-progress compile
 popd
 
 "${test_dir}"/../../../sf-fx-runtime-java serve -p "${port}" "${test_dir}" >"${runtime_output_logfile}" &
