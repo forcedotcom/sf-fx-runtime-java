@@ -27,6 +27,6 @@ jobs:
         if: ${{ always() }}
         with:
           name: JUnit Results
-          reporter: jest-junit
+          reporter: java-junit
           path: "**/target/surefire-reports/TEST-*.xml"
 
