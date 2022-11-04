@@ -18,6 +18,7 @@ runtime_pid=$!
 # which would work around having this fixed sleep in here. We should revisit this code in the future
 # to see if we can get rid of this sleep then.
 sleep 5
+cat "${runtime_output_logfile}"
 
 curl "http://localhost:${port}" \
 	-d '"Hello World!"' \
