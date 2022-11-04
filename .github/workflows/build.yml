@@ -22,9 +22,11 @@ jobs:
           distribution: zulu
           cache: maven
       - run: ./mvnw --no-transfer-progress clean package
-      - uses: scacap/action-surefire-report@v1
-        name: Publish Test Report
+      - uses: dorny/test-reporter@v1
+        name: Test Report
         if: ${{ always() }}
         with:
-          skip_publishing: true
+          name: JUnit Results
+          reporter: jest-junit
+          path: "**/target/surefire-reports/TEST-*.xml"
 
