@@ -55,3 +55,17 @@ jobs:
       - run: ./integration-test/openjdk-${{ matrix.version }}/list-pojo/test.sh
       - run: ./integration-test/openjdk-${{ matrix.version }}/exception/test.sh
       - run: ./integration-test/openjdk-${{ matrix.version }}/sdk-1.1.0/test.sh
+
+  coverage:
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: zulu
+          cache: maven
+      - run: ./mvnw clean package -Paggregate-coverage
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/target/site/jacoco-aggregate/jacoco.xml
