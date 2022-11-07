@@ -23,7 +23,7 @@ jobs:
           java-version: ${{ matrix.version }}
           distribution: zulu
           cache: maven
-      - run: ./mvnw --batch clean package
+      - run: ./mvnw --batch-mode clean package
       - uses: dorny/test-reporter@v1
         name: Test Report
         if: ${{ always() }}
@@ -47,7 +47,7 @@ jobs:
           java-version: ${{ matrix.version }}
           distribution: zulu
           cache: maven
-      - run: ./mvnw --batch clean package -Dmaven.test.skip=true
+      - run: ./mvnw --batch-mode clean package -Dmaven.test.skip=true
       - run: ./integration-test/openjdk-${{ matrix.version }}/string-reverse/test.sh
       - run: ./integration-test/openjdk-${{ matrix.version }}/pojo/test.sh
       - run: ./integration-test/openjdk-${{ matrix.version }}/pojo-gson/test.sh

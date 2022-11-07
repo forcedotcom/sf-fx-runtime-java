@@ -8,7 +8,7 @@ function_invocation_response_file="$(mktemp)"
 port=54321
 
 pushd "${test_dir}"
-./mvnw --batch compile
+./mvnw --batch-mode compile
 popd
 
 "${test_dir}"/../../../sf-fx-runtime-java serve -p "${port}" "${test_dir}" >"${runtime_output_logfile}" &
