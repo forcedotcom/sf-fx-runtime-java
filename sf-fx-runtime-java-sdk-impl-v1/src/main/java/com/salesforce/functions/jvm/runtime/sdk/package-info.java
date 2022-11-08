@@ -5,9 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-/**
- * Contains the v1.0 implementation for the sf-fx-runtime-sdk.
- */
+/** Contains the v1.0 implementation for the sf-fx-runtime-sdk. */
 @ParametersAreNonnullByDefault
 package com.salesforce.functions.jvm.runtime.sdk;
 
