@@ -8,16 +8,16 @@ function_invocation_response_file="$(mktemp)"
 port=54321
 
 pushd "${test_dir}"
-./mvnw compile
+./mvnw --batch-mode compile
 popd
 
 "${test_dir}"/../../../sf-fx-runtime-java serve -p "${port}" "${test_dir}" >"${runtime_output_logfile}" &
 runtime_pid=$!
 
-# The curl version used by CircleCI does not correctly support curl's --retry-connrefused
+# The curl version used by GHA does not correctly support curl's --retry-connrefused
 # which would work around having this fixed sleep in here. We should revisit this code in the future
 # to see if we can get rid of this sleep then.
-sleep 5
+sleep 10
 
 curl "http://localhost:${port}" \
 	-d '[{"name": "Jonas", age: 0}, {"name": "Johanna", age: 5}]' \

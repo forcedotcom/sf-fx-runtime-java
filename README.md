@@ -1,7 +1,7 @@
 # sf-fx-runtime-java
 [![](https://badgen.net/github/license/forcedotcom/sf-fx-runtime-java)](LICENSE.txt)
 [![](https://badgen.net/maven/v/maven-central/com.salesforce.functions/sf-fx-runtime-java)](https://search.maven.org/artifact/com.salesforce.functions/sf-fx-runtime-java)
-[![](https://badgen.net/circleci/github/forcedotcom/sf-fx-runtime-java/main)](https://circleci.com/gh/forcedotcom/sf-fx-runtime-java/tree/main)
+![](https://github.com/forcedotcom/sf-fx-runtime-java/actions/workflows/build.yml/badge.svg)
 [![](https://codecov.io/gh/forcedotcom/sf-fx-runtime-java/branch/main/graph/badge.svg)](https://codecov.io/gh/forcedotcom/sf-fx-runtime-java)
 [![](https://badgen.net/github/dependabot/forcedotcom/sf-fx-runtime-java)](https://github.com/forcedotcom/sf-fx-runtime-java/security/dependabot)
 
