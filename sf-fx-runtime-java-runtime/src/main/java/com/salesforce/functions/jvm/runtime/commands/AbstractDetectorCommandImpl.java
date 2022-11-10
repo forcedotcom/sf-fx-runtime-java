@@ -6,7 +6,8 @@
  */
 package com.salesforce.functions.jvm.runtime.commands;
 
-import com.salesforce.functions.jvm.runtime.Constants;
+import static com.salesforce.functions.jvm.runtime.Constants.DEFAULT_SALESFORCE_API_VERSION;
+
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
 import com.salesforce.functions.jvm.runtime.project.ProjectMetadata;
@@ -65,23 +66,24 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
             .orElseThrow(
                 () -> new IllegalStateException("Cannot parse project metadata (project.toml)!"));
 
-    String salesforceApiVersion = Constants.DEFAULT_SALESFORCE_API_VERSION;
+    String salesforceApiVersion = DEFAULT_SALESFORCE_API_VERSION;
 
     if (projectMetadata.getSalesforceApiVersion().isPresent()) {
       salesforceApiVersion = projectMetadata.getSalesforceApiVersion().get();
     } else {
       LOGGER.warn(
           "Project's Salesforce API version isn't explicitly defined in project.toml. The default version {} will be used.",
-          Constants.DEFAULT_SALESFORCE_API_VERSION);
+          DEFAULT_SALESFORCE_API_VERSION);
     }
 
-    if (Constants.SUPPORTED_SALESFORCE_API_VERSIONS.contains(salesforceApiVersion)) {
-      LOGGER.info("Project uses Salesforce API version {}.", salesforceApiVersion);
-    } else {
+    if (isVersionUnsupported(salesforceApiVersion)) {
       LOGGER.error(
-          "Project configuration specifies an unsupported Salesforce API version {}. Exiting.",
-          salesforceApiVersion);
+          "Salesforce Rest API Version \"{}\" is not supported. Please change `com.salesforce.salesforce-api-version` in project.toml to \"{}\" or newer.",
+          salesforceApiVersion,
+          DEFAULT_SALESFORCE_API_VERSION);
       return ExitCodes.UNSUPPORTED_SALESFORCE_API_VERSION;
+    } else {
+      LOGGER.info("Project uses Salesforce API version {}.", salesforceApiVersion);
     }
 
     LOGGER.info("Scanning project for functions...");
@@ -92,6 +94,20 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
     LOGGER.info("Found {} function(s) after {}ms.", functions.size(), scanDuration);
 
     return handle(project, functions);
+  }
+
+  private static boolean isVersionUnsupported(String salesforceApiVersion) {
+    try {
+      return parseMajor(salesforceApiVersion) < parseMajor(DEFAULT_SALESFORCE_API_VERSION);
+    } catch (Exception ignored) {
+      // if we can't parse the version we'll have to assume it's unsupported
+      return true;
+    }
+  }
+
+  private static int parseMajor(String version) {
+    String[] semverParts = version.split("\\.");
+    return Integer.parseInt(semverParts[0], 10);
   }
 
   protected abstract Integer handle(Project project, List<SalesforceFunction> functions)
