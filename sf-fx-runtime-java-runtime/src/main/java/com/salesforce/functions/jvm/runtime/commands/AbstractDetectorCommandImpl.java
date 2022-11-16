@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.commands;
 
 import static com.salesforce.functions.jvm.runtime.Constants.DEFAULT_SALESFORCE_API_VERSION;
 
+import com.google.common.base.Splitter;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
 import com.salesforce.functions.jvm.runtime.project.ProjectMetadata;
@@ -97,17 +98,23 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
   }
 
   private static boolean isVersionUnsupported(String salesforceApiVersion) {
-    try {
-      return parseMajor(salesforceApiVersion) < parseMajor(DEFAULT_SALESFORCE_API_VERSION);
-    } catch (Exception ignored) {
-      // if we can't parse the version we'll have to assume it's unsupported
-      return true;
-    }
+    boolean versionIsUnsupported = true;
+    return parseMajor(salesforceApiVersion)
+        .map(
+            targetVersion ->
+                parseMajor(DEFAULT_SALESFORCE_API_VERSION)
+                    .map(minimumVersion -> targetVersion < minimumVersion)
+                    .orElse(versionIsUnsupported))
+        .orElse(versionIsUnsupported);
   }
 
-  private static int parseMajor(String version) {
-    String[] semverParts = version.split("\\.");
-    return Integer.parseInt(semverParts[0], 10);
+  private static Optional<Integer> parseMajor(String version) {
+    try {
+      List<String> semverParts = Splitter.on('.').splitToList(version);
+      return Optional.of(Integer.parseInt(semverParts.get(0), 10));
+    } catch (NumberFormatException e) {
+      return Optional.empty();
+    }
   }
 
   protected abstract Integer handle(Project project, List<SalesforceFunction> functions)
