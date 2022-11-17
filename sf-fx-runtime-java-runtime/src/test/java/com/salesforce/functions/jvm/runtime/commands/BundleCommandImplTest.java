@@ -228,4 +228,138 @@ public class BundleCommandImplTest extends StdOutAndStdErrCapturingTest {
 
     verify(mockedProjectBuilder).build(projectDirectoryFolder.getRoot().toPath());
   }
+
+  @Test
+  public void testFailureWhenUnsupportedSalesforceApiVersion() throws Exception {
+    File projectTomlFile = new File(projectDirectoryFolder.getRoot(), "project.toml");
+    Files.copy(
+        Paths.get("src", "test", "resources", "salesforce-api-version-unsupported-project.toml"),
+        projectTomlFile.toPath(),
+        StandardCopyOption.REPLACE_EXISTING);
+
+    Project mockedProject = mock(Project.class);
+    when(mockedProject.getClasspathPaths()).thenReturn(Collections.singletonList(sdkJarPath));
+
+    ProjectBuilder mockedProjectBuilder = mock(ProjectBuilder.class);
+    when(mockedProjectBuilder.build(projectDirectoryFolder.getRoot().toPath()))
+        .thenReturn(Optional.of(mockedProject));
+
+    BundleCommandImpl bundleCommandImpl =
+        new BundleCommandImpl(
+            projectDirectoryFolder.getRoot().toPath(),
+            bundleDirectoryFolder.getRoot().toPath(),
+            Collections.singletonList(mockedProjectBuilder));
+
+    assertThat(bundleCommandImpl.call(), is(ExitCodes.UNSUPPORTED_SALESFORCE_API_VERSION));
+    assertThat(
+        systemOutContent.toString(),
+        containsString(
+            "Salesforce Rest API Version \"XYZ\" is not supported. Please change `com.salesforce.salesforce-api-version` in project.toml to \"53.0\" or newer."));
+    assertThat(systemErrContent.toString(), is(emptyString()));
+
+    verify(mockedProjectBuilder).build(projectDirectoryFolder.getRoot().toPath());
+  }
+
+  @Test
+  public void testFailureWhenSalesforceApiVersionIsLowerThanTheMinimumVersion() throws Exception {
+    File projectTomlFile = new File(projectDirectoryFolder.getRoot(), "project.toml");
+    Files.copy(
+        Paths.get(
+            "src", "test", "resources", "salesforce-api-version-less-than-minimum-project.toml"),
+        projectTomlFile.toPath(),
+        StandardCopyOption.REPLACE_EXISTING);
+
+    Project mockedProject = mock(Project.class);
+    when(mockedProject.getClasspathPaths()).thenReturn(Collections.singletonList(sdkJarPath));
+
+    ProjectBuilder mockedProjectBuilder = mock(ProjectBuilder.class);
+    when(mockedProjectBuilder.build(projectDirectoryFolder.getRoot().toPath()))
+        .thenReturn(Optional.of(mockedProject));
+
+    BundleCommandImpl bundleCommandImpl =
+        new BundleCommandImpl(
+            projectDirectoryFolder.getRoot().toPath(),
+            bundleDirectoryFolder.getRoot().toPath(),
+            Collections.singletonList(mockedProjectBuilder));
+
+    assertThat(bundleCommandImpl.call(), is(ExitCodes.UNSUPPORTED_SALESFORCE_API_VERSION));
+    assertThat(
+        systemOutContent.toString(),
+        containsString(
+            "Salesforce Rest API Version \"52.0\" is not supported. Please change `com.salesforce.salesforce-api-version` in project.toml to \"53.0\" or newer."));
+    assertThat(systemErrContent.toString(), is(emptyString()));
+
+    verify(mockedProjectBuilder).build(projectDirectoryFolder.getRoot().toPath());
+  }
+
+  @Test
+  public void testMissingSalesforceApiVersionDefaultsToMinimumVersion() throws Exception {
+    File projectTomlFile = new File(projectDirectoryFolder.getRoot(), "project.toml");
+    Files.copy(
+        Paths.get("src", "test", "resources", "salesforce-api-version-missing-project.toml"),
+        projectTomlFile.toPath(),
+        StandardCopyOption.REPLACE_EXISTING);
+
+    Project mockedProject = mock(Project.class);
+
+    List<Path> paths = new ArrayList<>();
+    paths.add(sdkJarPath);
+    paths.add(Paths.get("src", "test", "resources", "sdk-1.0-string-reverse-function"));
+
+    when(mockedProject.getClasspathPaths()).thenReturn(paths);
+
+    ProjectBuilder mockedProjectBuilder = mock(ProjectBuilder.class);
+    when(mockedProjectBuilder.build(projectDirectoryFolder.getRoot().toPath()))
+        .thenReturn(Optional.of(mockedProject));
+
+    BundleCommandImpl bundleCommandImpl =
+        new BundleCommandImpl(
+            projectDirectoryFolder.getRoot().toPath(),
+            bundleDirectoryFolder.getRoot().toPath(),
+            Collections.singletonList(mockedProjectBuilder));
+
+    assertThat(bundleCommandImpl.call(), is(ExitCodes.SUCCESS));
+    assertThat(
+        systemOutContent.toString(),
+        containsString(
+            "Project's Salesforce API version isn't explicitly defined in project.toml. The default version 53.0 will be used."));
+    assertThat(systemOutContent.toString(), containsString("Found 1 function(s) after"));
+    assertThat(systemErrContent.toString(), is(emptyString()));
+
+    verify(mockedProjectBuilder).build(projectDirectoryFolder.getRoot().toPath());
+  }
+
+  @Test
+  public void testSalesforceApiVersionIsGreaterThanTheCurrentVersion() throws Exception {
+    File projectTomlFile = new File(projectDirectoryFolder.getRoot(), "project.toml");
+    Files.copy(
+        Paths.get(
+            "src", "test", "resources", "salesforce-api-version-greater-than-current-project.toml"),
+        projectTomlFile.toPath(),
+        StandardCopyOption.REPLACE_EXISTING);
+
+    Project mockedProject = mock(Project.class);
+
+    List<Path> paths = new ArrayList<>();
+    paths.add(sdkJarPath);
+    paths.add(Paths.get("src", "test", "resources", "sdk-1.0-string-reverse-function"));
+
+    when(mockedProject.getClasspathPaths()).thenReturn(paths);
+
+    ProjectBuilder mockedProjectBuilder = mock(ProjectBuilder.class);
+    when(mockedProjectBuilder.build(projectDirectoryFolder.getRoot().toPath()))
+        .thenReturn(Optional.of(mockedProject));
+
+    BundleCommandImpl bundleCommandImpl =
+        new BundleCommandImpl(
+            projectDirectoryFolder.getRoot().toPath(),
+            bundleDirectoryFolder.getRoot().toPath(),
+            Collections.singletonList(mockedProjectBuilder));
+
+    assertThat(bundleCommandImpl.call(), is(ExitCodes.SUCCESS));
+    assertThat(systemOutContent.toString(), containsString("Found 1 function(s) after"));
+    assertThat(systemErrContent.toString(), is(emptyString()));
+
+    verify(mockedProjectBuilder).build(projectDirectoryFolder.getRoot().toPath());
+  }
 }

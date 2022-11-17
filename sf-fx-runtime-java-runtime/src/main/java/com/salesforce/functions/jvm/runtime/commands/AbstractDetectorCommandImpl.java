@@ -6,7 +6,9 @@
  */
 package com.salesforce.functions.jvm.runtime.commands;
 
-import com.salesforce.functions.jvm.runtime.Constants;
+import static com.salesforce.functions.jvm.runtime.Constants.DEFAULT_SALESFORCE_API_VERSION;
+
+import com.google.common.base.Splitter;
 import com.salesforce.functions.jvm.runtime.project.Project;
 import com.salesforce.functions.jvm.runtime.project.ProjectBuilder;
 import com.salesforce.functions.jvm.runtime.project.ProjectMetadata;
@@ -65,22 +67,23 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
             .orElseThrow(
                 () -> new IllegalStateException("Cannot parse project metadata (project.toml)!"));
 
-    String salesforceApiVersion = Constants.DEFAULT_SALESFORCE_API_VERSION;
+    String salesforceApiVersion = DEFAULT_SALESFORCE_API_VERSION;
 
     if (projectMetadata.getSalesforceApiVersion().isPresent()) {
       salesforceApiVersion = projectMetadata.getSalesforceApiVersion().get();
     } else {
       LOGGER.warn(
           "Project's Salesforce API version isn't explicitly defined in project.toml. The default version {} will be used.",
-          Constants.DEFAULT_SALESFORCE_API_VERSION);
+          DEFAULT_SALESFORCE_API_VERSION);
     }
 
-    if (Constants.SUPPORTED_SALESFORCE_API_VERSIONS.contains(salesforceApiVersion)) {
+    if (isVersionSupported(salesforceApiVersion)) {
       LOGGER.info("Project uses Salesforce API version {}.", salesforceApiVersion);
     } else {
       LOGGER.error(
-          "Project configuration specifies an unsupported Salesforce API version {}. Exiting.",
-          salesforceApiVersion);
+          "Salesforce Rest API Version \"{}\" is not supported. Please change `com.salesforce.salesforce-api-version` in project.toml to \"{}\" or newer.",
+          salesforceApiVersion,
+          DEFAULT_SALESFORCE_API_VERSION);
       return ExitCodes.UNSUPPORTED_SALESFORCE_API_VERSION;
     }
 
@@ -92,6 +95,24 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
     LOGGER.info("Found {} function(s) after {}ms.", functions.size(), scanDuration);
 
     return handle(project, functions);
+  }
+
+  private static boolean isVersionSupported(String salesforceApiVersion) {
+    return parseMajor(salesforceApiVersion)
+        .flatMap(
+            targetVersion ->
+                parseMajor(DEFAULT_SALESFORCE_API_VERSION)
+                    .map(minimumVersion -> targetVersion >= minimumVersion))
+        .orElse(false);
+  }
+
+  private static Optional<Integer> parseMajor(String version) {
+    try {
+      List<String> semverParts = Splitter.on('.').splitToList(version);
+      return Optional.of(Integer.parseInt(semverParts.get(0), 10));
+    } catch (NumberFormatException e) {
+      return Optional.empty();
+    }
   }
 
   protected abstract Integer handle(Project project, List<SalesforceFunction> functions)
