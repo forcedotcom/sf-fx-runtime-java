@@ -77,14 +77,14 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
           DEFAULT_SALESFORCE_API_VERSION);
     }
 
-    if (isVersionUnsupported(salesforceApiVersion)) {
+    if (isVersionSupported(salesforceApiVersion)) {
+      LOGGER.info("Project uses Salesforce API version {}.", salesforceApiVersion);
+    } else {
       LOGGER.error(
           "Salesforce Rest API Version \"{}\" is not supported. Please change `com.salesforce.salesforce-api-version` in project.toml to \"{}\" or newer.",
           salesforceApiVersion,
           DEFAULT_SALESFORCE_API_VERSION);
       return ExitCodes.UNSUPPORTED_SALESFORCE_API_VERSION;
-    } else {
-      LOGGER.info("Project uses Salesforce API version {}.", salesforceApiVersion);
     }
 
     LOGGER.info("Scanning project for functions...");
@@ -97,15 +97,13 @@ public abstract class AbstractDetectorCommandImpl implements Callable<Integer> {
     return handle(project, functions);
   }
 
-  private static boolean isVersionUnsupported(String salesforceApiVersion) {
-    boolean versionIsUnsupported = true;
+  private static boolean isVersionSupported(String salesforceApiVersion) {
     return parseMajor(salesforceApiVersion)
-        .map(
+        .flatMap(
             targetVersion ->
                 parseMajor(DEFAULT_SALESFORCE_API_VERSION)
-                    .map(minimumVersion -> targetVersion < minimumVersion)
-                    .orElse(versionIsUnsupported))
-        .orElse(versionIsUnsupported);
+                    .map(minimumVersion -> targetVersion >= minimumVersion))
+        .orElse(false);
   }
 
   private static Optional<Integer> parseMajor(String version) {
