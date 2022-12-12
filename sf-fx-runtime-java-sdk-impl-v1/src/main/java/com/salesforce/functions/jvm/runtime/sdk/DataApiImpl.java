@@ -6,7 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
-import com.google.gson.JsonElement;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.CompositeGraphRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.CreateRecordRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.DeleteRecordRestApiRequest;
@@ -160,7 +159,7 @@ public class DataApiImpl implements DataApi {
                     new IllegalArgumentException(
                         "Given Record does not have an Id field and therefore cannot be updated."));
 
-    Map<String, JsonElement> fieldValues = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    Map<String, Object> fieldValues = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     fieldValues.putAll(recordImpl.getFieldValues());
     fieldValues.remove("id");
 

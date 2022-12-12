@@ -6,7 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.Record;
@@ -45,12 +44,19 @@ final class BinaryFieldUtil {
     final String recordObjectType = record.getAttributes().get("type").getAsString();
 
     final Map<String, FieldValue> fieldValues = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    for (Map.Entry<String, JsonPrimitive> fieldEntry : record.getValues().entrySet()) {
-      FieldValue fieldValue = new FieldValue(fieldEntry.getValue());
-
-      if (isBinaryField(recordObjectType, fieldEntry.getKey())) {
-        ByteBuffer data = restApi.downloadFile(fieldEntry.getValue().getAsString());
-        fieldValue = new FieldValue(data);
+    for (Map.Entry<String, Object> fieldEntry : record.getValues().entrySet()) {
+      FieldValue fieldValue;
+      Object value = fieldEntry.getValue();
+      if (value instanceof Record) {
+        fieldValue = new FieldValue(convert((Record) value, restApi));
+      } else {
+        JsonPrimitive jsonValue = (JsonPrimitive) value;
+        if (isBinaryField(recordObjectType, fieldEntry.getKey())) {
+          ByteBuffer data = restApi.downloadFile(jsonValue.getAsString());
+          fieldValue = new FieldValue(data);
+        } else {
+          fieldValue = new FieldValue(jsonValue);
+        }
       }
 
       fieldValues.put(fieldEntry.getKey(), fieldValue);
@@ -64,8 +70,8 @@ final class BinaryFieldUtil {
     return new RecordWithSubQueryResultsImpl(recordObjectType, fieldValues, subQueryResults);
   }
 
-  public static Map<String, JsonElement> convert(Map<String, FieldValue> fieldValues2) {
-    Map<String, JsonElement> fieldValues = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+  public static Map<String, Object> convert(Map<String, FieldValue> fieldValues2) {
+    Map<String, Object> fieldValues = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     for (Map.Entry<String, FieldValue> entry : fieldValues2.entrySet()) {
       if (entry.getValue().isBinaryData()) {

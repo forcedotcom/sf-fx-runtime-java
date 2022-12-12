@@ -12,7 +12,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasEntry;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import java.io.IOException;
 import java.net.URI;
@@ -37,7 +36,7 @@ public class RestApiCompositeTest {
   public void compositeSingleCreate() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
 
-    Map<String, JsonElement> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Star Wars Episode IV - A New Hope"));
     values.put("Rating__c", new JsonPrimitive("Excellent"));
     subrequests.put("insert-anh", new CreateRecordRestApiRequest("Movie__c", values));
@@ -56,7 +55,7 @@ public class RestApiCompositeTest {
   public void compositeSingleCreateWithError() throws IOException, RestApiException {
     Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
 
-    Map<String, JsonElement> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Star Wars Episode IV - A New Hope"));
     values.put("Rating__c", new JsonPrimitive("Amazing"));
     subrequests.put("insert-anh", new CreateRecordRestApiRequest("Movie__c", values));
@@ -86,7 +85,7 @@ public class RestApiCompositeTest {
   public void compositeSingleUpdate() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
 
-    Map<String, JsonElement> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
     subrequests.put(
         "referenceId0", new UpdateRecordRestApiRequest("a01B0000009gSrFIAU", "Movie__c", values));
@@ -105,22 +104,22 @@ public class RestApiCompositeTest {
   public void compositeCreateTree() throws RestApiErrorsException, IOException, RestApiException {
     Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
 
-    Map<String, JsonElement> valuesFranchise = new HashMap<>();
+    Map<String, Object> valuesFranchise = new HashMap<>();
     valuesFranchise.put("Name", new JsonPrimitive("Star Wars"));
     subrequests.put(
         "referenceId0", new CreateRecordRestApiRequest("Franchise__c", valuesFranchise));
 
-    Map<String, JsonElement> valuesEp1 = new HashMap<>();
+    Map<String, Object> valuesEp1 = new HashMap<>();
     valuesEp1.put("Name", new JsonPrimitive("Star Wars Episode I - A Phantom Menace"));
     valuesEp1.put("Franchise__c", new JsonPrimitive("@{referenceId0.id}"));
     subrequests.put("referenceId1", new CreateRecordRestApiRequest("Movie__c", valuesEp1));
 
-    Map<String, JsonElement> valuesEp2 = new HashMap<>();
+    Map<String, Object> valuesEp2 = new HashMap<>();
     valuesEp2.put("Name", new JsonPrimitive("Star Wars Episode II - Attack Of The Clones"));
     valuesEp2.put("Franchise__c", new JsonPrimitive("@{referenceId0.id}"));
     subrequests.put("referenceId2", new CreateRecordRestApiRequest("Movie__c", valuesEp2));
 
-    Map<String, JsonElement> valuesEp3 = new HashMap<>();
+    Map<String, Object> valuesEp3 = new HashMap<>();
     valuesEp3.put("Name", new JsonPrimitive("Star Wars Episode III - Revenge Of The Sith"));
     valuesEp3.put("Franchise__c", new JsonPrimitive("@{referenceId0.id}"));
     subrequests.put("referenceId3", new CreateRecordRestApiRequest("Movie__c", valuesEp3));

@@ -7,6 +7,7 @@
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.jsonPrimitiveMap;
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -24,7 +25,7 @@ public class RecordTest {
   public void testValuesAndAttributesAreUnmodified() {
     Map<String, JsonPrimitive> attributes = new HashMap<>();
 
-    Map<String, JsonPrimitive> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put("foo", new JsonPrimitive("bar"));
     values.put("bar", new JsonPrimitive("baz"));
 
@@ -44,7 +45,7 @@ public class RecordTest {
                 new RecordBuilder.JsonPrimitiveTuple("type", "Account"),
                 new RecordBuilder.JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
-            jsonPrimitiveMap(new RecordBuilder.JsonPrimitiveTuple("Name", "Acme")),
+            map(new RecordBuilder.JsonPrimitiveTuple("Name", "Acme")),
             Collections.emptyMap());
 
     Record blue =
@@ -53,8 +54,7 @@ public class RecordTest {
                 new RecordBuilder.JsonPrimitiveTuple("type", "Account"),
                 new RecordBuilder.JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
-            jsonPrimitiveMap(
-                new RecordBuilder.JsonPrimitiveTuple("Name", "Sample Account for Entitlements")),
+            map(new RecordBuilder.JsonPrimitiveTuple("Name", "Sample Account for Entitlements")),
             Collections.emptyMap());
 
     EqualsVerifier.forClass(Record.class).withPrefabValues(Record.class, red, blue).verify();

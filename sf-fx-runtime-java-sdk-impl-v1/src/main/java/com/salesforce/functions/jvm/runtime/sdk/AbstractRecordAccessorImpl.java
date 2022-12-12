@@ -24,7 +24,7 @@ public abstract class AbstractRecordAccessorImpl implements RecordAccessor {
     this.type = type;
   }
 
-  protected abstract TreeMap<String, JsonElement> getFieldValues();
+  protected abstract TreeMap<String, Object> getFieldValues();
 
   @Nonnull
   @Override
@@ -46,6 +46,8 @@ public abstract class AbstractRecordAccessorImpl implements RecordAccessor {
   @Override
   public boolean isNullField(String name) {
     return Optional.ofNullable(getFieldValues().get(name))
+        .filter(e -> e instanceof JsonElement)
+        .map(e -> (JsonElement) e)
         .map(JsonElement::isJsonNull)
         .orElse(false);
   }
@@ -113,6 +115,8 @@ public abstract class AbstractRecordAccessorImpl implements RecordAccessor {
   @Nonnull
   private <T> Optional<T> getFieldValue(String fieldName, Function<JsonPrimitive, T> f) {
     return Optional.ofNullable(getFieldValues().get(fieldName))
+        .filter(e -> e instanceof JsonElement)
+        .map(e -> (JsonElement) e)
         .filter(JsonElement::isJsonPrimitive)
         .map(jsonElement -> f.apply(jsonElement.getAsJsonPrimitive()));
   }

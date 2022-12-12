@@ -16,9 +16,9 @@ import org.apache.http.client.utils.URIBuilder;
 
 public class CreateRecordRestApiRequest implements RestApiRequest<ModifyRecordResult> {
   private final String type;
-  private final Map<String, JsonElement> values;
+  private final Map<String, Object> values;
 
-  public CreateRecordRestApiRequest(String type, Map<String, JsonElement> values) {
+  public CreateRecordRestApiRequest(String type, Map<String, Object> values) {
     this.type = type;
     this.values = values;
   }

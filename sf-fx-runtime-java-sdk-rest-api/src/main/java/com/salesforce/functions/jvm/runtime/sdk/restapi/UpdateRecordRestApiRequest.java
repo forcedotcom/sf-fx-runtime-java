@@ -18,9 +18,9 @@ import org.apache.http.client.utils.URIBuilder;
 public class UpdateRecordRestApiRequest implements RestApiRequest<ModifyRecordResult> {
   private final String id;
   private final String type;
-  private final Map<String, JsonElement> values;
+  private final Map<String, Object> values;
 
-  public UpdateRecordRestApiRequest(String id, String type, Map<String, JsonElement> values) {
+  public UpdateRecordRestApiRequest(String id, String type, Map<String, Object> values) {
     this.id = id;
     this.type = type;
     this.values = new HashMap<>(values);

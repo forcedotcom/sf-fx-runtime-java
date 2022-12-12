@@ -20,6 +20,15 @@ public final class RecordBuilder {
     return result;
   }
 
+  public static Map<String, Object> map(JsonPrimitiveTuple... data) {
+    HashMap<String, Object> result = new HashMap<>();
+    for (JsonPrimitiveTuple tuple : data) {
+      result.put(tuple.getKey(), tuple.getValue());
+    }
+
+    return result;
+  }
+
   public static Map<String, QueryRecordResult> queryResultMap(QueryResultTuple... data) {
     HashMap<String, QueryRecordResult> result = new HashMap<>();
     for (QueryResultTuple tuple : data) {

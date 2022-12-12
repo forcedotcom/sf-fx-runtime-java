@@ -14,12 +14,12 @@ import javax.annotation.Nonnull;
 
 public final class Record {
   private final Map<String, JsonPrimitive> attributes;
-  private final Map<String, JsonPrimitive> values;
+  private final Map<String, Object> values;
   private final Map<String, QueryRecordResult> subQueryResults;
 
   public Record(
       Map<String, JsonPrimitive> attributes,
-      Map<String, JsonPrimitive> values,
+      Map<String, Object> values,
       Map<String, QueryRecordResult> subQueryResults) {
     this.attributes = attributes;
     this.values = values;
@@ -32,7 +32,7 @@ public final class Record {
   }
 
   @Nonnull
-  public Map<String, JsonPrimitive> getValues() {
+  public Map<String, Object> getValues() {
     return Collections.unmodifiableMap(values);
   }
 

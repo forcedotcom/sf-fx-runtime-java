@@ -28,7 +28,7 @@ public class RecordImplTest {
 
   @Before
   public void setUp() {
-    Map<String, JsonElement> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put(NUMBER_MAX_BYTE_KEY, new JsonPrimitive(Byte.MAX_VALUE));
     values.put(NUMBER_MAX_SHORT_KEY, new JsonPrimitive(Short.MAX_VALUE));
     values.put(NUMBER_MAX_INT_KEY, new JsonPrimitive(Integer.MAX_VALUE));

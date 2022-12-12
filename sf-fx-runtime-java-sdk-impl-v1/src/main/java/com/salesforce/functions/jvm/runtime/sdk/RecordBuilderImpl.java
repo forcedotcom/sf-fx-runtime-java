@@ -6,7 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.salesforce.functions.jvm.sdk.data.Record;
@@ -20,14 +19,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements RecordBuilder {
-  private final TreeMap<String, JsonElement> fieldValues =
-      new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+  private final TreeMap<String, Object> fieldValues = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
   public RecordBuilderImpl(String type) {
     super(type);
   }
 
-  public RecordBuilderImpl(String type, Map<String, JsonElement> fieldValues) {
+  public RecordBuilderImpl(String type, Map<String, Object> fieldValues) {
     super(type);
     this.fieldValues.putAll(fieldValues);
   }
@@ -153,7 +151,7 @@ public class RecordBuilderImpl extends AbstractRecordAccessorImpl implements Rec
   }
 
   @Override
-  protected TreeMap<String, JsonElement> getFieldValues() {
+  protected TreeMap<String, Object> getFieldValues() {
     return fieldValues;
   }
 }

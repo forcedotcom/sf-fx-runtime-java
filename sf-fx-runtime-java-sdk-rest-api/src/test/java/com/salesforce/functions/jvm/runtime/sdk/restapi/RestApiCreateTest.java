@@ -13,7 +13,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import java.io.IOException;
 import java.net.URI;
@@ -34,7 +33,7 @@ public class RestApiCreateTest {
 
   @Test
   public void create() throws RestApiErrorsException, IOException, RestApiException {
-    Map<String, JsonElement> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Star Wars Episode V: The Empire Strikes Back"));
     values.put("Rating__c", new JsonPrimitive("Excellent"));
 
@@ -45,7 +44,7 @@ public class RestApiCreateTest {
 
   @Test
   public void createWithInvalidPicklistValue() throws IOException, RestApiException {
-    Map<String, JsonElement> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Star Wars Episode VIII: The Last Jedi"));
     values.put("Rating__c", new JsonPrimitive("Terrible"));
 
@@ -72,7 +71,7 @@ public class RestApiCreateTest {
 
   @Test
   public void createWithUnknownObjectType() throws IOException, RestApiException {
-    Map<String, JsonElement> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Ace of Spades"));
 
     CreateRecordRestApiRequest request = new CreateRecordRestApiRequest("PlayingCard__c", values);
@@ -96,7 +95,7 @@ public class RestApiCreateTest {
 
   @Test
   public void createWithInvalidField() throws IOException, RestApiException {
-    Map<String, JsonElement> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put("FavoritePet__c", new JsonPrimitive("Dog"));
 
     CreateRecordRestApiRequest request = new CreateRecordRestApiRequest("Account", values);
@@ -122,7 +121,7 @@ public class RestApiCreateTest {
 
   @Test
   public void createWithRequiredFieldMissing() throws IOException, RestApiException {
-    Map<String, JsonElement> values = new HashMap<>();
+    Map<String, Object> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Falcon 9"));
 
     CreateRecordRestApiRequest request = new CreateRecordRestApiRequest("Spaceship__c", values);

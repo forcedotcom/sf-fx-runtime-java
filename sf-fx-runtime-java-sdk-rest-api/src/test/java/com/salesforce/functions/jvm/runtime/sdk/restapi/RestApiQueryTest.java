@@ -6,8 +6,7 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.jsonPrimitiveMap;
-import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.queryResultMap;
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.*;
 import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -124,7 +123,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/001B000001LntWlIAJ")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "An awesome test account")),
+            map(new JsonPrimitiveTuple("Name", "An awesome test account")),
             Collections.emptyMap()));
 
     expectedRecords.add(
@@ -133,7 +132,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/001B000001LwihtIAB")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Global Media")),
+            map(new JsonPrimitiveTuple("Name", "Global Media")),
             Collections.emptyMap()));
 
     expectedRecords.add(
@@ -142,7 +141,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Acme")),
+            map(new JsonPrimitiveTuple("Name", "Acme")),
             Collections.emptyMap()));
 
     expectedRecords.add(
@@ -151,7 +150,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/001B000001LwihvIAB")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "salesforce.com")),
+            map(new JsonPrimitiveTuple("Name", "salesforce.com")),
             Collections.emptyMap()));
 
     expectedRecords.add(
@@ -160,7 +159,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Sample Account for Entitlements")),
+            map(new JsonPrimitiveTuple("Name", "Sample Account for Entitlements")),
             Collections.emptyMap()));
 
     assertThat(result.getRecords(), is(equalTo(expectedRecords)));
@@ -183,7 +182,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbyQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "GenePoint")),
+            map(new JsonPrimitiveTuple("Name", "GenePoint")),
             queryResultMap(
                 new RecordBuilder.QueryResultTuple(
                     "Contacts",
@@ -197,7 +196,7 @@ public class RestApiQueryTest {
                                     new JsonPrimitiveTuple(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjpQAE")),
-                                jsonPrimitiveMap(
+                                map(
                                     new JsonPrimitiveTuple("FirstName", "Edna"),
                                     new JsonPrimitiveTuple("LastName", "Frank")),
                                 queryResultMap())),
@@ -209,7 +208,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbwQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "United Oil & Gas, UK")),
+            map(new JsonPrimitiveTuple("Name", "United Oil & Gas, UK")),
             queryResultMap(
                 new RecordBuilder.QueryResultTuple(
                     "Contacts",
@@ -223,7 +222,7 @@ public class RestApiQueryTest {
                                     new JsonPrimitiveTuple(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjmQAE")),
-                                jsonPrimitiveMap(
+                                map(
                                     new JsonPrimitiveTuple("FirstName", "Ashley"),
                                     new JsonPrimitiveTuple("LastName", "James")),
                                 queryResultMap())),
@@ -235,7 +234,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbxQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "United Oil & Gas, Singapore")),
+            map(new JsonPrimitiveTuple("Name", "United Oil & Gas, Singapore")),
             queryResultMap(
                 new RecordBuilder.QueryResultTuple(
                     "Contacts",
@@ -249,7 +248,7 @@ public class RestApiQueryTest {
                                     new JsonPrimitiveTuple(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjnQAE")),
-                                jsonPrimitiveMap(
+                                map(
                                     new JsonPrimitiveTuple("FirstName", "Tom"),
                                     new JsonPrimitiveTuple("LastName", "Ripley")),
                                 queryResultMap()),
@@ -259,7 +258,7 @@ public class RestApiQueryTest {
                                     new JsonPrimitiveTuple(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjoQAE")),
-                                jsonPrimitiveMap(
+                                map(
                                     new JsonPrimitiveTuple("FirstName", "Liz"),
                                     new JsonPrimitiveTuple("LastName", "D'Cruz")),
                                 queryResultMap())),
@@ -271,7 +270,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlboQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Edge Communications")),
+            map(new JsonPrimitiveTuple("Name", "Edge Communications")),
             queryResultMap(
                 new RecordBuilder.QueryResultTuple(
                     "Contacts",
@@ -285,7 +284,7 @@ public class RestApiQueryTest {
                                     new JsonPrimitiveTuple(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjZQAU")),
-                                jsonPrimitiveMap(
+                                map(
                                     new JsonPrimitiveTuple("FirstName", "Rose"),
                                     new JsonPrimitiveTuple("LastName", "Gonzalez")),
                                 queryResultMap()),
@@ -295,7 +294,7 @@ public class RestApiQueryTest {
                                     new JsonPrimitiveTuple(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjaQAE")),
-                                jsonPrimitiveMap(
+                                map(
                                     new JsonPrimitiveTuple("FirstName", "Sean"),
                                     new JsonPrimitiveTuple("LastName", "Forbes")),
                                 queryResultMap())),
@@ -307,7 +306,7 @@ public class RestApiQueryTest {
                 new JsonPrimitiveTuple("type", "Account"),
                 new JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbpQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Burlington Textiles Corp of America")),
+            map(new JsonPrimitiveTuple("Name", "Burlington Textiles Corp of America")),
             queryResultMap(
                 new RecordBuilder.QueryResultTuple(
                     "Contacts",
@@ -321,7 +320,7 @@ public class RestApiQueryTest {
                                     new JsonPrimitiveTuple(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjbQAE")),
-                                jsonPrimitiveMap(
+                                map(
                                     new JsonPrimitiveTuple("FirstName", "Jack"),
                                     new JsonPrimitiveTuple("LastName", "Rogers")),
                                 queryResultMap())),

@@ -7,6 +7,7 @@
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.jsonPrimitiveMap;
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.map;
 
 import java.util.Collections;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -22,7 +23,7 @@ public class QueryRecordResultTest {
                 new RecordBuilder.JsonPrimitiveTuple("type", "Account"),
                 new RecordBuilder.JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
-            jsonPrimitiveMap(new RecordBuilder.JsonPrimitiveTuple("Name", "Acme")),
+            map(new RecordBuilder.JsonPrimitiveTuple("Name", "Acme")),
             Collections.emptyMap());
 
     Record blue =
@@ -31,8 +32,7 @@ public class QueryRecordResultTest {
                 new RecordBuilder.JsonPrimitiveTuple("type", "Account"),
                 new RecordBuilder.JsonPrimitiveTuple(
                     "url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
-            jsonPrimitiveMap(
-                new RecordBuilder.JsonPrimitiveTuple("Name", "Sample Account for Entitlements")),
+            map(new RecordBuilder.JsonPrimitiveTuple("Name", "Sample Account for Entitlements")),
             Collections.emptyMap());
 
     EqualsVerifier.forClass(QueryRecordResult.class)
