@@ -6,8 +6,7 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.jsonPrimitiveMap;
-import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.queryResultMap;
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.*;
 import static com.spotify.hamcrest.optional.OptionalMatchers.optionalWithValue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -15,7 +14,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.JsonPrimitiveTuple;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -120,48 +118,38 @@ public class RestApiQueryTest {
     List<Record> expectedRecords = new ArrayList<>();
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/001B000001LntWlIAJ")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "An awesome test account")),
-            Collections.emptyMap()));
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/001B000001LntWlIAJ")),
+            fields(field("Name", "An awesome test account"))));
 
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/001B000001LwihtIAB")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Global Media")),
-            Collections.emptyMap()));
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/001B000001LwihtIAB")),
+            fields(field("Name", "Global Media"))));
 
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Acme")),
-            Collections.emptyMap()));
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
+            fields(field("Name", "Acme"))));
 
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/001B000001LwihvIAB")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "salesforce.com")),
-            Collections.emptyMap()));
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/001B000001LwihvIAB")),
+            fields(field("Name", "salesforce.com"))));
 
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Sample Account for Entitlements")),
-            Collections.emptyMap()));
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
+            fields(field("Name", "Sample Account for Entitlements"))));
 
     assertThat(result.getRecords(), is(equalTo(expectedRecords)));
   }
@@ -179,152 +167,126 @@ public class RestApiQueryTest {
     List<Record> expectedRecords = new ArrayList<>();
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbyQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "GenePoint")),
-            queryResultMap(
-                new RecordBuilder.QueryResultTuple(
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbyQAD")),
+            fields(
+                field("Name", "GenePoint"),
+                field(
                     "Contacts",
                     new QueryRecordResult(
                         1,
                         true,
                         Collections.singletonList(
                             new Record(
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("type", "Contact"),
-                                    new JsonPrimitiveTuple(
+                                attributes(
+                                    attribute("type", "Contact"),
+                                    attribute(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjpQAE")),
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("FirstName", "Edna"),
-                                    new JsonPrimitiveTuple("LastName", "Frank")),
-                                queryResultMap())),
+                                fields(field("FirstName", "Edna"), field("LastName", "Frank")))),
                         null)))));
 
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbwQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "United Oil & Gas, UK")),
-            queryResultMap(
-                new RecordBuilder.QueryResultTuple(
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbwQAD")),
+            fields(
+                field("Name", "United Oil & Gas, UK"),
+                field(
                     "Contacts",
                     new QueryRecordResult(
                         1,
                         true,
                         Collections.singletonList(
                             new Record(
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("type", "Contact"),
-                                    new JsonPrimitiveTuple(
+                                attributes(
+                                    attribute("type", "Contact"),
+                                    attribute(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjmQAE")),
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("FirstName", "Ashley"),
-                                    new JsonPrimitiveTuple("LastName", "James")),
-                                queryResultMap())),
+                                fields(field("FirstName", "Ashley"), field("LastName", "James")))),
                         null)))));
 
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbxQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "United Oil & Gas, Singapore")),
-            queryResultMap(
-                new RecordBuilder.QueryResultTuple(
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbxQAD")),
+            fields(
+                field("Name", "United Oil & Gas, Singapore"),
+                field(
                     "Contacts",
                     new QueryRecordResult(
                         2,
                         true,
                         Arrays.asList(
                             new Record(
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("type", "Contact"),
-                                    new JsonPrimitiveTuple(
+                                attributes(
+                                    attribute("type", "Contact"),
+                                    attribute(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjnQAE")),
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("FirstName", "Tom"),
-                                    new JsonPrimitiveTuple("LastName", "Ripley")),
-                                queryResultMap()),
+                                fields(field("FirstName", "Tom"), field("LastName", "Ripley"))),
                             new Record(
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("type", "Contact"),
-                                    new JsonPrimitiveTuple(
+                                attributes(
+                                    attribute("type", "Contact"),
+                                    attribute(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjoQAE")),
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("FirstName", "Liz"),
-                                    new JsonPrimitiveTuple("LastName", "D'Cruz")),
-                                queryResultMap())),
+                                fields(field("FirstName", "Liz"), field("LastName", "D'Cruz")))),
                         null)))));
 
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlboQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Edge Communications")),
-            queryResultMap(
-                new RecordBuilder.QueryResultTuple(
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlboQAD")),
+            fields(
+                field("Name", "Edge Communications"),
+                field(
                     "Contacts",
                     new QueryRecordResult(
                         2,
                         true,
                         Arrays.asList(
                             new Record(
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("type", "Contact"),
-                                    new JsonPrimitiveTuple(
+                                attributes(
+                                    attribute("type", "Contact"),
+                                    attribute(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjZQAU")),
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("FirstName", "Rose"),
-                                    new JsonPrimitiveTuple("LastName", "Gonzalez")),
-                                queryResultMap()),
+                                fields(field("FirstName", "Rose"), field("LastName", "Gonzalez"))),
                             new Record(
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("type", "Contact"),
-                                    new JsonPrimitiveTuple(
+                                attributes(
+                                    attribute("type", "Contact"),
+                                    attribute(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjaQAE")),
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("FirstName", "Sean"),
-                                    new JsonPrimitiveTuple("LastName", "Forbes")),
-                                queryResultMap())),
+                                fields(field("FirstName", "Sean"), field("LastName", "Forbes")))),
                         null)))));
 
     expectedRecords.add(
         new Record(
-            jsonPrimitiveMap(
-                new JsonPrimitiveTuple("type", "Account"),
-                new JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbpQAD")),
-            jsonPrimitiveMap(new JsonPrimitiveTuple("Name", "Burlington Textiles Corp of America")),
-            queryResultMap(
-                new RecordBuilder.QueryResultTuple(
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/0017Q00000EZlbpQAD")),
+            fields(
+                field("Name", "Burlington Textiles Corp of America"),
+                field(
                     "Contacts",
                     new QueryRecordResult(
                         1,
                         true,
                         Collections.singletonList(
                             new Record(
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("type", "Contact"),
-                                    new JsonPrimitiveTuple(
+                                attributes(
+                                    attribute("type", "Contact"),
+                                    attribute(
                                         "url",
                                         "/services/data/v53.0/sobjects/Contact/0037Q000007vKjbQAE")),
-                                jsonPrimitiveMap(
-                                    new JsonPrimitiveTuple("FirstName", "Jack"),
-                                    new JsonPrimitiveTuple("LastName", "Rogers")),
-                                queryResultMap())),
+                                fields(field("FirstName", "Jack"), field("LastName", "Rogers")))),
                         null)))));
 
     assertThat(result.getRecords(), is(equalTo(expectedRecords)));

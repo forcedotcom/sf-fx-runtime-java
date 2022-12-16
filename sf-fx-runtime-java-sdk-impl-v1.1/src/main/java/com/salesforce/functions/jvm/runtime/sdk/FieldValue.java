@@ -7,20 +7,30 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonElement;
+import com.salesforce.functions.jvm.sdk.data.Record;
 import java.nio.ByteBuffer;
 import javax.annotation.Nonnull;
 
 public class FieldValue {
   private final JsonElement jsonData;
   private final ByteBuffer binaryData;
+  private final Record recordData;
 
   public FieldValue(@Nonnull JsonElement jsonData) {
     this.jsonData = jsonData;
     this.binaryData = null;
+    this.recordData = null;
   }
 
   public FieldValue(@Nonnull ByteBuffer binaryData) {
     this.binaryData = binaryData;
+    this.jsonData = null;
+    this.recordData = null;
+  }
+
+  public FieldValue(@Nonnull Record recordData) {
+    this.recordData = recordData;
+    this.binaryData = null;
     this.jsonData = null;
   }
 
@@ -32,6 +42,10 @@ public class FieldValue {
     return this.jsonData != null;
   }
 
+  public boolean isRecordData() {
+    return this.recordData != null;
+  }
+
   public JsonElement getJsonData() {
     return jsonData;
   }
@@ -40,8 +54,19 @@ public class FieldValue {
     return binaryData;
   }
 
+  public Record getRecordData() {
+    return this.recordData;
+  }
+
   @Override
   public String toString() {
-    return "FieldValue{" + "jsonData=" + jsonData + ", binaryData=" + binaryData + '}';
+    return "FieldValue{"
+        + "jsonData="
+        + jsonData
+        + ", binaryData="
+        + binaryData
+        + ", recordData="
+        + recordData
+        + '}';
   }
 }
