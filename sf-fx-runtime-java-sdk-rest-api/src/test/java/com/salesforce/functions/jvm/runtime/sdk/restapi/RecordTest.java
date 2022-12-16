@@ -6,13 +6,12 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.jsonPrimitiveMap;
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.google.gson.JsonPrimitive;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -22,40 +21,31 @@ public class RecordTest {
 
   @Test
   public void testValuesAndAttributesAreUnmodified() {
-    Map<String, JsonPrimitive> attributes = new HashMap<>();
-
     Map<String, JsonPrimitive> values = new HashMap<>();
     values.put("foo", new JsonPrimitive("bar"));
     values.put("bar", new JsonPrimitive("baz"));
 
-    Map<String, QueryRecordResult> subQueryResults = new HashMap<>();
-
-    Record record = new Record(attributes, values, subQueryResults);
-    assertThat(record.getAttributes(), is(equalTo(attributes)));
-    assertThat(record.getValues(), is(equalTo(values)));
-    assertThat(record.getSubQueryResults(), is(equalTo(subQueryResults)));
+    Record record = new Record(attributes(), fields(field("foo", "bar"), field("bar", "baz")));
+    assertThat(record.getAttributes().size(), is(equalTo(0)));
+    assertThat(record.getValues().get("foo").getJsonData().getAsString(), is(equalTo("bar")));
+    assertThat(record.getValues().get("bar").getJsonData().getAsString(), is(equalTo("baz")));
   }
 
   @Test
   public void testEqualsAndHashCode() {
     Record red =
         new Record(
-            jsonPrimitiveMap(
-                new RecordBuilder.JsonPrimitiveTuple("type", "Account"),
-                new RecordBuilder.JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
-            jsonPrimitiveMap(new RecordBuilder.JsonPrimitiveTuple("Name", "Acme")),
-            Collections.emptyMap());
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
+            fields(field("Name", "Acme")));
 
     Record blue =
         new Record(
-            jsonPrimitiveMap(
-                new RecordBuilder.JsonPrimitiveTuple("type", "Account"),
-                new RecordBuilder.JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
-            jsonPrimitiveMap(
-                new RecordBuilder.JsonPrimitiveTuple("Name", "Sample Account for Entitlements")),
-            Collections.emptyMap());
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
+            fields(field("Name", "Sample Account for Entitlements")));
 
     EqualsVerifier.forClass(Record.class).withPrefabValues(Record.class, red, blue).verify();
   }

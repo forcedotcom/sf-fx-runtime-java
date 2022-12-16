@@ -6,9 +6,8 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.jsonPrimitiveMap;
+import static com.salesforce.functions.jvm.runtime.sdk.restapi.RecordBuilder.*;
 
-import java.util.Collections;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
@@ -18,22 +17,17 @@ public class QueryRecordResultTest {
   public void testEqualsAndHashCode() {
     Record red =
         new Record(
-            jsonPrimitiveMap(
-                new RecordBuilder.JsonPrimitiveTuple("type", "Account"),
-                new RecordBuilder.JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
-            jsonPrimitiveMap(new RecordBuilder.JsonPrimitiveTuple("Name", "Acme")),
-            Collections.emptyMap());
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/001B000001LwihuIAB")),
+            fields(field("Name", "Acme")));
 
     Record blue =
         new Record(
-            jsonPrimitiveMap(
-                new RecordBuilder.JsonPrimitiveTuple("type", "Account"),
-                new RecordBuilder.JsonPrimitiveTuple(
-                    "url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
-            jsonPrimitiveMap(
-                new RecordBuilder.JsonPrimitiveTuple("Name", "Sample Account for Entitlements")),
-            Collections.emptyMap());
+            attributes(
+                attribute("type", "Account"),
+                attribute("url", "/services/data/v53.0/sobjects/Account/001B000001LnobCIAR")),
+            fields(field("Name", "Sample Account for Entitlements")));
 
     EqualsVerifier.forClass(QueryRecordResult.class)
         .withPrefabValues(Record.class, red, blue)

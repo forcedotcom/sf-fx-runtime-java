@@ -45,20 +45,24 @@ final class BinaryFieldUtil {
     final String recordObjectType = record.getAttributes().get("type").getAsString();
 
     final Map<String, FieldValue> fieldValues = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-    for (Map.Entry<String, JsonPrimitive> fieldEntry : record.getValues().entrySet()) {
-      FieldValue fieldValue = new FieldValue(fieldEntry.getValue());
-
-      if (isBinaryField(recordObjectType, fieldEntry.getKey())) {
-        ByteBuffer data = restApi.downloadFile(fieldEntry.getValue().getAsString());
-        fieldValue = new FieldValue(data);
-      }
-
-      fieldValues.put(fieldEntry.getKey(), fieldValue);
-    }
-
     final Map<String, RecordQueryResultImpl> subQueryResults = new HashMap<>();
-    for (Map.Entry<String, QueryRecordResult> entry : record.getSubQueryResults().entrySet()) {
-      subQueryResults.put(entry.getKey(), convert(entry.getValue(), restApi));
+
+    for (Map.Entry<String, Record.FieldValue> fieldEntry : record.getValues().entrySet()) {
+      Record.FieldValue value = fieldEntry.getValue();
+
+      if (value.isJsonData()) {
+        if (isBinaryField(recordObjectType, fieldEntry.getKey())) {
+          ByteBuffer data = restApi.downloadFile(value.getJsonData().getAsString());
+          fieldValues.put(fieldEntry.getKey(), new FieldValue(data));
+        } else {
+          fieldValues.put(fieldEntry.getKey(), new FieldValue(value.getJsonData()));
+        }
+      } else if (value.isRecordData()) {
+        fieldValues.put(
+            fieldEntry.getKey(), new FieldValue(convert(value.getRecordData(), restApi)));
+      } else if (value.isQueryRecordResult()) {
+        subQueryResults.put(fieldEntry.getKey(), convert(value.getQueryRecordResult(), restApi));
+      }
     }
 
     return new RecordWithSubQueryResultsImpl(recordObjectType, fieldValues, subQueryResults);

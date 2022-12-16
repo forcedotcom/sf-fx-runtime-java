@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class RecordBuilder {
-  public static Map<String, JsonPrimitive> jsonPrimitiveMap(JsonPrimitiveTuple... data) {
+  public static Map<String, JsonPrimitive> attributes(JsonPrimitiveTuple... data) {
     HashMap<String, JsonPrimitive> result = new HashMap<>();
     for (JsonPrimitiveTuple tuple : data) {
       result.put(tuple.getKey(), tuple.getValue());
@@ -20,34 +20,27 @@ public final class RecordBuilder {
     return result;
   }
 
-  public static Map<String, QueryRecordResult> queryResultMap(QueryResultTuple... data) {
-    HashMap<String, QueryRecordResult> result = new HashMap<>();
-    for (QueryResultTuple tuple : data) {
+  public static JsonPrimitiveTuple attribute(String name, String value) {
+    return new JsonPrimitiveTuple(name, value);
+  }
+
+  public static Map<String, Record.FieldValue> fields(FieldValueTuple... data) {
+    HashMap<String, Record.FieldValue> result = new HashMap<>();
+    for (FieldValueTuple tuple : data) {
       result.put(tuple.getKey(), tuple.getValue());
     }
-
     return result;
   }
 
-  public static class QueryResultTuple {
-    private final String key;
-    private final QueryRecordResult value;
-
-    public QueryResultTuple(String key, QueryRecordResult value) {
-      this.key = key;
-      this.value = value;
-    }
-
-    public String getKey() {
-      return key;
-    }
-
-    public QueryRecordResult getValue() {
-      return value;
-    }
+  public static FieldValueTuple field(String name, String value) {
+    return new FieldValueTuple(name, new Record.FieldValue(new JsonPrimitive(value)));
   }
 
-  public static class JsonPrimitiveTuple {
+  public static FieldValueTuple field(String name, QueryRecordResult queryRecordResult) {
+    return new FieldValueTuple(name, new Record.FieldValue(queryRecordResult));
+  }
+
+  static class JsonPrimitiveTuple {
     private final String key;
     private final JsonPrimitive value;
 
@@ -76,6 +69,24 @@ public final class RecordBuilder {
     }
 
     public JsonPrimitive getValue() {
+      return value;
+    }
+  }
+
+  static class FieldValueTuple {
+    private final String key;
+    private final Record.FieldValue value;
+
+    public FieldValueTuple(String key, Record.FieldValue value) {
+      this.key = key;
+      this.value = value;
+    }
+
+    public String getKey() {
+      return key;
+    }
+
+    public Record.FieldValue getValue() {
       return value;
     }
   }

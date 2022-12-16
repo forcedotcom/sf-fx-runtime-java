@@ -8,6 +8,7 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.RecordAccessor;
 import com.salesforce.functions.jvm.sdk.data.error.FieldConversionException;
 import java.math.BigDecimal;
@@ -139,11 +140,31 @@ public abstract class AbstractRecordAccessorImpl implements RecordAccessor {
   }
 
   @Nonnull
+  @Override
+  public Optional<Record> getRecordField(String name) {
+    FieldValue value = getFieldValues().get(name);
+
+    if (isNullField(name) || value == null) {
+      return Optional.empty();
+    }
+
+    if (!value.isRecordData()) {
+      throw new FieldConversionException(
+          String.format("Field %s cannot be converted to Record.", name));
+    }
+
+    return Optional.ofNullable(value.getRecordData());
+  }
+
+  @Nonnull
   private <T, E extends Throwable> Optional<T> getJsonFieldValue(
       String fieldName, Function<JsonPrimitive, T> f, E binaryDataException) throws E {
     Optional<FieldValue> fieldValue = Optional.ofNullable(getFieldValues().get(fieldName));
 
     if (fieldValue.isPresent() && fieldValue.get().isBinaryData()) {
+      throw binaryDataException;
+    } else if (fieldValue.isPresent() && fieldValue.get().isRecordData()) {
+      // TODO: this is not a binary data exception
       throw binaryDataException;
     } else {
       try {
