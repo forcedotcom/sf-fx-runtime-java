@@ -55,60 +55,49 @@ public abstract class AbstractRecordAccessorImpl implements RecordAccessor {
   @Nonnull
   @Override
   public Optional<String> getStringField(String name) {
-    return getJsonFieldValue(
-        name,
-        JsonPrimitive::getAsString,
-        new FieldConversionException("Binary data fields cannot be converted to a string!"));
+    return getJsonFieldValue(name, JsonPrimitive::getAsString, String.class);
   }
 
   @Nonnull
   @Override
   public Optional<Boolean> getBooleanField(String name) {
-    return getJsonFieldValue(
-        name,
-        JsonPrimitive::getAsBoolean,
-        new FieldConversionException("Binary data fields cannot be converted to a boolean!"));
+    return getJsonFieldValue(name, JsonPrimitive::getAsBoolean, Boolean.class);
   }
 
   @Nonnull
   @Override
   public Optional<Byte> getByteField(String name) {
-    return getJsonFieldValue(
-        name, JsonPrimitive::getAsByte, BINARY_DATA_FIELD_CONVERSION_EXCEPTION);
+    return getJsonFieldValue(name, JsonPrimitive::getAsByte, Byte.class);
   }
 
   @Nonnull
   @Override
   public Optional<Short> getShortField(String name) {
-    return getJsonFieldValue(
-        name, JsonPrimitive::getAsShort, BINARY_DATA_FIELD_CONVERSION_EXCEPTION);
+    return getJsonFieldValue(name, JsonPrimitive::getAsShort, Short.class);
   }
 
   @Nonnull
   @Override
   public Optional<Integer> getIntField(String name) {
-    return getJsonFieldValue(name, JsonPrimitive::getAsInt, BINARY_DATA_FIELD_CONVERSION_EXCEPTION);
+    return getJsonFieldValue(name, JsonPrimitive::getAsInt, Integer.class);
   }
 
   @Nonnull
   @Override
   public Optional<Long> getLongField(String name) {
-    return getJsonFieldValue(
-        name, JsonPrimitive::getAsLong, BINARY_DATA_FIELD_CONVERSION_EXCEPTION);
+    return getJsonFieldValue(name, JsonPrimitive::getAsLong, Long.class);
   }
 
   @Nonnull
   @Override
   public Optional<Float> getFloatField(String name) {
-    return getJsonFieldValue(
-        name, JsonPrimitive::getAsFloat, BINARY_DATA_FIELD_CONVERSION_EXCEPTION);
+    return getJsonFieldValue(name, JsonPrimitive::getAsFloat, Float.class);
   }
 
   @Nonnull
   @Override
   public Optional<Double> getDoubleField(String name) {
-    return getJsonFieldValue(
-        name, JsonPrimitive::getAsDouble, BINARY_DATA_FIELD_CONVERSION_EXCEPTION);
+    return getJsonFieldValue(name, JsonPrimitive::getAsDouble, Double.class);
   }
 
   @Nonnull
@@ -120,8 +109,7 @@ public abstract class AbstractRecordAccessorImpl implements RecordAccessor {
   @Nonnull
   @Override
   public Optional<BigDecimal> getBigDecimalField(String name) {
-    return getJsonFieldValue(
-        name, JsonPrimitive::getAsBigDecimal, BINARY_DATA_FIELD_CONVERSION_EXCEPTION);
+    return getJsonFieldValue(name, JsonPrimitive::getAsBigDecimal, BigDecimal.class);
   }
 
   @Nonnull
@@ -157,15 +145,17 @@ public abstract class AbstractRecordAccessorImpl implements RecordAccessor {
   }
 
   @Nonnull
-  private <T, E extends Throwable> Optional<T> getJsonFieldValue(
-      String fieldName, Function<JsonPrimitive, T> f, E binaryDataException) throws E {
+  private <T> Optional<T> getJsonFieldValue(
+      String fieldName, Function<JsonPrimitive, T> f, Class<T> klass)
+      throws FieldConversionException {
     Optional<FieldValue> fieldValue = Optional.ofNullable(getFieldValues().get(fieldName));
 
     if (fieldValue.isPresent() && fieldValue.get().isBinaryData()) {
-      throw binaryDataException;
+      throw new FieldConversionException(
+          "Binary data fields cannot be converted to a " + klass.getName() + "!");
     } else if (fieldValue.isPresent() && fieldValue.get().isRecordData()) {
-      // TODO: this is not a binary data exception
-      throw binaryDataException;
+      throw new FieldConversionException(
+          "Record data fields cannot be converted to a " + klass.getName() + "!");
     } else {
       try {
         return fieldValue
@@ -177,7 +167,4 @@ public abstract class AbstractRecordAccessorImpl implements RecordAccessor {
       }
     }
   }
-
-  private static final FieldConversionException BINARY_DATA_FIELD_CONVERSION_EXCEPTION =
-      new FieldConversionException("Binary data fields cannot be converted to a number!");
 }
