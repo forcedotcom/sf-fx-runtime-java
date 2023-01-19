@@ -2,3 +2,5 @@
 *.iml
 target
 .DS_Store
+integration-test/**/maven-wrapper.jar
+

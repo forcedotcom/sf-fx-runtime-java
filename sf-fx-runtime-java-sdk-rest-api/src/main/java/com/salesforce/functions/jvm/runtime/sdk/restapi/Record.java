@@ -6,6 +6,7 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import java.util.Collections;
 import java.util.Map;
@@ -14,16 +15,11 @@ import javax.annotation.Nonnull;
 
 public final class Record {
   private final Map<String, JsonPrimitive> attributes;
-  private final Map<String, JsonPrimitive> values;
-  private final Map<String, QueryRecordResult> subQueryResults;
+  private final Map<String, FieldValue> values;
 
-  public Record(
-      Map<String, JsonPrimitive> attributes,
-      Map<String, JsonPrimitive> values,
-      Map<String, QueryRecordResult> subQueryResults) {
+  public Record(Map<String, JsonPrimitive> attributes, Map<String, FieldValue> values) {
     this.attributes = attributes;
     this.values = values;
-    this.subQueryResults = subQueryResults;
   }
 
   @Nonnull
@@ -32,13 +28,8 @@ public final class Record {
   }
 
   @Nonnull
-  public Map<String, JsonPrimitive> getValues() {
+  public Map<String, FieldValue> getValues() {
     return Collections.unmodifiableMap(values);
-  }
-
-  @Nonnull
-  public Map<String, QueryRecordResult> getSubQueryResults() {
-    return Collections.unmodifiableMap(subQueryResults);
   }
 
   @Override
@@ -46,25 +37,91 @@ public final class Record {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Record record = (Record) o;
-    return Objects.equals(attributes, record.attributes)
-        && Objects.equals(values, record.values)
-        && Objects.equals(subQueryResults, record.subQueryResults);
+    return Objects.equals(attributes, record.attributes) && Objects.equals(values, record.values);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attributes, values, subQueryResults);
+    return Objects.hash(attributes, values);
   }
 
   @Override
   public String toString() {
-    return "Record{"
-        + "attributes="
-        + attributes
-        + ", values="
-        + values
-        + ", subQueryResults="
-        + subQueryResults
-        + '}';
+    return "Record{" + "attributes=" + attributes + ", values=" + values + '}';
+  }
+
+  public static class FieldValue {
+    private final JsonElement jsonData;
+    private final Record record;
+    private final QueryRecordResult queryRecordResult;
+
+    public FieldValue(@Nonnull JsonElement jsonData) {
+      this.jsonData = jsonData;
+      this.record = null;
+      this.queryRecordResult = null;
+    }
+
+    public FieldValue(@Nonnull Record record) {
+      this.record = record;
+      this.jsonData = null;
+      this.queryRecordResult = null;
+    }
+
+    public FieldValue(@Nonnull QueryRecordResult queryRecordResult) {
+      this.queryRecordResult = queryRecordResult;
+      this.jsonData = null;
+      this.record = null;
+    }
+
+    public JsonElement getJsonData() {
+      return jsonData;
+    }
+
+    public boolean isJsonData() {
+      return this.jsonData != null;
+    }
+
+    public Record getRecordData() {
+      return record;
+    }
+
+    public boolean isRecordData() {
+      return record != null;
+    }
+
+    public QueryRecordResult getQueryRecordResult() {
+      return queryRecordResult;
+    }
+
+    public boolean isQueryRecordResult() {
+      return queryRecordResult != null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || !(o instanceof FieldValue)) return false;
+      FieldValue that = (FieldValue) o;
+      return Objects.equals(jsonData, that.jsonData)
+          && Objects.equals(record, that.record)
+          && Objects.equals(queryRecordResult, that.queryRecordResult);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(jsonData, record, queryRecordResult);
+    }
+
+    @Override
+    public String toString() {
+      return "FieldValue{"
+          + "jsonData="
+          + jsonData
+          + ", record="
+          + record
+          + ", queryRecordResult="
+          + queryRecordResult
+          + '}';
+    }
   }
 }

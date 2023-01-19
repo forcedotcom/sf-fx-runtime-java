@@ -6,10 +6,13 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
+import com.google.gson.JsonElement;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
 import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.RecordQueryResult;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -38,7 +41,8 @@ public class RecordQueryResultImpl implements RecordQueryResult {
         .map(
             record ->
                 new RecordImpl(
-                    record.getAttributes().get("type").getAsString(), record.getValues()))
+                    record.getAttributes().get("type").getAsString(),
+                    convertRestRecordToRecordImpl(record)))
         .collect(Collectors.toList());
   }
 
@@ -48,5 +52,23 @@ public class RecordQueryResultImpl implements RecordQueryResult {
 
   public QueryRecordResult getQueryRecordResult() {
     return queryRecordResult;
+  }
+
+  private Map<String, JsonElement> convertRestRecordToRecordImpl(
+      com.salesforce.functions.jvm.runtime.sdk.restapi.Record record) {
+    HashMap<String, JsonElement> values = new HashMap<>();
+    record
+        .getValues()
+        .entrySet()
+        .forEach(
+            stringFieldValueEntry -> {
+              String key = stringFieldValueEntry.getKey();
+              com.salesforce.functions.jvm.runtime.sdk.restapi.Record.FieldValue value =
+                  stringFieldValueEntry.getValue();
+              if (value.isJsonData()) {
+                values.put(key, value.getJsonData());
+              }
+            });
+    return values;
   }
 }

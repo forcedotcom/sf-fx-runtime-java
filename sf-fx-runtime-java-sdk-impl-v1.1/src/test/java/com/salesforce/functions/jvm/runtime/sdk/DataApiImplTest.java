@@ -346,4 +346,18 @@ public class DataApiImplTest {
         equalTo(
             "00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS"));
   }
+
+  @Test
+  public void testQueryWithAssociatedRecordResults() throws DataApiException {
+    RecordQueryResult result = dataApi.query("SELECT Name, Owner.Name from Account LIMIT 1");
+    assertThat(result.isDone(), is(true));
+    assertThat(result.getTotalSize(), is(1L));
+
+    Record record = result.getRecords().get(0);
+    assertThat(record.getRecordField("Owner").get(), isA(Record.class));
+
+    Record nestedRecord = record.getRecordField("Owner").get();
+    assertThat(nestedRecord.getType(), is("User"));
+    assertThat(nestedRecord.getStringField("Name").get(), is("Guy Smiley"));
+  }
 }

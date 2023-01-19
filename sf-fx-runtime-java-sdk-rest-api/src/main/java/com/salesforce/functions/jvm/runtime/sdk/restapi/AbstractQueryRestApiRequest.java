@@ -43,35 +43,43 @@ public abstract class AbstractQueryRestApiRequest implements RestApiRequest<Quer
     }
 
     for (JsonElement jsonElement : body.get("records").getAsJsonArray()) {
-      final JsonObject jsonObject = jsonElement.getAsJsonObject();
-
-      final JsonObject attributesObject = jsonObject.get("attributes").getAsJsonObject();
-      final Map<String, JsonPrimitive> attributes =
-          gson.fromJson(attributesObject, new TypeToken<Map<String, JsonPrimitive>>() {}.getType());
-
-      final Map<String, JsonPrimitive> values = new HashMap<>();
-      final Map<String, QueryRecordResult> subQueryResults = new HashMap<>();
-
-      for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-        if (entry.getKey().equals("attributes")) {
-          continue;
-        }
-
-        if (entry.getValue().isJsonPrimitive()) {
-          values.put(entry.getKey(), entry.getValue().getAsJsonPrimitive());
-        } else if (entry.getValue().isJsonObject()) {
-          subQueryResults.put(entry.getKey(), parseQueryResult(entry.getValue().getAsJsonObject()));
-        } else {
-          // We don't throw an exception if the value is null, but it will not be added.
-          if (!entry.getValue().isJsonNull()) {
-            throw new RuntimeException("Unexpected value in record response: " + entry.getValue());
-          }
-        }
-      }
-
-      records.add(new Record(attributes, values, subQueryResults));
+      records.add(parseQueryRecord(jsonElement.getAsJsonObject()));
     }
 
     return new QueryRecordResult(totalSize, done, records, nextRecordsPath);
+  }
+
+  private Record parseQueryRecord(JsonObject data) {
+    final JsonObject attributesObject = data.get("attributes").getAsJsonObject();
+    final Map<String, JsonPrimitive> attributes =
+        gson.fromJson(attributesObject, new TypeToken<Map<String, JsonPrimitive>>() {}.getType());
+
+    final Map<String, Record.FieldValue> values = new HashMap<>();
+
+    for (Map.Entry<String, JsonElement> entry : data.entrySet()) {
+      if (entry.getKey().equals("attributes")) {
+        continue;
+      }
+
+      if (entry.getValue().isJsonPrimitive()) {
+        values.put(entry.getKey(), new Record.FieldValue(entry.getValue().getAsJsonPrimitive()));
+      } else if (entry.getValue().isJsonObject()) {
+        JsonObject nestedJsonObject = entry.getValue().getAsJsonObject();
+        if (nestedJsonObject.has("attributes")) {
+          values.put(entry.getKey(), new Record.FieldValue(parseQueryRecord(nestedJsonObject)));
+        } else {
+          values.put(
+              entry.getKey(),
+              new Record.FieldValue(parseQueryResult(entry.getValue().getAsJsonObject())));
+        }
+      } else {
+        // We don't throw an exception if the value is null, but it will not be added.
+        if (!entry.getValue().isJsonNull()) {
+          throw new RuntimeException("Unexpected value in record response: " + entry.getValue());
+        }
+      }
+    }
+
+    return new Record(attributes, values);
   }
 }

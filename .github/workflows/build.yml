@@ -55,6 +55,7 @@ jobs:
       - run: ./integration-test/openjdk-${{ matrix.version }}/list-pojo/test.sh
       - run: ./integration-test/openjdk-${{ matrix.version }}/exception/test.sh
       - run: ./integration-test/openjdk-${{ matrix.version }}/sdk-1.1.0/test.sh
+      - run: ./integration-test/openjdk-${{ matrix.version }}/sdk-1.1.1/test.sh
 
   coverage:
     name: Code Coverage
