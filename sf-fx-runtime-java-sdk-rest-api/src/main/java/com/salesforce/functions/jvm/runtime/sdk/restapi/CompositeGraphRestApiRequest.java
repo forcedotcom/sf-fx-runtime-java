@@ -21,14 +21,14 @@ import java.util.Map;
 import java.util.Optional;
 import org.apache.http.client.utils.URIBuilder;
 
-public class CompositeGraphRestApiRequest<T> implements RestApiRequest<Map<String, T>> {
+public class CompositeGraphRestApiRequest<T> extends JsonRestApiRequest<Map<String, T>> {
   private final Gson gson = new Gson();
   private final URI baseUri;
   private final String apiVersion;
-  private final Map<String, RestApiRequest<T>> subrequests;
+  private final Map<String, JsonRestApiRequest<T>> subrequests;
 
   public CompositeGraphRestApiRequest(
-      URI baseUri, String apiVersion, Map<String, RestApiRequest<T>> subrequests) {
+      URI baseUri, String apiVersion, Map<String, JsonRestApiRequest<T>> subrequests) {
     this.baseUri = baseUri;
     this.apiVersion = apiVersion;
     this.subrequests = subrequests;
@@ -47,10 +47,10 @@ public class CompositeGraphRestApiRequest<T> implements RestApiRequest<Map<Strin
   }
 
   @Override
-  public Optional<JsonElement> getBody() {
+  public Optional<JsonRequestBody> getBody() {
     JsonArray subrequestJsonArray = new JsonArray();
 
-    for (Map.Entry<String, RestApiRequest<T>> entry : subrequests.entrySet()) {
+    for (Map.Entry<String, JsonRestApiRequest<T>> entry : subrequests.entrySet()) {
       String method = httpMethodToCompositeMethodString(entry.getValue().getHttpMethod());
 
       // RestApiRequest#createUri returns an absolute URL. For a composite request, we need to strip
@@ -75,7 +75,10 @@ public class CompositeGraphRestApiRequest<T> implements RestApiRequest<Map<Strin
       subrequestJson.addProperty("url", subrequestUrl.toString());
       subrequestJson.addProperty("referenceId", entry.getKey());
 
-      entry.getValue().getBody().ifPresent(jsonElement -> subrequestJson.add("body", jsonElement));
+      entry
+          .getValue()
+          .getBody()
+          .ifPresent(jsonBody -> subrequestJson.add("body", jsonBody.getJsonElement()));
 
       subrequestJsonArray.add(subrequestJson);
     }
@@ -90,16 +93,17 @@ public class CompositeGraphRestApiRequest<T> implements RestApiRequest<Map<Strin
     JsonObject body = new JsonObject();
     body.add("graphs", graphsArray);
 
-    return Optional.of(body);
+    return Optional.of(new JsonRequestBody(body));
   }
 
   @Override
   public Map<String, T> processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiErrorsException {
+      int statusCode, Map<String, String> headers, JsonElement jsonRequestBody)
+      throws RestApiErrorsException {
     Map<String, T> result = new HashMap<>();
 
     if (statusCode == 200) {
-      JsonArray graphsArray = body.getAsJsonObject().get("graphs").getAsJsonArray();
+      JsonArray graphsArray = jsonRequestBody.getAsJsonObject().get("graphs").getAsJsonArray();
       if (graphsArray.size() != 1) {
         throw new IllegalStateException(
             "Composite REST API unexpectedly returned more or less than one graph!");
@@ -146,7 +150,7 @@ public class CompositeGraphRestApiRequest<T> implements RestApiRequest<Map<Strin
       return result;
     }
 
-    throw new RestApiErrorsException(ErrorResponseParser.parse(body));
+    throw new RestApiErrorsException(ErrorResponseParser.parse(jsonRequestBody));
   }
 
   private static String httpMethodToCompositeMethodString(HttpMethod method) {

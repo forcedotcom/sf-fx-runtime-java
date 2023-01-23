@@ -35,7 +35,7 @@ public class RestApiCompositeTest {
 
   @Test
   public void compositeSingleCreate() throws RestApiErrorsException, IOException, RestApiException {
-    Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
+    Map<String, JsonRestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
 
     Map<String, JsonElement> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Star Wars Episode IV - A New Hope"));
@@ -54,7 +54,7 @@ public class RestApiCompositeTest {
 
   @Test
   public void compositeSingleCreateWithError() throws IOException, RestApiException {
-    Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
+    Map<String, JsonRestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
 
     Map<String, JsonElement> values = new HashMap<>();
     values.put("Name", new JsonPrimitive("Star Wars Episode IV - A New Hope"));
@@ -84,7 +84,7 @@ public class RestApiCompositeTest {
 
   @Test
   public void compositeSingleUpdate() throws RestApiErrorsException, IOException, RestApiException {
-    Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
+    Map<String, JsonRestApiRequest<ModifyRecordResult>> subrequests = new HashMap<>();
 
     Map<String, JsonElement> values = new HashMap<>();
     values.put("ReleaseDate__c", new JsonPrimitive("1980-05-21"));
@@ -103,7 +103,7 @@ public class RestApiCompositeTest {
 
   @Test
   public void compositeCreateTree() throws RestApiErrorsException, IOException, RestApiException {
-    Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
+    Map<String, JsonRestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
 
     Map<String, JsonElement> valuesFranchise = new HashMap<>();
     valuesFranchise.put("Name", new JsonPrimitive("Star Wars"));
@@ -149,7 +149,7 @@ public class RestApiCompositeTest {
 
   @Test
   public void compositeDeleteTest() throws RestApiErrorsException, IOException, RestApiException {
-    Map<String, RestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
+    Map<String, JsonRestApiRequest<ModifyRecordResult>> subrequests = new LinkedHashMap<>();
     subrequests.put(
         "referenceId0", new DeleteRecordRestApiRequest("Movie__c", "a01B0000009gSr9IAE"));
 

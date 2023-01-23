@@ -7,18 +7,7 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonElement;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.CompositeGraphRestApiRequest;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.CreateRecordRestApiRequest;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.DeleteRecordRestApiRequest;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryNextRecordsRestApiRequest;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordRestApiRequest;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.QueryRecordResult;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApi;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiErrorsException;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiException;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiRequest;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.UpdateRecordRestApiRequest;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.*;
 import com.salesforce.functions.jvm.sdk.data.DataApi;
 import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.RecordModificationResult;
@@ -52,7 +41,7 @@ public class DataApiImpl implements DataApi {
   @Override
   @Nonnull
   public RecordQueryResult query(String soql) throws DataApiException {
-    RestApiRequest<QueryRecordResult> request = new QueryRecordRestApiRequest(soql);
+    JsonRestApiRequest<QueryRecordResult> request = new QueryRecordRestApiRequest(soql);
 
     try {
       return BinaryFieldUtil.convert(executeRequest(request), restApi);
@@ -154,7 +143,7 @@ public class DataApiImpl implements DataApi {
     return restApi.getAccessToken();
   }
 
-  public static RestApiRequest<ModifyRecordResult> apiRequestForUpdate(Record record) {
+  public static JsonRestApiRequest<ModifyRecordResult> apiRequestForUpdate(Record record) {
     if (!(record instanceof RecordImpl)) {
       throw new IllegalArgumentException(INCOMPATIBLE_RECORD_MESSAGE);
     }
@@ -175,7 +164,7 @@ public class DataApiImpl implements DataApi {
     return new UpdateRecordRestApiRequest(id, recordImpl.getType(), fieldValues);
   }
 
-  public static RestApiRequest<ModifyRecordResult> apiRequestForCreate(Record record) {
+  public static JsonRestApiRequest<ModifyRecordResult> apiRequestForCreate(Record record) {
     if (!(record instanceof RecordImpl)) {
       throw new IllegalArgumentException(INCOMPATIBLE_RECORD_MESSAGE);
     }
@@ -185,7 +174,7 @@ public class DataApiImpl implements DataApi {
         recordImpl.getType(), BinaryFieldUtil.convert(recordImpl.getFieldValues()));
   }
 
-  private <T> T executeRequest(RestApiRequest<T> request) throws DataApiException {
+  private <T> T executeRequest(JsonRestApiRequest<T> request) throws DataApiException {
     try {
       return restApi.execute(request);
     } catch (RestApiErrorsException restApiException) {

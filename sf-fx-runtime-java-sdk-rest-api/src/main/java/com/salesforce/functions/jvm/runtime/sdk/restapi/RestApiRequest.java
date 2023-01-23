@@ -6,19 +6,20 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import com.google.gson.JsonElement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Optional;
 
-public interface RestApiRequest<T> {
+public interface RestApiRequest<T, A extends RestApiRequestBody, B> {
   HttpMethod getHttpMethod();
 
   URI createUri(URI baseUri, String apiVersion) throws URISyntaxException;
 
-  Optional<JsonElement> getBody();
+  Optional<A> getBody();
 
-  T processResponse(int statusCode, Map<String, String> headers, JsonElement body)
+  T processResponse(int statusCode, Map<String, String> headers, B body)
       throws RestApiErrorsException;
+
+  B parseBody(byte[] body) throws BodyParsingException;
 }

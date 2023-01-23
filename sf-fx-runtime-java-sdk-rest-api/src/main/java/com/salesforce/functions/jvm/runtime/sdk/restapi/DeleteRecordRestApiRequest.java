@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.apache.http.client.utils.URIBuilder;
 
-public class DeleteRecordRestApiRequest implements RestApiRequest<ModifyRecordResult> {
+public class DeleteRecordRestApiRequest extends JsonRestApiRequest<ModifyRecordResult> {
   private final String type;
   private final String id;
 
@@ -35,17 +35,18 @@ public class DeleteRecordRestApiRequest implements RestApiRequest<ModifyRecordRe
   }
 
   @Override
-  public Optional<JsonElement> getBody() {
+  public Optional<JsonRequestBody> getBody() {
     return Optional.empty();
   }
 
   @Override
   public ModifyRecordResult processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiErrorsException {
+      int statusCode, Map<String, String> headers, JsonElement jsonRequestBody)
+      throws RestApiErrorsException {
     if (statusCode == 204) {
       return new ModifyRecordResult(id);
     } else {
-      throw new RestApiErrorsException(ErrorResponseParser.parse(body));
+      throw new RestApiErrorsException(ErrorResponseParser.parse(jsonRequestBody));
     }
   }
 }

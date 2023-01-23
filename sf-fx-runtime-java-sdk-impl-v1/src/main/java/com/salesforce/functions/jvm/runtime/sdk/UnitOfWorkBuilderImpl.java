@@ -7,8 +7,8 @@
 package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.salesforce.functions.jvm.runtime.sdk.restapi.DeleteRecordRestApiRequest;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.JsonRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiRequest;
 import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.ReferenceId;
 import com.salesforce.functions.jvm.sdk.data.UnitOfWork;
@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
 public class UnitOfWorkBuilderImpl implements UnitOfWorkBuilder {
   // Order is important, don't replace LinkedHashMap without verifying the new implementation
   // also preserves insertion order!
-  private final LinkedHashMap<String, RestApiRequest<ModifyRecordResult>> subrequests =
+  private final LinkedHashMap<String, JsonRestApiRequest<ModifyRecordResult>> subrequests =
       new LinkedHashMap<>();
 
   private final AtomicInteger nextReferenceId = new AtomicInteger(0);
