@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.requests.DeleteRecordRestApiRequest;
 import java.io.IOException;
 import java.net.URI;
 import org.junit.Assert;

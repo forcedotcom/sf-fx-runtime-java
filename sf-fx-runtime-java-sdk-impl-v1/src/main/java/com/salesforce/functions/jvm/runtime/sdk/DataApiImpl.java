@@ -8,6 +8,8 @@ package com.salesforce.functions.jvm.runtime.sdk;
 
 import com.google.gson.JsonElement;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.*;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.json.JsonRestApiRequest;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.requests.*;
 import com.salesforce.functions.jvm.sdk.data.DataApi;
 import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.RecordModificationResult;

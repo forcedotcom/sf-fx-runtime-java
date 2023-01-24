@@ -6,8 +6,8 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
-import com.salesforce.functions.jvm.runtime.sdk.restapi.JsonRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.json.JsonRestApiRequest;
 import com.salesforce.functions.jvm.sdk.data.UnitOfWork;
 import java.util.Collections;
 import java.util.LinkedHashMap;

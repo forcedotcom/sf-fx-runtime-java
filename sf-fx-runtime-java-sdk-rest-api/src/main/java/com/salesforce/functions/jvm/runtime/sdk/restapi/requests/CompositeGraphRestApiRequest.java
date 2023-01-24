@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-package com.salesforce.functions.jvm.runtime.sdk.restapi;
+package com.salesforce.functions.jvm.runtime.sdk.restapi.requests;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -12,6 +12,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.*;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.json.JsonRequestBody;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.json.JsonRestApiRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;

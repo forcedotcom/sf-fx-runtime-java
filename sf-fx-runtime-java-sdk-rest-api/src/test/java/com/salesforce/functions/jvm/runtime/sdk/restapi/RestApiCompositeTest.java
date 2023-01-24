@@ -14,6 +14,8 @@ import static org.hamcrest.Matchers.hasEntry;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.json.JsonRestApiRequest;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.requests.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;

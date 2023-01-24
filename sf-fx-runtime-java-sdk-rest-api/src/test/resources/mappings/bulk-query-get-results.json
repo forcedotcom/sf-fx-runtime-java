@@ -1,0 +1,34 @@
+{
+  "id" : "4c269313-e0d3-3750-bed7-8b998f2cdb97",
+  "request" : {
+    "url" : "/services/data/v53.0/jobs/query/7507Q000009f8jvQAA/results",
+    "method" : "GET",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer 00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS"
+      },
+      "Sforce-Call-Options": {
+        "matches": "client=sf-fx-runtime-java-sdk-impl-v\\d+:\\d+\\.\\d+\\.\\d+(-[a-zA-Z]+)*"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "\"Name\",\"Type\",\"Industry\"\n\"Beispielaccount für Ansprüche\",\"\",\"\"\n\"Edge Communications\",\"Customer - Direct\",\"Electronics\"\n\"Burlington Textiles Corp of America\",\"Customer - Direct\",\"Apparel\"\n\"Pyramid Construction Inc.\",\"Customer - Channel\",\"Construction\"\n\"Dickenson plc\",\"Customer - Channel\",\"Consulting\"\n\"Grand Hotels & Resorts Ltd\",\"Customer - Direct\",\"Hospitality\"\n\"United Oil & Gas Corp.\",\"Customer - Direct\",\"Energy\"\n\"Express Logistics and Transport\",\"Customer - Channel\",\"Transportation\"\n\"University of Arizona\",\"Customer - Direct\",\"Education\"\n\"United Oil & Gas, UK\",\"Customer - Direct\",\"Energy\"\n\"United Oil & Gas, Singapore\",\"Customer - Direct\",\"Energy\"\n\"GenePoint\",\"Customer - Channel\",\"Biotechnology\"\n\"sForce\",\"\",\"\"\n",
+    "headers" : {
+      "Date" : "Thu, 26 Jan 2023 14:50:34 GMT",
+      "Strict-Transport-Security" : "max-age=63072000; includeSubDomains",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Robots-Tag" : "none",
+      "Cache-Control" : "no-cache,must-revalidate,max-age=0,no-store,private",
+      "Set-Cookie" : "BrowserId=ydmkFJ2IEe2qeWljrtQmBw; domain=.salesforce.com; path=/; expires=Fri, 26-Jan-2024 14:50:34 GMT; Max-Age=31536000",
+      "Sforce-Limit-Info" : "api-usage=40/15000",
+      "Content-Type" : "text/csv",
+      "Sforce-Locator" : "null",
+      "Sforce-NumberOfRecords" : "13",
+      "Vary" : "Accept-Encoding"
+    }
+  },
+  "uuid" : "4c269313-e0d3-3750-bed7-8b998f2cdb97"
+}

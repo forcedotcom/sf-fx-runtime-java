@@ -1,0 +1,36 @@
+{
+  "id" : "d31f2edb-3195-3b52-a0d8-a2285a482663",
+  "request" : {
+    "url" : "/services/data/v53.0/jobs/ingest/7507Q000009f4YjXXX",
+    "method" : "PATCH",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n\t\"state\":\"Aborted\"\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ],
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer 00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS"
+      },
+      "Sforce-Call-Options": {
+        "matches": "client=sf-fx-runtime-java-sdk-impl-v\\d+:\\d+\\.\\d+\\.\\d+(-[a-zA-Z]+)*"
+      }
+    }
+  },
+  "response" : {
+    "status" : 404,
+    "body" : "[{\"errorCode\":\"NOT_FOUND\",\"message\":\"The requested resource does not exist\"}]",
+    "headers" : {
+      "Date" : "Thu, 26 Jan 2023 09:40:53 GMT",
+      "Strict-Transport-Security" : "max-age=63072000; includeSubDomains",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Robots-Tag" : "none",
+      "Cache-Control" : "no-cache,must-revalidate,max-age=0,no-store,private",
+      "Set-Cookie" : "BrowserId=hrybOp1dEe2OzalPKBZyRA; domain=.salesforce.com; path=/; expires=Fri, 26-Jan-2024 09:40:53 GMT; Max-Age=31536000",
+      "Sforce-Limit-Info" : "api-usage=13/15000",
+      "Content-Type" : "application/json;charset=UTF-8"
+    }
+  },
+  "uuid" : "d31f2edb-3195-3b52-a0d8-a2285a482663"
+}

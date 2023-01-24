@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -83,7 +84,7 @@ public final class RestApi {
             response.getStatusLine().getStatusCode(), headers, apiRequest.parseBody(bodyBytes));
       } catch (BodyParsingException e) {
         throw new RestApiException(
-            "Could not parse API response!\n" + Arrays.toString(bodyBytes), e);
+            "Could not parse API response!\n" + new String(bodyBytes, StandardCharsets.UTF_8), e);
       }
     }
   }
@@ -114,6 +115,9 @@ public final class RestApi {
           break;
         case PATCH:
           httpEntityEnclosingRequest = new HttpPatch(uri);
+          break;
+        case PUT:
+          httpEntityEnclosingRequest = new HttpPut(uri);
           break;
         default:
           // Since we don't get exhaustive switch/cases (JEP 361, previews since Java 12+) we put

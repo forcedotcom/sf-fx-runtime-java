@@ -6,9 +6,9 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
-import com.salesforce.functions.jvm.runtime.sdk.restapi.DeleteRecordRestApiRequest;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.JsonRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.json.JsonRestApiRequest;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.requests.DeleteRecordRestApiRequest;
 import com.salesforce.functions.jvm.sdk.data.Record;
 import com.salesforce.functions.jvm.sdk.data.ReferenceId;
 import com.salesforce.functions.jvm.sdk.data.UnitOfWork;

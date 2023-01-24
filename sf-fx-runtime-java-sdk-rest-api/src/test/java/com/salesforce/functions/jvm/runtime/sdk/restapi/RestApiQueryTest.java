@@ -14,6 +14,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.requests.QueryNextRecordsRestApiRequest;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.requests.QueryRecordRestApiRequest;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;

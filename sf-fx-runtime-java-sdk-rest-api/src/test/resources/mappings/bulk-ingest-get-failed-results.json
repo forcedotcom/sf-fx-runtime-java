@@ -1,0 +1,32 @@
+{
+  "id" : "1c35ea9b-0448-3f06-b92f-1ace789fbfd5",
+  "request" : {
+    "url" : "/services/data/v53.0/jobs/ingest/7507Q000009f52jQAA/failedResults",
+    "method" : "GET",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer 00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS"
+      },
+      "Sforce-Call-Options": {
+        "matches": "client=sf-fx-runtime-java-sdk-impl-v\\d+:\\d+\\.\\d+\\.\\d+(-[a-zA-Z]+)*"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "\"sf__Id\",\"sf__Error\",\"Name\",\"Employees\"\n",
+    "headers" : {
+      "Date" : "Thu, 26 Jan 2023 10:10:23 GMT",
+      "Strict-Transport-Security" : "max-age=63072000; includeSubDomains",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Robots-Tag" : "none",
+      "Cache-Control" : "no-cache,must-revalidate,max-age=0,no-store,private",
+      "Set-Cookie" : "BrowserId=pWYK_51hEe22B2tN6FkXMg; domain=.salesforce.com; path=/; expires=Fri, 26-Jan-2024 10:10:23 GMT; Max-Age=31536000",
+      "Sforce-Limit-Info" : "api-usage=28/15000",
+      "Content-Type" : "text/csv",
+      "Vary" : "Accept-Encoding"
+    }
+  },
+  "uuid" : "1c35ea9b-0448-3f06-b92f-1ace789fbfd5"
+}

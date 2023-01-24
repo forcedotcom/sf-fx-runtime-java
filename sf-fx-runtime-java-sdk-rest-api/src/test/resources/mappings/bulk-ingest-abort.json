@@ -1,0 +1,36 @@
+{
+  "id" : "0990f491-9c9b-389e-b358-59185f499ce2",
+  "request" : {
+    "url" : "/services/data/v53.0/jobs/ingest/7507Q000009f4YjQAI",
+    "method" : "PATCH",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n\t\"state\":\"Aborted\"\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ],
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer 00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS"
+      },
+      "Sforce-Call-Options": {
+        "matches": "client=sf-fx-runtime-java-sdk-impl-v\\d+:\\d+\\.\\d+\\.\\d+(-[a-zA-Z]+)*"
+      }
+    }
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"id\":\"7507Q000009f4YjQAI\",\"operation\":\"insert\",\"object\":\"Asset\",\"createdById\":\"0057Q0000037T8QQAU\",\"createdDate\":\"2023-01-26T09:26:51.000+0000\",\"systemModstamp\":\"2023-01-26T09:26:51.000+0000\",\"state\":\"Aborted\",\"concurrencyMode\":\"Parallel\",\"contentType\":\"CSV\",\"apiVersion\":53.0}",
+    "headers" : {
+      "Date" : "Thu, 26 Jan 2023 09:39:03 GMT",
+      "Strict-Transport-Security" : "max-age=63072000; includeSubDomains",
+      "X-Content-Type-Options" : "nosniff",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Robots-Tag" : "none",
+      "Cache-Control" : "no-cache,must-revalidate,max-age=0,no-store,private",
+      "Set-Cookie" : "BrowserId=ROlCAp1dEe21JP0aIyCpHA; domain=.salesforce.com; path=/; expires=Fri, 26-Jan-2024 09:39:03 GMT; Max-Age=31536000",
+      "Sforce-Limit-Info" : "api-usage=12/15000",
+      "Content-Type" : "application/json;charset=UTF-8"
+    }
+  },
+  "uuid" : "0990f491-9c9b-389e-b358-59185f499ce2"
+}

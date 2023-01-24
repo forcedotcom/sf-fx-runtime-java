@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-package com.salesforce.functions.jvm.runtime.sdk.restapi;
+package com.salesforce.functions.jvm.runtime.sdk.restapi.requests;
 
+import com.salesforce.functions.jvm.runtime.sdk.restapi.HttpMethod;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.json.JsonRequestBody;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;

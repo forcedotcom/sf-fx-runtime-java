@@ -1,0 +1,32 @@
+{
+  "id": "70f0911e-0386-3128-91be-40d4bfbdb336",
+  "request": {
+    "url": "/services/data/v53.0/jobs/ingest/7507Q000009f52jQAA",
+    "method": "GET",
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer 00DB0000000UIn2!AQMAQKXBvR03lDdfMiD6Pdpo_wiMs6LGp6dVkrwOuqiiTEmwdPb8MvSZwdPLe009qHlwjxIVa4gY.JSAd0mfgRRz22vS"
+      },
+      "Sforce-Call-Options": {
+        "matches": "client=sf-fx-runtime-java-sdk-impl-v\\d+:\\d+\\.\\d+\\.\\d+(-[a-zA-Z]+)*"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"id\":\"7507Q000009f52jQAA\",\"operation\":\"insert\",\"object\":\"Account\",\"createdById\":\"0057Q0000037T8QQAU\",\"createdDate\":\"2023-01-26T10:09:27.000+0000\",\"systemModstamp\":\"2023-01-26T10:09:49.000+0000\",\"state\":\"Failed\",\"concurrencyMode\":\"Parallel\",\"contentType\":\"CSV\",\"apiVersion\":53.0,\"jobType\":\"V2Ingest\",\"lineEnding\":\"LF\",\"columnDelimiter\":\"COMMA\",\"numberRecordsProcessed\":0,\"numberRecordsFailed\":0,\"retries\":0,\"totalProcessingTime\":0,\"apiActiveProcessingTime\":0,\"apexProcessingTime\":0,\"errorMessage\":\"InvalidBatch : InvalidBatch : Field name not found : Employees\"}",
+    "headers": {
+      "Date": "Thu, 26 Jan 2023 10:10:02 GMT",
+      "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "X-Robots-Tag": "none",
+      "Cache-Control": "no-cache,must-revalidate,max-age=0,no-store,private",
+      "Set-Cookie": "BrowserId=mOcJiJ1hEe2K0PtKPaxCMw; domain=.salesforce.com; path=/; expires=Fri, 26-Jan-2024 10:10:02 GMT; Max-Age=31536000",
+      "Sforce-Limit-Info": "api-usage=27/15000",
+      "Content-Type": "application/json;charset=UTF-8",
+      "Vary": "Accept-Encoding"
+    }
+  },
+  "uuid": "70f0911e-0386-3128-91be-40d4bfbdb336"
+}

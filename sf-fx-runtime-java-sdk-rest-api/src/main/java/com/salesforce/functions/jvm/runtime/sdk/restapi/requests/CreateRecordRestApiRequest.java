@@ -4,37 +4,37 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-package com.salesforce.functions.jvm.runtime.sdk.restapi;
+package com.salesforce.functions.jvm.runtime.sdk.restapi.requests;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.*;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.json.JsonRequestBody;
+import com.salesforce.functions.jvm.runtime.sdk.restapi.json.JsonRestApiRequest;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.apache.http.client.utils.URIBuilder;
 
-public class UpdateRecordRestApiRequest extends JsonRestApiRequest<ModifyRecordResult> {
-  private final String id;
+public class CreateRecordRestApiRequest extends JsonRestApiRequest<ModifyRecordResult> {
   private final String type;
   private final Map<String, JsonElement> values;
 
-  public UpdateRecordRestApiRequest(String id, String type, Map<String, JsonElement> values) {
-    this.id = id;
+  public CreateRecordRestApiRequest(String type, Map<String, JsonElement> values) {
     this.type = type;
-    this.values = new HashMap<>(values);
+    this.values = values;
   }
 
   @Override
   public HttpMethod getHttpMethod() {
-    return HttpMethod.PATCH;
+    return HttpMethod.POST;
   }
 
   @Override
   public URI createUri(URI baseUri, String apiVersion) throws URISyntaxException {
     return new URIBuilder(baseUri)
-        .setPathSegments("services", "data", "v" + apiVersion, "sobjects", this.type, this.id)
+        .setPathSegments("services", "data", "v" + apiVersion, "sobjects", type)
         .build();
   }
 
@@ -47,8 +47,8 @@ public class UpdateRecordRestApiRequest extends JsonRestApiRequest<ModifyRecordR
   public ModifyRecordResult processResponse(
       int statusCode, Map<String, String> headers, JsonElement jsonRequestBody)
       throws RestApiErrorsException {
-    if (statusCode == 204) {
-      return new ModifyRecordResult(id);
+    if (statusCode == 201) {
+      return new ModifyRecordResult(jsonRequestBody.getAsJsonObject().get("id").getAsString());
     } else {
       throw new RestApiErrorsException(ErrorResponseParser.parse(jsonRequestBody));
     }
