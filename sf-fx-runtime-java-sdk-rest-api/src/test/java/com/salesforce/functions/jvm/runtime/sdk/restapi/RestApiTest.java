@@ -35,7 +35,7 @@ public class RestApiTest {
     try {
       restApi.execute(queryRequest);
     } catch (RestApiException e) {
-      assertThat(e.getMessage(), startsWith("Could not parse API response as JSON!"));
+      assertThat(e.getMessage(), startsWith("Could not parse API response!"));
 
       return;
     }

@@ -7,26 +7,19 @@
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
@@ -56,7 +49,7 @@ public final class RestApi {
     return accessToken;
   }
 
-  public <T> T execute(RestApiRequest<T> apiRequest)
+  public <T, A extends RestApiRequestBody, B> T execute(RestApiRequest<T, A, B> apiRequest)
       throws RestApiErrorsException, RestApiException, IOException {
     URI uri;
     try {
@@ -83,14 +76,14 @@ public final class RestApi {
     if (entity == null) {
       return apiRequest.processResponse(response.getStatusLine().getStatusCode(), headers, null);
     } else {
-      String bodyString = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+      byte[] bodyBytes = EntityUtils.toByteArray(response.getEntity());
 
       try {
-        JsonElement bodyJsonElement = gson.fromJson(bodyString, JsonElement.class);
         return apiRequest.processResponse(
-            response.getStatusLine().getStatusCode(), headers, bodyJsonElement);
-      } catch (JsonSyntaxException e) {
-        throw new RestApiException("Could not parse API response as JSON!\n" + bodyString, e);
+            response.getStatusLine().getStatusCode(), headers, apiRequest.parseBody(bodyBytes));
+      } catch (BodyParsingException e) {
+        throw new RestApiException(
+            "Could not parse API response!\n" + Arrays.toString(bodyBytes), e);
       }
     }
   }
@@ -104,8 +97,8 @@ public final class RestApi {
     return ByteBuffer.wrap(EntityUtils.toByteArray(client.execute(request).getEntity()));
   }
 
-  private HttpUriRequest createBaseHttpRequest(
-      HttpMethod method, URI uri, Optional<JsonElement> optionalBody) {
+  private <A extends RestApiRequestBody> HttpUriRequest createBaseHttpRequest(
+      HttpMethod method, URI uri, Optional<A> optionalBody) {
 
     HttpUriRequest request;
 
@@ -133,7 +126,7 @@ public final class RestApi {
       optionalBody.ifPresent(
           body ->
               httpEntityEnclosingRequest.setEntity(
-                  new StringEntity(gson.toJson(body), ContentType.APPLICATION_JSON)));
+                  new ByteArrayEntity(body.getRequestContents(), body.getContentType())));
 
       request = httpEntityEnclosingRequest;
     }

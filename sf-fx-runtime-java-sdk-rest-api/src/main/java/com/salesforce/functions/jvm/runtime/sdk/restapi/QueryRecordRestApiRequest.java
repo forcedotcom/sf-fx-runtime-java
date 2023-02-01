@@ -6,7 +6,6 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk.restapi;
 
-import com.google.gson.JsonElement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public class QueryRecordRestApiRequest extends AbstractQueryRestApiRequest {
   }
 
   @Override
-  public Optional<JsonElement> getBody() {
+  public Optional<JsonRequestBody> getBody() {
     return Optional.empty();
   }
 }

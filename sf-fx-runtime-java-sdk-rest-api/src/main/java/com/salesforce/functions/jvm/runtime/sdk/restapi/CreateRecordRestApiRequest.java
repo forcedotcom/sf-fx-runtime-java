@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.apache.http.client.utils.URIBuilder;
 
-public class CreateRecordRestApiRequest implements RestApiRequest<ModifyRecordResult> {
+public class CreateRecordRestApiRequest extends JsonRestApiRequest<ModifyRecordResult> {
   private final String type;
   private final Map<String, JsonElement> values;
 
@@ -36,17 +36,18 @@ public class CreateRecordRestApiRequest implements RestApiRequest<ModifyRecordRe
   }
 
   @Override
-  public Optional<JsonElement> getBody() {
-    return Optional.of(new Gson().toJsonTree(values));
+  public Optional<JsonRequestBody> getBody() {
+    return Optional.of(new JsonRequestBody(new Gson().toJsonTree(values)));
   }
 
   @Override
   public ModifyRecordResult processResponse(
-      int statusCode, Map<String, String> headers, JsonElement body) throws RestApiErrorsException {
+      int statusCode, Map<String, String> headers, JsonElement jsonRequestBody)
+      throws RestApiErrorsException {
     if (statusCode == 201) {
-      return new ModifyRecordResult(body.getAsJsonObject().get("id").getAsString());
+      return new ModifyRecordResult(jsonRequestBody.getAsJsonObject().get("id").getAsString());
     } else {
-      throw new RestApiErrorsException(ErrorResponseParser.parse(body));
+      throw new RestApiErrorsException(ErrorResponseParser.parse(jsonRequestBody));
     }
   }
 }

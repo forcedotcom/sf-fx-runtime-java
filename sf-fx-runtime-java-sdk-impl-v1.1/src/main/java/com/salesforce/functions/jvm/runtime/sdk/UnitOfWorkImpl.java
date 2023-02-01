@@ -6,8 +6,8 @@
  */
 package com.salesforce.functions.jvm.runtime.sdk;
 
+import com.salesforce.functions.jvm.runtime.sdk.restapi.JsonRestApiRequest;
 import com.salesforce.functions.jvm.runtime.sdk.restapi.ModifyRecordResult;
-import com.salesforce.functions.jvm.runtime.sdk.restapi.RestApiRequest;
 import com.salesforce.functions.jvm.sdk.data.UnitOfWork;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -16,13 +16,13 @@ import java.util.Map;
 public class UnitOfWorkImpl implements UnitOfWork {
   // Order is important, don't replace LinkedHashMap without verifying the new implementation
   // also preserves insertion order!
-  private final LinkedHashMap<String, RestApiRequest<ModifyRecordResult>> subrequests;
+  private final LinkedHashMap<String, JsonRestApiRequest<ModifyRecordResult>> subrequests;
 
-  public UnitOfWorkImpl(LinkedHashMap<String, RestApiRequest<ModifyRecordResult>> subrequests) {
+  public UnitOfWorkImpl(LinkedHashMap<String, JsonRestApiRequest<ModifyRecordResult>> subrequests) {
     this.subrequests = subrequests;
   }
 
-  public Map<String, RestApiRequest<ModifyRecordResult>> getSubrequests() {
+  public Map<String, JsonRestApiRequest<ModifyRecordResult>> getSubrequests() {
     return Collections.unmodifiableMap(subrequests);
   }
 }

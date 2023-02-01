@@ -16,17 +16,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractQueryRestApiRequest implements RestApiRequest<QueryRecordResult> {
+public abstract class AbstractQueryRestApiRequest extends JsonRestApiRequest<QueryRecordResult> {
   private final Gson gson = new Gson();
 
   @Override
   public final QueryRecordResult processResponse(
-      int statusCode, Map<String, String> headers, JsonElement json) throws RestApiErrorsException {
+      int statusCode, Map<String, String> headers, JsonElement jsonRequestBody)
+      throws RestApiErrorsException {
 
     if (statusCode != 200) {
-      throw new RestApiErrorsException(ErrorResponseParser.parse(json));
+      throw new RestApiErrorsException(ErrorResponseParser.parse(jsonRequestBody));
     } else {
-      return parseQueryResult(json.getAsJsonObject());
+      return parseQueryResult(jsonRequestBody.getAsJsonObject());
     }
   }
 
