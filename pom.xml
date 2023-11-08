@@ -112,7 +112,7 @@
         <dependency>
             <groupId>com.spotify</groupId>
             <artifactId>hamcrest-pojo</artifactId>
-            <version>1.3.1</version>
+            <version>1.3.2</version>
             <scope>test</scope>
             <exclusions>
                 <!-- hamcrest-pojo depends on an old Guava version that breaks other libraries -->
