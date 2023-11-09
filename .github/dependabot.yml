@@ -4,3 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    groups:
+      dependencies:
+        update-types:
+          - "minor"
+          - "patch"
