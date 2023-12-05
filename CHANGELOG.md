@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [1.1.6] - 2023-12-05
 
+### Changed
+
+- Registered SDK `1.1.2` with implementation in runtime. ([#452](https://github.com/forcedotcom/sf-fx-runtime-java/pull/452))
 
 ## [1.1.5] - 2023-11-17
 
