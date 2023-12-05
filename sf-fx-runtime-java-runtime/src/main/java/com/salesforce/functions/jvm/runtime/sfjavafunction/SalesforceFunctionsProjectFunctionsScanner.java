@@ -451,6 +451,7 @@ public class SalesforceFunctionsProjectFunctionsScanner
     mapping.put("1.0.0", "sdk-impl-v1.jar");
     mapping.put("1.1.0", "sdk-impl-v1.1.jar");
     mapping.put("1.1.1", "sdk-impl-v1.1.jar");
+    mapping.put("1.1.2", "sdk-impl-v1.1.jar");
 
     return Optional.ofNullable(properties.getProperty("version"))
         .flatMap((version) -> Optional.ofNullable(mapping.get(version)));
