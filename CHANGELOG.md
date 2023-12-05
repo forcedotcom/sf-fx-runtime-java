@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ## [Unreleased]
 
 
+## [1.1.6] - 2023-12-05
+
+### Changed
+
+- Registered SDK `1.1.2` with implementation in runtime. ([#452](https://github.com/forcedotcom/sf-fx-runtime-java/pull/452))
+
 ## [1.1.5] - 2023-11-17
 
 ### Changed
@@ -18,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Generalize `RestApi` body types. ([#372](https://github.com/forcedotcom/sf-fx-runtime-java/pull/372))
 
-[unreleased]: https://github.com/forcedotcom/sf-fx-runtime-java/compare/v1.1.5...HEAD
+[unreleased]: https://github.com/forcedotcom/sf-fx-runtime-java/compare/v1.1.6...HEAD
+[1.1.6]: https://github.com/forcedotcom/sf-fx-runtime-java/compare/v1.1.5...v1.1.6
 [1.1.5]: https://github.com/forcedotcom/sf-fx-runtime-java/compare/v1.1.4...v1.1.5
 [1.1.4]: https://github.com/forcedotcom/sf-fx-runtime-java/compare/v1.1.3...v1.1.4
