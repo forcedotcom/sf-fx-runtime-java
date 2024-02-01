@@ -68,7 +68,7 @@ jobs:
           distribution: zulu
           cache: maven
       - run: ./mvnw clean package -Paggregate-coverage
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/target/site/jacoco-aggregate/jacoco.xml
