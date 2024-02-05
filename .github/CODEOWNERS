@@ -1,1 +1,7 @@
+# Default to requesting reviews from the Languages team.
 * @forcedotcom/languages
+
+# However, request review from specific owners instead for files that are updated
+# by Dependabot or release automation, to reduce team review request noise.
+CHANGELOG.md @colincasey
+pom.xml @colincasey
