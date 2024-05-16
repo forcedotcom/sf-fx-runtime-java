@@ -9,6 +9,9 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # Undertow 2.3 only supports JDK 11 - https://issues.redhat.com/browse/UNDERTOW-2049
+      - dependency-name: "io.undertow:undertow-core"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
