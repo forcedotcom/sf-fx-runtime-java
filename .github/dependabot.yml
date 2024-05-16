@@ -12,6 +12,8 @@ updates:
     ignore:
       # Undertow 2.3 only supports JDK 11 - https://issues.redhat.com/browse/UNDERTOW-2049
       - dependency-name: "io.undertow:undertow-core"
+      # Mockito 5.x breaks so many tests, so let's keep it at 4.x
+      - dependency-name: "org.mockito:mockito-core"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
