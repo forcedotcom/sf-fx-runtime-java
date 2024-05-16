@@ -14,6 +14,10 @@ updates:
       - dependency-name: "io.undertow:undertow-core"
       # Mockito 5.x breaks so many tests, so let's keep it at 4.x
       - dependency-name: "org.mockito:mockito-core"
+      # updating these cloudevent dependencies could cause issues, we should only touch them if there is an update for security purposes
+      - dependency-name: "io.cloudevents:cloudevents-core"
+      - dependency-name: "io.cloudevents:cloudevents-api"
+      - dependency-name: "io.cloudevents:cloudevents-http-basic"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
